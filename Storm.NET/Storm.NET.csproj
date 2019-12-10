@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>8</LangVersion>
+    <Nullable>enable</Nullable>
+    <AssemblyName>StormDotNet</AssemblyName>
+    <RootNamespace>StormDotNet</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Storm.Net</Authors>
+    <Product>Storm.Net</Product>
+    <PackageId>Storm.Net</PackageId>
+    <Description>Simple Topologically Ordered Reactive Model</Description>
+    <Copyright>Copyright © 2019 Storm.NET contributors. All rights reserved.</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/StormDotNet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/StormDotNet</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Version>0.1.0</Version>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
