@@ -13,7 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storm.NET.Demo", "Storm.NET.Demo\Storm.NET.Demo.csproj", "{835F0F9B-221D-4903-B324-CA40FA1EFE86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storm.NET.Demo", "Storm.NET.Demo\Storm.NET.Demo.csproj", "{835F0F9B-221D-4903-B324-CA40FA1EFE86}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D10CC163-0739-47E1-85C5-EC5A53A1474F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfUnitConverter", "Examples\WpfUnitConverter\WpfUnitConverter.csproj", "{B6900E2B-3C03-458E-84B4-C0545E9CD757}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,16 @@ Global
 		{835F0F9B-221D-4903-B324-CA40FA1EFE86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{835F0F9B-221D-4903-B324-CA40FA1EFE86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{835F0F9B-221D-4903-B324-CA40FA1EFE86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6900E2B-3C03-458E-84B4-C0545E9CD757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6900E2B-3C03-458E-84B4-C0545E9CD757}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6900E2B-3C03-458E-84B4-C0545E9CD757}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6900E2B-3C03-458E-84B4-C0545E9CD757}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B6900E2B-3C03-458E-84B4-C0545E9CD757} = {D10CC163-0739-47E1-85C5-EC5A53A1474F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59DB95D3-92CF-4AD0-AF43-37B18679DD3F}
