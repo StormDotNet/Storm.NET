@@ -22,6 +22,8 @@ namespace StormDotNet
     {
         EStormContentType ContentType { get; }
 
+        T GetValueOr(T fallBack);
+
         void Match(Action<StormError> onError, Action<T> onValue);
 
         TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue);

@@ -66,6 +66,8 @@ namespace StormDotNet.Implementations
             OnVisitCache = null;
         }
 
+        public T GetValueOr(T fallBack) => _target == null ? fallBack : _target.GetValueOr(fallBack);
+
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
             if (onError == null) throw new ArgumentNullException(nameof(onError));

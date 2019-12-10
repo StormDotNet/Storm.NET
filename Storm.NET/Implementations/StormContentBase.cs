@@ -36,6 +36,16 @@ namespace StormDotNet.Implementations
 
         public EStormContentType ContentType { get; private set; }
 
+        public T GetValueOr(T fallBack)
+        {
+            return ContentType switch
+            {
+                EStormContentType.Error => fallBack,
+                EStormContentType.Value => _value,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
             switch (ContentType)
