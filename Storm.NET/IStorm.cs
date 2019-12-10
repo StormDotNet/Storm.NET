@@ -15,45 +15,7 @@
 
 namespace StormDotNet
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-
-    public delegate void StormOnTokenEnterDelegate(IStormToken token);
-
-    public delegate void StormOnTokenLeaveDelegate(IStormToken token, bool hasChanged);
-
-    public interface IStorm
+    public interface IStorm<T> : IStormContent<T>, IStormNode
     {
-        event StormOnTokenEnterDelegate? OnEnter;
-        event StormOnTokenLeaveDelegate? OnLeave;
-
-        /// <summary>
-        /// Accept a <see cref="IStormToken"/> to graph traversal purpose.
-        /// This cause <see cref="OnEnter"/> event to be raise with the passed <see cref="IStormToken"/> as argument.
-        /// </summary>
-        /// <param name="token">The <see cref="IStormToken"/> passed to listener.</param>
-        /// <remarks>
-        /// Only disposed token are accepted.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">If the passed <see cref="IStormToken"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">If the passed <see cref="IStormToken"/> is not disposed.</exception>
-        void Accept(IStormToken token);
-    }
-
-    public delegate void StormMatchEmptyDelegate();
-
-    public delegate void StormMatchErrorDelegate(Exception exception);
-
-    public delegate void StormMatchValueDelegate<in T>([DisallowNull] T value);
-
-    public interface IStorm<T> : IStorm
-    {
-        void Match(in StormMatchEmptyDelegate onEmpty,
-                   in StormMatchErrorDelegate onError,
-                   in StormMatchValueDelegate<T> onValue);
-
-        bool TryGetError([AllowNull] [NotNullWhen(true)] out Exception? error);
-
-        bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)] out T value);
     }
 }

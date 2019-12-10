@@ -27,22 +27,22 @@ namespace StormDotNet.Tests
     [TestFixture]
     public class StormInputWithNullComparerAsStormTests : StormTests
     {
-        protected override IStorm CreateNewSubject() => Storm.Input.WithCompare<object>();
+        protected override IStormNode CreateSubject() => Storm.Input.Create<object>();
     }
 
     [TestFixture]
     public class StormInputWithComparerAsStormTests : StormTests
     {
-        protected override IStorm CreateNewSubject()
+        protected override IStormNode CreateSubject()
         {
             var mockComparer = new Mock<IEqualityComparer<object>>();
-            return Storm.Input.WithCompare<object>(mockComparer.Object);
+            return Storm.Input.Create(mockComparer.Object);
         }
     }
 
     [TestFixture]
     public class StormInputWithoutCompareAsStormTests : StormTests
     {
-        protected override IStorm CreateNewSubject() => Storm.Input.WithoutCompare<object>();
+        protected override IStormNode CreateSubject() => Storm.Input.WithoutCompare.Create<object>();
     }
 }

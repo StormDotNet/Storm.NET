@@ -3,9 +3,9 @@ Simple Topologically Ordered Reactive Model
 
 ### Available features
 
-  - [ ] Input
-  - [ ] Function
-  - [ ] Socket
-  - [ ] Switch
+  - [X] Input
+  - [X] Function
+  - [X] Socket
+  - [X] Switch
   - [ ] List
   - [ ] Dictionary  

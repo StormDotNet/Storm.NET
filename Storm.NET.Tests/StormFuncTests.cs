@@ -24,24 +24,19 @@ namespace StormDotNet.Tests
         [Test]
         public void StormFuncCaptureException()
         {
-            var s = Storm.Input.WithCompare<int>();
-            var f = Storm.Func.WithCompare(s, i => i % 2 == 0 ? i : throw new Exception("odd value"));
-            
-            Assert.DoesNotThrow(() => s.SetError(new Exception("original error")));
-            Assert.DoesNotThrow(() => f.Match(() => throw new Exception(),
-                                              error => { },
+            var s = Storm.Input.Create<int>();
+            var f = Storm.Func.Create(s, i => i % 2 == 0 ? i : throw new Exception("odd value"));
+
+            Assert.DoesNotThrow(() => s.SetEmpty());
+            Assert.DoesNotThrow(() => f.Match(error => { },
                                               value => throw new Exception()));
 
-            var v = 2;
-            Assert.DoesNotThrow(() => s.SetValue(v));
-            Assert.DoesNotThrow(() => f.Match(() => throw new Exception(),
-                                              error => throw new Exception(),
-                                              value => Assert.That(value, Is.EqualTo(v))));
+            Assert.DoesNotThrow(() => s.SetValue(2));
+            Assert.DoesNotThrow(() => f.Match(error => throw new Exception(),
+                                              value => Assert.That(value, Is.EqualTo(2))));
 
-            v = 3;
-            Assert.DoesNotThrow(() => s.SetValue(v));
-            Assert.DoesNotThrow(() => f.Match(() => throw new Exception(),
-                                              error => { },
+            Assert.DoesNotThrow(() => s.SetValue(3));
+            Assert.DoesNotThrow(() => f.Match(error => { },
                                               value => throw new Exception()));
         }
     }

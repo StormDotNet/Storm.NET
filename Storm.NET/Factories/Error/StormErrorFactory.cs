@@ -13,14 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace StormDotNet.Exceptions
+// ReSharper disable MemberCanBeMadeStatic.Global
+namespace StormDotNet.Factories.Error
 {
-    using System;
-
-    /// <summary>
-    /// This exception is used when an invalid nullable state is detected.
-    /// </summary>
-    internal class InvalidNullableStateException : Exception
+    public class StormErrorFactory
     {
+        internal StormErrorFactory()
+        {
+        }
+
+        public StormError Create(string message) => new StormError(message);
+        public StormError EmptyContent { get; } = new StormError("Empty content.");
     }
 }

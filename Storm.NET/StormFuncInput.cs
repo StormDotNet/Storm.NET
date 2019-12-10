@@ -15,16 +15,30 @@
 
 namespace StormDotNet
 {
-    using Implementations;
+    using System;
 
-    public static partial class Storm
+    public readonly struct StormFuncInput<T>
     {
-        public static class Socket
+        public StormFuncInput(IStormContent<T> content, EStormFuncInputState state)
         {
-            public static IStormSocket<T> New<T>()
+            Content = content;
+            State = state;
+        }
+
+        public IStormContent<T> Content { get; }
+        public EStormFuncInputState State { get; }
+
+        public override string ToString()
+        {
+            var visitState = State switch
             {
-                return new StormSocket<T>();
-            }
+                EStormFuncInputState.NotVisited =>           "not visited",
+                EStormFuncInputState.VisitedWithChange =>    "changed",
+                EStormFuncInputState.VisitedWithoutChange => "unchanged",
+                _ => throw new ArgumentException()
+            };
+
+            return $"{visitState}, {Content}";
         }
     }
 }

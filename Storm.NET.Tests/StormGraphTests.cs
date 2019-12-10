@@ -24,13 +24,13 @@ namespace StormDotNet.Tests
         [Test]
         public void Diamond()
         {
-            var input = Storm.Input.WithCompare<int>();
-            var left = Storm.Func.WithCompare(input, v => v / 2);
-            var right = Storm.Func.WithCompare(input, v => v % 2);
-            var output = Storm.Func.WithCompare(left, right, (lValue, rValue) => lValue * 2 + rValue);
+            var input = Storm.Input.Create<int>();
+            var left = Storm.Func.Create(input, v => v / 2);
+            var right = Storm.Func.Create(input, v => v % 2);
+            var output = Storm.Func.Create(left, right, (lValue, rValue) => lValue * 2 + rValue);
 
             Assert.That(output.TryGetValue(out _), Is.False);
-            Assert.That(output.TryGetError(out _), Is.False);
+            Assert.That(output.TryGetError(out _), Is.True);
 
             foreach (var v in Enumerable.Range(0, 10))
             {
@@ -40,22 +40,22 @@ namespace StormDotNet.Tests
                 Assert.That(output.TryGetError(out _), Is.False);
             }
 
-            input.Reset();
+            input.SetEmpty();
             Assert.That(output.TryGetValue(out _), Is.False);
-            Assert.That(output.TryGetError(out _), Is.False);
+            Assert.That(output.TryGetError(out _), Is.True);
         }
 
         [Test]
         public void DiamondWithSocket()
         {
-            var input = Storm.Input.WithCompare<int>();
-            var left = Storm.Func.WithCompare(input, v => v / 2);
-            var right = Storm.Socket.New<int>();
-            var output = Storm.Func.WithCompare(left, right, (lValue, rValue) => lValue * 2 + rValue);
-            right.Connect(Storm.Func.WithCompare(input, v => v % 2));
+            var input = Storm.Input.Create<int>();
+            var left = Storm.Func.Create(input, v => v / 2);
+            var right = Storm.Socket.Create<int>();
+            var output = Storm.Func.Create(left, right, (lValue, rValue) => lValue * 2 + rValue);
+            right.Connect(Storm.Func.Create(input, v => v % 2));
 
             Assert.That(output.TryGetValue(out _), Is.False);
-            Assert.That(output.TryGetError(out _), Is.False);
+            Assert.That(output.TryGetError(out _), Is.True);
 
             foreach (var v in Enumerable.Range(0, 10))
             {
@@ -65,9 +65,39 @@ namespace StormDotNet.Tests
                 Assert.That(output.TryGetError(out _), Is.False);
             }
 
-            input.Reset();
+            input.SetEmpty();
             Assert.That(output.TryGetValue(out _), Is.False);
-            Assert.That(output.TryGetError(out _), Is.False);
+            Assert.That(output.TryGetError(out _), Is.True);
+        }
+
+        [Test]
+        public void SwitchLoop()
+        {
+            var input = Storm.Input.Create<int>();
+            var a = Storm.Func.Create(input, v => v);
+            var b = Storm.Socket.Create<int>();
+            var s = Storm.Switch.FromValues.Create(input, i => i % 2 == 0 ? a : b);
+            var c = Storm.Func.Create(s, v => v);
+            b.Connect(c);
+
+            input.SetValue(0);
+            Assert.That(s.TryGetError(out _), Is.False);
+            input.SetValue(1);
+            Assert.That(s.TryGetError(out _), Is.True);
+        }
+
+        [Test]
+        public void SwitchLoop2()
+        {
+            var input = Storm.Input.Create<int>();
+            var socket = Storm.Socket.Create<int>();
+            var s = Storm.Switch.FromValues.Create(input, i => i % 2 == 0 ? Storm.Immutable.CreateValue(1) : socket);
+            socket.Connect(s);
+
+            input.SetValue(0);
+            Assert.That(s.TryGetError(out _), Is.False);
+            input.SetValue(1);
+            Assert.That(s.TryGetError(out _), Is.True);
         }
     }
 }

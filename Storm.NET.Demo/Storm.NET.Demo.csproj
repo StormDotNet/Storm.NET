@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>StormDotNet.Demo</AssemblyName>
+    <RootNamespace>StormDotNet.Demo</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Storm.NET\Storm.NET.csproj" />
+  </ItemGroup>
+
+</Project>

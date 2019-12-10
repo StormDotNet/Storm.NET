@@ -21,26 +21,6 @@ namespace StormDotNet
 
     public static partial class StormExtensions
     {
-        public static bool IsAncestorOf(this IStorm root, IStorm storm)
-        {
-            if (root == null) throw new ArgumentNullException(nameof(root));
-            if (storm == null) throw new ArgumentNullException(nameof(storm));
-
-            var token = Storm.Token.SinglePassToken();
-            var hasEntered = false;
-
-            void OnEnter(IStormToken enteredToken)
-            {
-                hasEntered |= token.Equals(enteredToken);
-            }
-
-            storm.OnEnter += OnEnter;
-            root.Accept(token);
-            storm.OnEnter -= OnEnter;
-
-            return hasEntered;
-        }
-
         public static IStorm<T> SwitchWithCompare<T>(this IStorm<IStorm<T>> selector)
         {
             if (selector == null) throw new ArgumentNullException(nameof(selector));

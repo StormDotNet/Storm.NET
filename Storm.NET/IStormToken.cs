@@ -17,11 +17,9 @@ namespace StormDotNet
 {
     using System;
 
-    public delegate void StormTokenOnDisposingDelegate(IStormToken token);
-
     public interface IStormToken : IDisposable
     {
         bool IsDisposed { get; }
-        event StormTokenOnDisposingDelegate Disposing;
+        event Action Disposing;
     }
 }

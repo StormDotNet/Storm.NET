@@ -24,15 +24,15 @@ namespace StormDotNet.Tests
         [Test]
         public void StormSocketSelfConnectThrow()
         {
-            var subject = Storm.Socket.New<object>();
+            var subject = Storm.Socket.Create<object>();
             Assert.Throws<InvalidOperationException>(() => subject.Connect(subject));
         }
 
         [Test]
         public void StormSocketConnectDescendantThrow()
         {
-            var subject = Storm.Socket.New<object>();
-            var descendant = Storm.Func.WithCompare(subject, v => v);
+            var subject = Storm.Socket.Create<object>();
+            var descendant = Storm.Func.Create(subject, v => v);
             Assert.Throws<InvalidOperationException>(() => subject.Connect(descendant));
         }
     }

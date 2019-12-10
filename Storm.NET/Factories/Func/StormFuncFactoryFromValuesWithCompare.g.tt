@@ -1,0 +1,107 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// Storm.NET - Simple Topologically Ordered Reactive Model
+// Copyright © 2019 Storm.NET. All rights reserved.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+<#
+    var ordinals = new[]
+    {
+        string.Empty,
+        "First", "Second", "Third", "Fourth",
+        "Fifth", "Sixth", "Seventh", "Eighth"
+    };
+
+    var cardinals = new[]
+    {
+        "zero",
+        "one", "two", "three", "four",
+        "five", "six", "seven", "eight"
+    };
+
+    var overloads =
+        from argCount in Enumerable.Range(1, 8)
+        from args in new[]
+        {
+            from argIndex in Enumerable.Range(0, argCount)
+            select new
+            {
+                Index      = argIndex,
+                Name       = ordinals[argIndex + 1],
+                name       = ordinals[argIndex + 1].ToLower(),
+                Type       = $"T{ordinals[argIndex + 1]}",
+            }
+        }
+        select new
+        {
+            Arguments = args.ToList(),
+            cardinal = cardinals[argCount],
+            TParams = string.Join(", ", from arg in args select arg.Type)
+        };
+#>
+
+namespace StormDotNet.Factories.Func
+{
+    using System;
+    using System.Collections.Generic;
+    using Implementations;
+
+    public class StormFuncFactoryFromValuesWithCompare
+    {
+        internal StormFuncFactoryFromValuesWithCompare()
+        {
+        }
+
+        public StormFuncFactoryFromValuesWithCompare FromValues => FuncFactories.FromValuesWithCompare;
+        public StormFuncFactoryFromStatesWithCompare FromStates => FuncFactories.FromStatesWithCompare;
+        public StormFuncFactoryFromValuesWithCompare WithCompare => FuncFactories.FromValuesWithCompare;
+        public StormFuncFactoryFromValuesWithoutCompare WithoutCompare => FuncFactories.FromValuesWithoutCompare;
+
+<#  foreach (var o in overloads) { #>
+        public IStorm<TResult> Create<<#= o.TParams #>, TResult>(
+<#  foreach (var a in o.Arguments) { #>
+            IStorm<<#= a.Type #>> <#= a.name #>,
+<#  } #>
+            Func<<#= o.TParams #>, TResult> func)
+        {
+<#  foreach (var a in o.Arguments) { #>
+            if (<#= a.name #> == null) throw new ArgumentNullException(nameof(<#= a.name #>));
+<#  } #>
+            if (func == null) throw new ArgumentNullException(nameof(func));
+
+            return new StormFuncFromValues<<#= o.TParams #>, TResult>(<#  foreach (var a in o.Arguments) { #><#= a.name #>, <#  } #>func, EqualityComparer<TResult>.Default);
+        }
+
+        public IStorm<TResult> Create<<#= o.TParams #>, TResult>(
+<#  foreach (var a in o.Arguments) { #>
+            IStorm<<#= a.Type #>> <#= a.name #>,
+<#  } #>
+            Func<<#= o.TParams #>, TResult> func,
+            IEqualityComparer<TResult> comparer)
+        {
+<#  foreach (var a in o.Arguments) { #>
+            if (<#= a.name #> == null) throw new ArgumentNullException(nameof(<#= a.name #>));
+<#  } #>
+            if (func == null) throw new ArgumentNullException(nameof(func));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+
+            return new StormFuncFromValues<<#= o.TParams #>, TResult>(<#  foreach (var a in o.Arguments) { #><#= a.name #>, <#  } #>func, comparer);
+        }
+
+<#  } #>
+    }
+}

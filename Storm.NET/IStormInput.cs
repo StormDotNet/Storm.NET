@@ -15,12 +15,9 @@
 
 namespace StormDotNet
 {
-    using System;
-
     public interface IStormInput<T> : IStorm<T>
     {
-        void Reset(IStormToken token);
-        void SetError(IStormToken token, Exception error);
+        void SetError(IStormToken token, StormError error);
         void SetValue(IStormToken token, T value);
     }
 }

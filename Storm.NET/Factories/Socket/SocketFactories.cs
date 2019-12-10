@@ -13,15 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace StormDotNet.Exceptions
+namespace StormDotNet.Factories.Socket
 {
-    using System;
-
-    public class StormFuncEvaluationException : Exception
+    public class SocketFactories
     {
-        public StormFuncEvaluationException(Exception innerException) :
-            base("StormFunc func evaluation failed.", innerException)
+        static SocketFactories()
         {
+            Default = new StormSocketFactory();
         }
+
+        public static StormSocketFactory Default { get; }
     }
 }

@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storm.NET.Demo", "Storm.NET.Demo\Storm.NET.Demo.csproj", "{835F0F9B-221D-4903-B324-CA40FA1EFE86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{34258DB1-9F9C-45DD-B258-3D079AEB1438}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34258DB1-9F9C-45DD-B258-3D079AEB1438}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34258DB1-9F9C-45DD-B258-3D079AEB1438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{835F0F9B-221D-4903-B324-CA40FA1EFE86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{835F0F9B-221D-4903-B324-CA40FA1EFE86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{835F0F9B-221D-4903-B324-CA40FA1EFE86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{835F0F9B-221D-4903-B324-CA40FA1EFE86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

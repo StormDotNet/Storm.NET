@@ -13,31 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace StormDotNet
+namespace StormDotNet.Implementations
 {
     using System;
-    using System.Collections.Generic;
-    using Implementations;
 
-    public static partial class Storm
+    internal static partial class Error
     {
-        public static class Input
+        public static class Func
         {
-            public static IStormInput<T> WithCompare<T>()
+            public static StormError SourceError(Exception[] innerExceptions)
             {
-                return new StormInput<T>(EqualityComparer<T>.Default);
+                return new StormError("StormFunc sources have errors.", new AggregateException(innerExceptions));
             }
 
-            public static IStormInput<T> WithCompare<T>(IEqualityComparer<T> comparer)
+            public static StormError Evaluation(Exception innerException)
             {
-                if (comparer == null) throw new ArgumentNullException(nameof(comparer));
-
-                return new StormInput<T>(comparer);
-            }
-
-            public static IStormInput<T> WithoutCompare<T>()
-            {
-                return new StormInput<T>(null);
+                return new StormError("StormFunc func evaluation failed.", innerException);
             }
         }
     }

@@ -16,31 +16,38 @@
 namespace StormDotNet.Implementations
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
     internal class StormSocket<T> : IStormSocket<T>
     {
-        private List<StormOnTokenEnterDelegate>? _enterDelegates;
-        private List<StormOnTokenLeaveDelegate>? _leaveDelegates;
+        private event Action<IStormToken, EStormVisitType>? OnVisitCache;
         private IStorm<T>? _target;
+        public EStormContentType ContentType => _target?.ContentType ?? EStormContentType.Error;
+        public IStormNode? Target => _target;
 
-        public void Accept(IStormToken token)
+        public event Action<IStormToken, EStormVisitType>? OnVisit
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
-            if (!token.IsDisposed) throw new ArgumentException("Object is not disposed.", nameof(token));
-
-            if (_target == null)
+            add
             {
-                if (_enterDelegates != null)
+                if (_target != null)
                 {
-                    foreach (var enterDelegate in _enterDelegates)
-                        enterDelegate?.Invoke(token);
+                    _target.OnVisit += value;
+                }
+                else
+                {
+                    OnVisitCache += value;
                 }
             }
-            else
+            remove
             {
-                _target.Accept(token);
+                if (_target != null)
+                {
+                    _target.OnVisit -= value;
+                }
+                else
+                {
+                    OnVisitCache -= value;
+                }
             }
         }
 
@@ -51,58 +58,45 @@ namespace StormDotNet.Implementations
             if (_target != null)
                 throw new InvalidOperationException("Already connected");
 
-            if (this.IsAncestorOf(target))
+            if (IsDescendant(target))
                 throw new InvalidOperationException("This connection create a loop");
 
             _target = target;
-
-            if (_enterDelegates != null)
-            {
-                foreach (var enterDelegate in _enterDelegates)
-                    _target.OnEnter += enterDelegate;
-
-                _enterDelegates = null;
-            }
-
-            if (_leaveDelegates != null)
-            {
-                foreach (var leaveDelegate in _leaveDelegates)
-                    _target.OnLeave += leaveDelegate;
-
-                _leaveDelegates = null;
-            }
+            _target.OnVisit += OnVisitCache;
+            OnVisitCache = null;
         }
 
-        public void Match(in StormMatchEmptyDelegate onEmpty,
-                          in StormMatchErrorDelegate onError,
-                          in StormMatchValueDelegate<T> onValue)
+        public void Match(Action<StormError> onError, Action<T> onValue)
         {
-            if (onEmpty == null) throw new ArgumentNullException(nameof(onEmpty));
             if (onError == null) throw new ArgumentNullException(nameof(onError));
             if (onValue == null) throw new ArgumentNullException(nameof(onValue));
 
             if (_target == null)
-            {
-                onEmpty();
-                return;
-            }
-
-            _target.Match(onEmpty, onError, onValue);
+                onError(Error.Socket.Disconnected);
+            else
+                _target.Match(onError, onValue);
         }
 
-        public bool TryGetError([AllowNull] [NotNullWhen(true)] out Exception? error)
+        public TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue)
+        {
+            if (onError == null) throw new ArgumentNullException(nameof(onError));
+            if (onValue == null) throw new ArgumentNullException(nameof(onValue));
+
+            return _target == null ? onError(Error.Socket.Disconnected) : _target.Match(onError, onValue);
+        }
+
+        public bool TryGetError([AllowNull] [NotNullWhen(true)] out StormError? error)
         {
             if (_target == null)
             {
-                error = null;
+                error = Error.Socket.Disconnected;
                 return false;
             }
 
             return _target.TryGetError(out error);
         }
 
-        public bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)]
-                                out T value)
+        public bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)] out T value)
         {
             if (_target == null)
             {
@@ -113,58 +107,33 @@ namespace StormDotNet.Implementations
             return _target.TryGetValue(out value);
         }
 
-        public event StormOnTokenEnterDelegate? OnEnter
-        {
-            add
-            {
-                if (_target != null)
-                {
-                    _target.OnEnter += value;
-                }
-                else if (value != null)
-                {
-                    _enterDelegates ??= new List<StormOnTokenEnterDelegate>();
-                    _enterDelegates.Add(value);
-                }
-            }
-            remove
-            {
-                if (_target != null)
-                {
-                    _target.OnEnter -= value;
-                }
-                else if (value != null)
-                {
-                    _enterDelegates?.Remove(value);
-                }
-            }
-        }
+        public override string ToString() => ToStringHelper.ToString(this);
 
-        public event StormOnTokenLeaveDelegate? OnLeave
+        private bool IsDescendant(IStormNode target)
         {
-            add
+            if (target == this)
+                return true;
+
+            if (target is IStormSocket socket && socket.Target == this)
+                return true;
+
+            if (OnVisitCache == null)
+                return false;
+
+            var token = Storm.Token.Create();
+            var hasEntered = false;
+
+            void TargetOnVisit(IStormToken enteredToken, EStormVisitType visitType)
             {
-                if (_target != null)
-                {
-                    _target.OnLeave += value;
-                }
-                else if (value != null)
-                {
-                    _leaveDelegates ??= new List<StormOnTokenLeaveDelegate>();
-                    _leaveDelegates.Add(value);
-                }
+                hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.EnterLoopSearch;
             }
-            remove
-            {
-                if (_target != null)
-                {
-                    _target.OnLeave -= value;
-                }
-                else if (value != null)
-                {
-                    _leaveDelegates?.Remove(value);
-                }
-            }
+
+            target.OnVisit += TargetOnVisit;
+            OnVisitCache.Invoke(token, EStormVisitType.EnterLoopSearch);
+            OnVisitCache.Invoke(token, EStormVisitType.LeaveLoopSearch);
+            target.OnVisit -= TargetOnVisit;
+
+            return hasEntered;
         }
     }
 }

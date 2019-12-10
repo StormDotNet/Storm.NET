@@ -15,6 +15,8 @@
 
 namespace StormDotNet.Implementations
 {
+    using System;
+
     internal class StormToken : IStormToken
     {
         public StormToken()
@@ -23,9 +25,9 @@ namespace StormDotNet.Implementations
         }
 
         public bool IsDisposed { get; private set; }
-        private event StormTokenOnDisposingDelegate? Disposing;
+        private event Action? Disposing;
 
-        event StormTokenOnDisposingDelegate? IStormToken.Disposing
+        event Action? IStormToken.Disposing
         {
             add
             {
@@ -37,7 +39,7 @@ namespace StormDotNet.Implementations
 
         public void Dispose()
         {
-            Disposing?.Invoke(this);
+            Disposing?.Invoke();
             Disposing = null;
             IsDisposed = true;
         }
@@ -47,7 +49,7 @@ namespace StormDotNet.Implementations
     {
         public bool IsDisposed => true;
 
-        public event StormTokenOnDisposingDelegate Disposing
+        public event Action Disposing
         {
             add { }
             remove { }

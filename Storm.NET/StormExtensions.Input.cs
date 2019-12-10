@@ -19,27 +19,27 @@ namespace StormDotNet
 
     public static partial class StormExtensions
     {
-        public static void Reset<T>(this IStormInput<T> input)
+        public static void SetEmpty<T>(this IStormInput<T> input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            using var token = Storm.Token.TwoPassToken();
-            input.Reset(token);
+            using var token = Storm.Token.Create();
+            input.SetError(token, Storm.Error.EmptyContent);
         }
 
-        public static void SetError<T>(this IStormInput<T> input, Exception error)
+        public static void SetError<T>(this IStormInput<T> input, string errorMessage)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            using var token = Storm.Token.TwoPassToken();
-            input.SetError(token, error);
+            using var token = Storm.Token.Create();
+            input.SetError(token, Storm.Error.Create(errorMessage));
         }
 
         public static void SetValue<T>(this IStormInput<T> input, T value)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             
-            using var token = Storm.Token.TwoPassToken();
+            using var token = Storm.Token.Create();
             input.SetValue(token, value);
         }
     }

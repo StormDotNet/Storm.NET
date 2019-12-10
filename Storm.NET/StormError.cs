@@ -15,21 +15,16 @@
 
 namespace StormDotNet
 {
-    using Implementations;
+    using System;
 
-    public static partial class Storm
+    public class StormError : Exception
     {
-        public static class Token
+        internal StormError(string message) : base(message)
         {
-            static Token()
-            {
-                var initialToken = new StormTokenDisposed();
-                Initial = initialToken;
-            }
+        }
 
-            public static IStormToken Initial { get; }
-            public static IStormToken SinglePassToken() => new StormTokenDisposed();
-            public static IStormToken TwoPassToken() => new StormToken();
+        internal StormError(string message, Exception innerException) : base(message, innerException)
+        {
         }
     }
 }

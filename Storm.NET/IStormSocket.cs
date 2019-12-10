@@ -15,7 +15,12 @@
 
 namespace StormDotNet
 {
-    public interface IStormSocket<T> : IStorm<T>
+    public interface IStormSocket : IStormNode
+    {
+        IStormNode? Target { get; }
+    }
+
+    public interface IStormSocket<T> : IStorm<T>, IStormSocket
     {
         void Connect(IStorm<T> target);
     }

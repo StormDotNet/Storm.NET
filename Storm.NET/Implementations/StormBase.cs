@@ -17,184 +17,143 @@ namespace StormDotNet.Implementations
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
 
-    public abstract class StormBase<T> : IStorm<T>
+    public abstract class StormBase<T> : StormContentBase<T>, IStorm<T>
     {
-        private readonly IEqualityComparer<T>? _comparer;
-        private Exception? _error;
-        private Content _content;
-        private IStormToken _currentToken = Storm.Token.Initial;
-        private State _state = State.Idle;
+        private EState _visitState = EState.Idle;
+        private bool _inLoopSearch;
 
-        [AllowNull]
-        [MaybeNull]
-        private T _value;
-
-        protected StormBase(IEqualityComparer<T>? comparer)
+        protected StormBase(IEqualityComparer<T>? comparer) : base(comparer)
         {
-            _comparer = comparer;
-            _value = default;
+            CurrentToken = Storm.Token.Initial;
         }
 
-        public void Accept(IStormToken token)
-        {
-            if (token == null) throw new ArgumentNullException(nameof(token));
-            if (!token.IsDisposed) throw new ArgumentException("Object is not disposed.", nameof(token));
-
-            Enter(token);
-        }
-
-        public void Match(in StormMatchEmptyDelegate onEmpty,
-                          in StormMatchErrorDelegate onError,
-                          in StormMatchValueDelegate<T> onValue)
-        {
-            switch (_content)
-            {
-                case Content.Empty:
-                    onEmpty();
-                    break;
-                case Content.Error:
-                    onError(_error!);
-                    break;
-                case Content.Value:
-                    onValue(_value!);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public bool TryGetError([AllowNull][NotNullWhen(true)] out Exception? error)
-        {
-            if (_content != Content.Error)
-            {
-                error = null;
-                return false;
-            }
-
-            error = _error;
-            return true;
-        }
-
-        public bool TryGetValue([AllowNull][MaybeNull][NotNullWhen(true)] out T value)
-        {
-            if (_content != Content.Value)
-            {
-                value = default!;
-                return false;
-            }
-
-            value = _value;
-            return true;
-        }
+        protected IStormToken CurrentToken { get; private set; }
 
         protected void Enter(IStormToken token)
         {
-            if (token.IsDisposed)
-            {
-                OnEnter?.Invoke(token);
-                return;
-            }
+            if (CurrentToken != Storm.Token.Initial)
+                throw new InvalidOperationException("Unexpected state");
 
-            if (_state != State.Idle)
+            if (_visitState != EState.Idle || _inLoopSearch)
                 throw new InvalidOperationException("Can't enter now");
 
-            _currentToken = token;
-            _state = State.Entering;
-            OnEnter?.Invoke(token);
-            _state = State.Entered;
+            _visitState = EState.Entering;
+            OnVisit?.Invoke(token, EStormVisitType.Enter);
+            _visitState = EState.Entered;
+
+            CurrentToken = token;
+        }
+
+        protected void EnterLoopSearch(IStormToken token)
+        {
+            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
+                throw new InvalidOperationException("Unknown token");
+
+            if (_inLoopSearch)
+                throw new InvalidOperationException("Already in loop search");
+
+            _inLoopSearch = true;
+            OnVisit?.Invoke(token, EStormVisitType.EnterLoopSearch);
+        }
+
+        protected bool IsDescendant(IStormNode target)
+        {
+            if (target == this)
+                return true;
+
+            if (target is IStormSocket socket && socket.Target == this)
+                return true;
+
+            if (OnVisit == null)
+                return false;
+
+            var hasEntered = false;
+
+            void TargetOnVisit(IStormToken enteredToken, EStormVisitType visitType)
+            {
+                hasEntered |= CurrentToken.Equals(enteredToken) && visitType == EStormVisitType.EnterLoopSearch;
+            }
+
+            target.OnVisit += TargetOnVisit;
+            OnVisit.Invoke(CurrentToken, EStormVisitType.EnterLoopSearch);
+            OnVisit.Invoke(CurrentToken, EStormVisitType.LeaveLoopSearch);
+            target.OnVisit -= TargetOnVisit;
+
+            return hasEntered;
+        }
+
+        private void Leave(IStormToken token, bool hasChanged)
+        {
+            _visitState = EState.Leaving;
+            OnVisit?.Invoke(token, hasChanged ? EStormVisitType.LeaveChanged : EStormVisitType.LeaveUnchanged);
+            _visitState = EState.Idle;
+            CurrentToken = Storm.Token.Initial;
+        }
+
+        protected void LeaveLoopSearch(IStormToken token)
+        {
+            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
+                throw new InvalidOperationException("Unknown token");
+
+            if (!_inLoopSearch)
+                throw new InvalidOperationException("Not in loop search");
+
+            OnVisit?.Invoke(token, EStormVisitType.LeaveLoopSearch);
+            _inLoopSearch = false;
         }
 
         protected void LeaveUnchanged(IStormToken token)
         {
-            if (_state != State.Entered)
+            if (token != CurrentToken)
+                throw new InvalidOperationException("Unknown token");
+
+            if (_visitState != EState.Entered || _inLoopSearch)
                 throw new InvalidOperationException("Can't leave now");
 
-            _state = State.Leaving;
-            OnLeave?.Invoke(token, false);
-            _state = State.Idle;
+            Leave(token, false);
         }
 
-        protected void LeaveEmpty(IStormToken token)
+        protected void LeaveWithError(IStormToken token, StormError error)
         {
-            if (_state != State.Entered)
+            if (token != CurrentToken)
+                throw new InvalidOperationException("Unknown token");
+
+            if (_visitState != EState.Entered || _inLoopSearch)
                 throw new InvalidOperationException("Can't leave now");
 
-            var hasChanged = _content != Content.Empty;
-            if (hasChanged)
-            {
-                _content = Content.Empty;
-                _error = null;
-                _value = default;
-            }
-            
-            _state = State.Leaving;
-            OnLeave?.Invoke(token, hasChanged);
-            _state = State.Idle;
-        }
-
-        protected void LeaveWithError(IStormToken token, Exception error)
-        {
-            if (_state != State.Entered)
-                throw new InvalidOperationException("Can't leave now");
-            
-            var hasChanged = _content != Content.Error || _error != error;
-            if (hasChanged)
-            {
-                _content = Content.Error;
-                _error = error;
-                _value = default;
-            }
-
-            _state = State.Leaving;
-            OnLeave?.Invoke(token, hasChanged);
-            _state = State.Idle;
+            var hasChanged = SetError(error);
+            Leave(token, hasChanged);
         }
 
         protected void LeaveWithValue(IStormToken token, T value)
         {
-            if (_state != State.Entered)
+            if (token != CurrentToken)
+                throw new InvalidOperationException("Unknown token");
+
+            if (_visitState != EState.Entered || _inLoopSearch)
                 throw new InvalidOperationException("Can't leave now");
 
-            var hasChanged = _content != Content.Value || _comparer == null || !_comparer.Equals(_value, value);
-            if (hasChanged)
-            {
-                _content = Content.Value;
-                _error = null;
-                _value = value;
-            }
-
-            _state = State.Leaving;
-            OnLeave?.Invoke(token, true);
-            _state = State.Idle;
+            var hasChanged = SetValue(value);
+            Leave(token, hasChanged);
         }
 
-        private event StormOnTokenEnterDelegate? OnEnter;
+        private event Action<IStormToken, EStormVisitType>? OnVisit;
 
-        event StormOnTokenEnterDelegate? IStorm.OnEnter
+        event Action<IStormToken, EStormVisitType>? IStormNode.OnVisit
         {
             add
             {
-                OnEnter += value;
-                if (_state == State.Entered)
+                OnVisit += value;
+                if (_visitState == EState.Entered)
                 {
-                    value?.Invoke(_currentToken);
+                    value?.Invoke(CurrentToken, EStormVisitType.Enter);
                 }
             }
-            remove => OnEnter -= value;
+            remove => OnVisit -= value;
         }
 
-        public event StormOnTokenLeaveDelegate? OnLeave;
-
-        private enum Content
-        {
-            Empty,
-            Error,
-            Value
-        }
-
-        private enum State
+        private enum EState
         {
             Idle,
             Entering,

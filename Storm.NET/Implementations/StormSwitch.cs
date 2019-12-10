@@ -17,132 +17,101 @@ namespace StormDotNet.Implementations
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
-    internal class StormSwitch<TResult> : StormBase<TResult>
+    internal class StormSwitch<TResult> : StormFuncBase<TResult>
     {
         private readonly IStorm<IStorm<TResult>> _selector;
-        private readonly bool[] _entered = new bool[2];
-
         private IStorm<TResult>? _target;
-        private State _state = State.Idle;
-        private IStormToken? _token;
-        private bool _anySourceHasChanged;
+        private bool _hasTargetChanged;
 
         public StormSwitch(IStorm<IStorm<TResult>> selector,
-                           IEqualityComparer<TResult>? comparer) : base(comparer)
+                           IEqualityComparer<TResult>? comparer) : base(3, comparer)
         {
             _selector = selector;
             UpdateTarget();
+            _hasTargetChanged = false;
+            _selector.OnVisit += SelectorOnVisit;
+        }
 
-            _selector.OnEnter += OnEnterSelector;
-            _selector.OnLeave += OnLeaveSelector;
+        protected override void OnLeave(IStormToken token)
+        {
+            if (_selector.TryGetError(out var error))
+            {
+                LeaveWithError(token, error);
+            }
+            else if (_target == null)
+            {
+                LeaveWithError(token, Error.Switch.Disconnected);
+            }
+            else if (_target == this)
+            {
+                LeaveWithError(token, Error.Switch.Looped);
+            }
+            else if (_target.TryGetValue(out var targetValue))
+            {
+                LeaveWithValue(token, targetValue);
+            }
+            else if (_target.TryGetError(out var targetError))
+            {
+                LeaveWithError(token, targetError);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unexpected state");
+            }
+
+            _hasTargetChanged = false;
+        }
+
+        protected override void OnValidatedLeave(int index, bool hasChanged)
+        {
+            if (index == 0 && hasChanged)
+            {
+                UpdateTarget();
+                if (GetSourceState(1) == EStormSourceState.Enter)
+                {
+                    Accept(1, CurrentToken, EStormVisitType.LeaveChanged);
+                }
+            }
+
+            base.OnValidatedLeave(index, hasChanged);
+        }
+
+        private void SelectorOnVisit(IStormToken token, EStormVisitType visitType)
+        {
+            Accept(0, token, visitType);
+        }
+
+        private void TargetOnVisit(IStormToken token, EStormVisitType visitType)
+        {
+            Accept(_hasTargetChanged ? 2 : 1, token, visitType);
         }
 
         private void UpdateTarget()
         {
+            if (_hasTargetChanged)
+                throw new InvalidOperationException("Target already changed");
+
+            _hasTargetChanged = true;
+
             if (_target != null)
             {
-                _target.OnEnter -= OnEnterTarget;
-                _target.OnLeave -= OnLeaveTarget;
+                _target.OnVisit -= TargetOnVisit;
             }
 
             _selector.TryGetValue(out _target);
-            _entered[1] = false;
 
             if (_target != null)
             {
-                _target.OnEnter += OnEnterTarget;
-                _target.OnLeave += OnLeaveTarget;
-            }
-        }
-
-        private void OnEnterByIndex(int index, IStormToken token)
-        {
-            if (_state == State.Idle)
-            {
-                _state = State.Entering;
-                _token = token;
-
-                Enter(token);
-            }
-            else if (_state != State.Entering || _token != token)
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (_entered[index])
-                throw new InvalidOperationException();
-
-            _entered[index] = true;
-        }
-
-        private void OnLeaveByIndex(int index, IStormToken token, bool hasChanged)
-        {
-            if (_token != token)
-                throw new InvalidOperationException();
-
-            if (_state == State.Entering)
-            {
-                _state = State.Leaving;
-            }
-            else if (_state != State.Leaving)
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (!_entered[index])
-                throw new InvalidOperationException();
-
-            _entered[index] = false;
-            _anySourceHasChanged |= hasChanged;
-
-            if (_entered.Any(b => b))
-                return;
-
-            if (_anySourceHasChanged)
-            {
-                if (_target != null && _target.TryGetValue(out var value))
+                if (IsDescendant(_target))
                 {
-                    LeaveWithValue(token, value);
-                }
-                else if (_selector.TryGetError(out var error) || _target != null && _target.TryGetError(out error))
-                {
-                    LeaveWithError(token, new Exception("Source have an error", error));
+                    _target = this;
                 }
                 else
                 {
-                    LeaveEmpty(token);
+                    _target.OnVisit += TargetOnVisit;
                 }
             }
-            else
-            {
-                LeaveUnchanged(token);
-            }
-
-            _anySourceHasChanged = false;
-            _state = State.Idle;
-        }
-
-        private void OnEnterSelector(IStormToken token) => OnEnterByIndex(0, token);
-
-        private void OnLeaveSelector(IStormToken token, bool hasChanged)
-        {
-            if (hasChanged)
-                UpdateTarget();
-
-            OnLeaveByIndex(0, token, hasChanged);
-        }
-
-        private void OnEnterTarget(IStormToken token) => OnEnterByIndex(1, token);
-
-        private void OnLeaveTarget(IStormToken token, bool hasChanged) => OnLeaveByIndex(1, token, hasChanged);
-
-        private enum State
-        {
-            Idle,
-            Entering,
-            Leaving
         }
     }
 }

@@ -36,4 +36,113 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Factories\Func\StormFuncFactoryFromValuesWithCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFactoryFromValuesWithCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Factories\Func\StormFuncFactoryFromValuesWithoutCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFactoryFromValuesWithoutCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Factories\Func\StormFuncFactoryFromStatesWithCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFactoryFromStatesWithCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Factories\Func\StormFuncFactoryFromStatesWithoutCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFactoryFromStatesWithoutCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Factories\Switch\StormSwitchFactoryFromStatesWithCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromStatesWithCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Factories\Switch\StormSwitchFactoryFromStatesWithoutCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromStatesWithoutCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Factories\Switch\StormSwitchFactoryFromValuesWithCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromValuesWithCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Factories\Switch\StormSwitchFactoryFromValuesWithoutCompare.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromValuesWithoutCompare.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Implementations\StormFuncBase.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncBase.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Implementations\StormFuncFromStates.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFromStates.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Implementations\StormFuncFromValues.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFromValues.g.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Factories\Func\StormFuncFactoryFromValuesWithCompare.g.tt">
+      <LastGenOutput>StormFuncFactoryFromValuesWithCompare.g.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Factories\Func\StormFuncFactoryFromValuesWithoutCompare.g.tt">
+      <LastGenOutput>StormFuncFactoryFromValuesWithoutCompare.g.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Factories\Func\StormFuncFactoryFromStatesWithCompare.g.tt">
+      <LastGenOutput>StormFuncFactoryFromStatesWithCompare.g.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Factories\Func\StormFuncFactoryFromStatesWithoutCompare.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormFuncFactoryFromStatesWithoutCompare.g.cs</LastGenOutput>
+    </None>
+    <None Update="Factories\Switch\StormSwitchFactoryFromStatesWithCompare.g.tt">
+      <LastGenOutput>StormSwitchFactoryFromStatesWithCompare.g.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Factories\Switch\StormSwitchFactoryFromStatesWithoutCompare.g.tt">
+      <LastGenOutput>StormSwitchFactoryFromStatesWithoutCompare.g.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Factories\Switch\StormSwitchFactoryFromValuesWithCompare.g.tt">
+      <LastGenOutput>StormSwitchFactoryFromValuesWithCompare.g.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Factories\Switch\StormSwitchFactoryFromValuesWithoutCompare.g.tt">
+      <LastGenOutput>StormSwitchFactoryFromValuesWithoutCompare.g.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Implementations\StormFuncBase.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormFuncBase.g.cs</LastGenOutput>
+    </None>
+    <None Update="Implementations\StormFuncFromStates.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormFuncFromStates.g.cs</LastGenOutput>
+    </None>
+    <None Update="Implementations\StormFuncFromValues.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormFuncFromValues.g.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
 </Project>
