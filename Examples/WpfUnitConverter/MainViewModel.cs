@@ -44,8 +44,8 @@ namespace WpfUnitConverter
         {
             return (meterValue.State, inchValue.State) switch
             {
-                (_, EStormFuncInputState.NotVisited) => meterValue.Content.GetValueOr(default),
-                (EStormFuncInputState.NotVisited, _) => inchValue.Content.GetValueOr(default),
+                (_, EStormFuncInputState.NotVisited) => meterValue.Content.GetValueOrThrow(),
+                (EStormFuncInputState.NotVisited, _) => inchValue.Content.GetValueOrThrow(),
                 _ => default
             };
         }

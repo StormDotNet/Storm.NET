@@ -24,6 +24,8 @@ namespace StormDotNet
 
         T GetValueOr(T fallBack);
 
+        T GetValueOrThrow();
+
         void Match(Action<StormError> onError, Action<T> onValue);
 
         TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue);

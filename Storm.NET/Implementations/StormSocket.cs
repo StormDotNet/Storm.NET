@@ -67,7 +67,8 @@ namespace StormDotNet.Implementations
         }
 
         public T GetValueOr(T fallBack) => _target == null ? fallBack : _target.GetValueOr(fallBack);
-
+        public T GetValueOrThrow() => _target == null ? throw Error.Socket.Disconnected : _target.GetValueOrThrow();
+        
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
             if (onError == null) throw new ArgumentNullException(nameof(onError));

@@ -46,6 +46,16 @@ namespace StormDotNet.Implementations
             };
         }
 
+        public T GetValueOrThrow()
+        {
+            return ContentType switch
+            {
+                EStormContentType.Error => throw _error!,
+                EStormContentType.Value => _value,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
             switch (ContentType)

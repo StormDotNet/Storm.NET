@@ -30,7 +30,8 @@ namespace StormDotNet.Implementations
         public EStormContentType ContentType => EStormContentType.Error;
 
         public T GetValueOr(T fallBack) => fallBack;
-
+        public T GetValueOrThrow() => throw _error;
+        
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
             if (onError == null) throw new ArgumentNullException(nameof(onError));
