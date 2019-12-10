@@ -55,23 +55,23 @@ namespace WpfUnitConverter
 
         public WpfStormIo()
         {
-            Input = Storm.Input.Create<T>();
-            Update = Storm.Socket.Create<T>();
+            UserInput = Storm.Input.Create<T>();
+            ModelSocket = Storm.Socket.Create<T>();
 
-            _output = Storm.Func.FromStates.Create(Input, Update, Resolve);
+            _output = Storm.Func.FromStates.Create(UserInput, ModelSocket, Resolve);
             _output.OnVisit += OutputOnVisit;
         }
 
-        public IStormInput<T> Input { get; }
+        public IStormInput<T> UserInput { get; }
 
-        public IStormSocket<T> Update { get; }
+        public IStormSocket<T> ModelSocket { get; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public T Value
         {
             get => _output.TryGetValue(out var value) ? value : default;
-            set => Input.SetValue(value);
+            set => UserInput.SetValue(value);
         }
 
         private void OutputOnVisit(IStormToken token, EStormVisitType visitType)

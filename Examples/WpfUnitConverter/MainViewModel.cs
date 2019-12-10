@@ -28,16 +28,16 @@ namespace WpfUnitConverter
             InchIo = new WpfStormIo<string>();
             MeterIo = new WpfStormIo<string>();
 
-            var modelFromInch = Storm.Func.Create(InchIo.Input, s => decimal.Parse(s) * MeterByInch);
-            var modelFromMeter = Storm.Func.Create(MeterIo.Input, decimal.Parse);
+            var modelFromInch = Storm.Func.Create(InchIo.UserInput, s => decimal.Parse(s) * MeterByInch);
+            var modelFromMeter = Storm.Func.Create(MeterIo.UserInput, decimal.Parse);
 
             var model = Storm.Func.FromStates.Create(modelFromMeter, modelFromInch, GetModelValue);
 
             var inchFromModel = Storm.Func.Create(model, v => Convert.ToString(v / MeterByInch, CultureInfo.CurrentCulture));
             var meterFromModel = Storm.Func.Create(model, Convert.ToString);
 
-            InchIo.Update.Connect(inchFromModel);
-            MeterIo.Update.Connect(meterFromModel);
+            InchIo.ModelSocket.Connect(inchFromModel);
+            MeterIo.ModelSocket.Connect(meterFromModel);
         }
 
         private static decimal GetModelValue(StormFuncInput<decimal> meterValue, StormFuncInput<decimal> inchValue)
