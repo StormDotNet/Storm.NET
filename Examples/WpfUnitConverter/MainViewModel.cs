@@ -21,15 +21,15 @@ namespace WpfUnitConverter
 
     public class MainViewModel
     {
-        private const double MeterByInch = 0.0254;
+        private const decimal MeterByInch = 0.0254m;
 
         public MainViewModel()
         {
             InchIo = new WpfStormIo<string>();
             MeterIo = new WpfStormIo<string>();
 
-            var modelFromInch = Storm.Func.Create(InchIo.Input, s => double.Parse(s) * MeterByInch);
-            var modelFromMeter = Storm.Func.Create(MeterIo.Input, double.Parse);
+            var modelFromInch = Storm.Func.Create(InchIo.Input, s => decimal.Parse(s) * MeterByInch);
+            var modelFromMeter = Storm.Func.Create(MeterIo.Input, decimal.Parse);
 
             var model = Storm.Func.FromStates.Create(modelFromMeter, modelFromInch, GetModelValue);
 
@@ -40,13 +40,13 @@ namespace WpfUnitConverter
             MeterIo.Update.Connect(meterFromModel);
         }
 
-        private static double GetModelValue(StormFuncInput<double> meterValue, StormFuncInput<double> inchValue)
+        private static decimal GetModelValue(StormFuncInput<decimal> meterValue, StormFuncInput<decimal> inchValue)
         {
             return (meterValue.State, inchValue.State) switch
             {
-                (_, EStormFuncInputState.NotVisited) => meterValue.Content.GetValueOr(double.NaN),
-                (EStormFuncInputState.NotVisited, _) => inchValue.Content.GetValueOr(double.NaN),
-                _ => double.NaN
+                (_, EStormFuncInputState.NotVisited) => meterValue.Content.GetValueOr(default),
+                (EStormFuncInputState.NotVisited, _) => inchValue.Content.GetValueOr(default),
+                _ => default
             };
         }
 
