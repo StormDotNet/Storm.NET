@@ -81,6 +81,8 @@ namespace StormDotNet.Implementations
             };
         }
 
+        public override string ToString() => ToStringHelper.ToString(this);
+
         public bool TryGetError([NotNullWhen(true)] out StormError? error)
         {
             if (ContentType != EStormContentType.Error)
@@ -104,8 +106,6 @@ namespace StormDotNet.Implementations
             value = _value;
             return true;
         }
-
-        public override string ToString() => ToStringHelper.ToString(this);
 
         protected bool SetError(StormError error)
         {

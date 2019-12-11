@@ -35,20 +35,20 @@ namespace StormDotNet.Implementations
         {
             switch (visitType)
             {
-                case EStormVisitType.Enter:
-                    OnEnter(index, token);
+                case EStormVisitType.UpdateEnter:
+                    SourceOnUpdateEnter(index, token);
                     break;
-                case EStormVisitType.LeaveChanged:
-                    OnLeave(index, token, true);
+                case EStormVisitType.UpdateLeaveChanged:
+                    SourceOnUpdateLeave(index, token, true);
                     break;
-                case EStormVisitType.LeaveUnchanged:
-                    OnLeave(index, token, false);
+                case EStormVisitType.UpdateLeaveUnchanged:
+                    SourceOnUpdateLeave(index, token, false);
                     break;
-                case EStormVisitType.EnterLoopSearch:
-                    OnEnterLoopSearch(token);
+                case EStormVisitType.LoopSearchEnter:
+                    SourceOnLoopSearchEnter(token);
                     break;
-                case EStormVisitType.LeaveLoopSearch:
-                    OnLeaveLoopSearch(token);
+                case EStormVisitType.LoopSearchLeave:
+                    SourceOnLoopSearchLeave(token);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(visitType), visitType, null);
@@ -71,15 +71,37 @@ namespace StormDotNet.Implementations
 
         protected abstract bool Update();
 
-        protected virtual void OnValidatedLeave(int index, bool hasChanged)
+        protected virtual void SourceOnChanged(int index)
         {
         }
 
-        private void OnEnter(int index, IStormToken token)
+        private void SourceOnLoopSearchEnter(IStormToken token)
+        {
+            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
+                throw new InvalidOperationException("Unknown token");
+
+            if (_enteredLoopSearchCount == 0)
+                RaiseLoopSearchEnter(token);
+
+            _enteredLoopSearchCount++;
+        }
+
+        private void SourceOnLoopSearchLeave(IStormToken token)
+        {
+            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
+                throw new InvalidOperationException("Unknown token");
+
+            _enteredLoopSearchCount--;
+
+            if (_enteredLoopSearchCount == 0)
+                RaiseLoopSearchLeave(token);
+        }
+
+        private void SourceOnUpdateEnter(int index, IStormToken token)
         {
             if (_enteredCount == 0)
             {
-                Enter(token);
+                RaiseUpdateEnter(token);
             }
             else if (!Equals(token, CurrentToken))
             {
@@ -92,7 +114,7 @@ namespace StormDotNet.Implementations
             _enteredCount++;
         }
 
-        private void OnLeave(int index, IStormToken token, bool hasChanged)
+        private void SourceOnUpdateLeave(int index, IStormToken token, bool hasChanged)
         {
             if (token != CurrentToken)
                 throw new InvalidOperationException("Unknown token");
@@ -104,14 +126,15 @@ namespace StormDotNet.Implementations
             _enteredCount--;
             _hasChanged |= hasChanged;
 
-            OnValidatedLeave(index, hasChanged);
+            if (hasChanged)
+                SourceOnChanged(index);
 
             if (_enteredCount == 0)
             {
                 if (_hasChanged)
                     _hasChanged = Update();
 
-                Leave(token, _hasChanged);
+                RaiseUpdateLeave(token, _hasChanged);
 
                 _hasChanged = false;
                 for (var i = 0; i < _sourceStates.Length; i++)
@@ -119,27 +142,6 @@ namespace StormDotNet.Implementations
             }
         }
 
-        private void OnEnterLoopSearch(IStormToken token)
-        {
-            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
-                throw new InvalidOperationException("Unknown token");
-
-            if (_enteredLoopSearchCount == 0)
-                LoopSearchEnter(token);
-
-            _enteredLoopSearchCount++;
-        }
-
-        private void OnLeaveLoopSearch(IStormToken token)
-        {
-            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
-                throw new InvalidOperationException("Unknown token");
-
-            _enteredLoopSearchCount--;
-
-            if (_enteredLoopSearchCount == 0)
-                LoopSearchLeave(token);
-        }
         protected enum EStormSourceState
         {
             Idle = 0,

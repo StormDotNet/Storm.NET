@@ -55,18 +55,17 @@ namespace StormDotNet.Implementations
             return SetError(Storm.Error.Create("Unknown error"));
         }
 
-        protected override void OnValidatedLeave(int index, bool hasChanged)
+        protected override void SourceOnChanged(int index)
         {
-            if (index == 0 && hasChanged)
+            base.SourceOnChanged(index);
+            if (index == 0)
             {
                 UpdateTarget();
                 if (GetSourceState(1) == EStormSourceState.Enter)
                 {
-                    SourceOnVisit(1, CurrentToken, EStormVisitType.LeaveChanged);
+                    SourceOnVisit(1, CurrentToken, EStormVisitType.UpdateLeaveChanged);
                 }
             }
-
-            base.OnValidatedLeave(index, hasChanged);
         }
 
         private void SelectorOnVisit(IStormToken token, EStormVisitType visitType)

@@ -152,12 +152,12 @@ namespace StormDotNet.Implementations
 
             void TargetOnVisit(IStormToken enteredToken, EStormVisitType visitType)
             {
-                hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.EnterLoopSearch;
+                hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.LoopSearchEnter;
             }
 
             node.OnVisit += TargetOnVisit;
-            OnVisitCache.Invoke(token, EStormVisitType.EnterLoopSearch);
-            OnVisitCache.Invoke(token, EStormVisitType.LeaveLoopSearch);
+            OnVisitCache.Invoke(token, EStormVisitType.LoopSearchEnter);
+            OnVisitCache.Invoke(token, EStormVisitType.LoopSearchLeave);
             node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
