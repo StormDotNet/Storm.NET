@@ -33,7 +33,7 @@ namespace StormDotNet.Implementations
             _selector.OnVisit += SelectorOnVisit;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (_selector.TryGetError(out var error))
             {
@@ -70,7 +70,7 @@ namespace StormDotNet.Implementations
                 UpdateTarget();
                 if (GetSourceState(1) == EStormSourceState.Enter)
                 {
-                    Accept(1, CurrentToken, EStormVisitType.LeaveChanged);
+                    OnVisit(1, CurrentToken, EStormVisitType.LeaveChanged);
                 }
             }
 
@@ -79,12 +79,12 @@ namespace StormDotNet.Implementations
 
         private void SelectorOnVisit(IStormToken token, EStormVisitType visitType)
         {
-            Accept(0, token, visitType);
+            OnVisit(0, token, visitType);
         }
 
         private void TargetOnVisit(IStormToken token, EStormVisitType visitType)
         {
-            Accept(_hasTargetChanged ? 2 : 1, token, visitType);
+            OnVisit(_hasTargetChanged ? 2 : 1, token, visitType);
         }
 
         private void UpdateTarget()

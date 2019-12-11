@@ -33,7 +33,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (
                 First.TryGetValue(out var firstValue) &&
@@ -85,7 +85,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (
                 First.TryGetValue(out var firstValue) &&
@@ -139,7 +139,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (
                 First.TryGetValue(out var firstValue) &&
@@ -195,7 +195,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (
                 First.TryGetValue(out var firstValue) &&
@@ -253,7 +253,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (
                 First.TryGetValue(out var firstValue) &&
@@ -313,7 +313,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (
                 First.TryGetValue(out var firstValue) &&
@@ -375,7 +375,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             if (
                 First.TryGetValue(out var firstValue) &&

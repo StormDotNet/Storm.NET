@@ -32,7 +32,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             TResult value;
             try
@@ -72,7 +72,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             TResult value;
             try
@@ -114,7 +114,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             TResult value;
             try
@@ -158,7 +158,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             TResult value;
             try
@@ -204,7 +204,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             TResult value;
             try
@@ -252,7 +252,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             TResult value;
             try
@@ -302,7 +302,7 @@ namespace StormDotNet.Implementations
             _func = func;
         }
 
-        protected override void OnLeave(IStormToken token)
+        protected override void Leave(IStormToken token)
         {
             TResult value;
             try

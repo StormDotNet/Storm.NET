@@ -91,7 +91,7 @@ namespace StormDotNet.Implementations
         }
 
 <#  foreach (var a in o.Arguments) { #>
-        private void <#= a.Name #>OnVisit(IStormToken token, EStormVisitType visitType) => Accept(<#= a.Index #>, token, visitType);
+        private void <#= a.Name #>OnVisit(IStormToken token, EStormVisitType visitType) => OnVisit(<#= a.Index #>, token, visitType);
 <#  } #>
     }
 

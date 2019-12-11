@@ -31,7 +31,7 @@ namespace StormDotNet.Implementations
             _sourceStates = new EStormSourceState[length];
         }
 
-        protected void Accept(int index, IStormToken token, EStormVisitType visitType)
+        protected void OnVisit(int index, IStormToken token, EStormVisitType visitType)
         {
             switch (visitType)
             {
@@ -69,7 +69,7 @@ namespace StormDotNet.Implementations
 
         protected EStormSourceState GetSourceState(int index) => _sourceStates[index];
 
-        protected abstract void OnLeave(IStormToken token);
+        protected abstract void Leave(IStormToken token);
 
         protected virtual void OnValidatedLeave(int index, bool hasChanged)
         {
@@ -99,7 +99,7 @@ namespace StormDotNet.Implementations
 
             _sourceStates[index] = _sourceStates[index] == EStormSourceState.Enter
                                        ? hasChanged ? EStormSourceState.LeaveChanged : EStormSourceState.LeaveUnchanged
-                                       : throw new InvalidOperationException("Can't enter now");
+                                       : throw new InvalidOperationException("Can't leave here.");
 
             _enteredCount--;
             _hasChanged |= hasChanged;
@@ -109,7 +109,7 @@ namespace StormDotNet.Implementations
             if (_enteredCount == 0)
             {
                 if (_hasChanged)
-                    OnLeave(CurrentToken);
+                    Leave(CurrentToken);
                 else
                     LeaveUnchanged(CurrentToken);
 
