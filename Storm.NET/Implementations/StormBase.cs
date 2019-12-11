@@ -57,12 +57,12 @@ namespace StormDotNet.Implementations
             OnVisit?.Invoke(token, EStormVisitType.EnterLoopSearch);
         }
 
-        protected bool IsDescendant(IStormNode target)
+        protected bool IsDescendant(IStormNode node)
         {
-            if (target == this)
+            if (node == this)
                 return true;
 
-            if (target is IStormSocket socket && socket.Target == this)
+            if (node is IStormSocket<T> socket && socket.Target == this)
                 return true;
 
             if (OnVisit == null)
@@ -75,10 +75,10 @@ namespace StormDotNet.Implementations
                 hasEntered |= CurrentToken.Equals(enteredToken) && visitType == EStormVisitType.EnterLoopSearch;
             }
 
-            target.OnVisit += TargetOnVisit;
+            node.OnVisit += TargetOnVisit;
             OnVisit.Invoke(CurrentToken, EStormVisitType.EnterLoopSearch);
             OnVisit.Invoke(CurrentToken, EStormVisitType.LeaveLoopSearch);
-            target.OnVisit -= TargetOnVisit;
+            node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
         }

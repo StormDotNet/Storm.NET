@@ -22,16 +22,18 @@ namespace StormDotNet.Implementations
     {
         private event Action<IStormToken, EStormVisitType>? OnVisitCache;
         private IStorm<T>? _target;
-        public EStormContentType ContentType => _target?.ContentType ?? EStormContentType.Error;
-        public IStormNode? Target => _target;
+
+        public EStormContentType ContentType => GetTarget()?.ContentType ?? EStormContentType.Error;
+        public IStorm<T>? Target => GetTarget();
 
         public event Action<IStormToken, EStormVisitType>? OnVisit
         {
             add
             {
-                if (_target != null)
+                var target = GetTarget();
+                if (target != null)
                 {
-                    _target.OnVisit += value;
+                    target.OnVisit += value;
                 }
                 else
                 {
@@ -40,9 +42,10 @@ namespace StormDotNet.Implementations
             }
             remove
             {
-                if (_target != null)
+                var target = GetTarget();
+                if (target != null)
                 {
-                    _target.OnVisit -= value;
+                    target.OnVisit -= value;
                 }
                 else
                 {
@@ -62,22 +65,32 @@ namespace StormDotNet.Implementations
                 throw new InvalidOperationException("This connection create a loop");
 
             _target = target;
-            _target.OnVisit += OnVisitCache;
+            GetTarget()!.OnVisit += OnVisitCache;
             OnVisitCache = null;
         }
 
-        public T GetValueOr(T fallBack) => _target == null ? fallBack : _target.GetValueOr(fallBack);
-        public T GetValueOrThrow() => _target == null ? throw Error.Socket.Disconnected : _target.GetValueOrThrow();
-        
+        public T GetValueOr(T fallBack)
+        {
+            var target = GetTarget();
+            return target == null ? fallBack : target.GetValueOr(fallBack);
+        }
+
+        public T GetValueOrThrow()
+        {
+            var target = GetTarget();
+            return target == null ? throw Error.Socket.Disconnected : target.GetValueOrThrow();
+        }
+
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
             if (onError == null) throw new ArgumentNullException(nameof(onError));
             if (onValue == null) throw new ArgumentNullException(nameof(onValue));
 
-            if (_target == null)
+            var target = GetTarget();
+            if (target == null)
                 onError(Error.Socket.Disconnected);
             else
-                _target.Match(onError, onValue);
+                target.Match(onError, onValue);
         }
 
         public TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue)
@@ -85,39 +98,50 @@ namespace StormDotNet.Implementations
             if (onError == null) throw new ArgumentNullException(nameof(onError));
             if (onValue == null) throw new ArgumentNullException(nameof(onValue));
 
-            return _target == null ? onError(Error.Socket.Disconnected) : _target.Match(onError, onValue);
+            var target = GetTarget();
+            return target == null ? onError(Error.Socket.Disconnected) : target.Match(onError, onValue);
         }
 
         public bool TryGetError([AllowNull] [NotNullWhen(true)] out StormError? error)
         {
-            if (_target == null)
+            var target = GetTarget();
+            if (target == null)
             {
                 error = Error.Socket.Disconnected;
                 return false;
             }
 
-            return _target.TryGetError(out error);
+            return target.TryGetError(out error);
         }
 
         public bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)] out T value)
         {
-            if (_target == null)
+            var target = GetTarget();
+            if (target == null)
             {
                 value = default!;
                 return false;
             }
 
-            return _target.TryGetValue(out value);
+            return target.TryGetValue(out value);
         }
 
         public override string ToString() => ToStringHelper.ToString(this);
 
-        private bool IsDescendant(IStormNode target)
+        private IStorm<T>? GetTarget()
         {
-            if (target == this)
+            while (_target is IStormSocket<T> socket && socket.Target != null)
+                _target = socket.Target;
+
+            return _target;
+        }
+
+        private bool IsDescendant(IStormNode node)
+        {
+            if (node == this)
                 return true;
 
-            if (target is IStormSocket socket && socket.Target == this)
+            if (node is IStormSocket<T> socket && socket.Target == this)
                 return true;
 
             if (OnVisitCache == null)
@@ -131,10 +155,10 @@ namespace StormDotNet.Implementations
                 hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.EnterLoopSearch;
             }
 
-            target.OnVisit += TargetOnVisit;
+            node.OnVisit += TargetOnVisit;
             OnVisitCache.Invoke(token, EStormVisitType.EnterLoopSearch);
             OnVisitCache.Invoke(token, EStormVisitType.LeaveLoopSearch);
-            target.OnVisit -= TargetOnVisit;
+            node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
         }
