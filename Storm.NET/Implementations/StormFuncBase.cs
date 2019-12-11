@@ -25,7 +25,6 @@ namespace StormDotNet.Implementations
         private int _enteredCount;
         private int _enteredLoopSearchCount;
         private bool _hasChanged;
-        private bool _hasEmitEnter;
 
         protected StormFuncBase(int length, IEqualityComparer<T>? comparer) : base(comparer)
         {
@@ -72,20 +71,15 @@ namespace StormDotNet.Implementations
 
         protected abstract void OnLeave(IStormToken token);
 
-        protected virtual void OnValidatedEnter(int index)
-        {
-        }
-
         protected virtual void OnValidatedLeave(int index, bool hasChanged)
         {
         }
 
         private void OnEnter(int index, IStormToken token)
         {
-            if (!_hasEmitEnter)
+            if (_enteredCount == 0)
             {
                 Enter(token);
-                _hasEmitEnter = true;
             }
             else if (!Equals(token, CurrentToken))
             {
@@ -96,7 +90,6 @@ namespace StormDotNet.Implementations
                                        ? EStormSourceState.Enter
                                        : throw new InvalidOperationException("Can't enter now");
             _enteredCount++;
-            OnValidatedEnter(index);
         }
 
         private void OnLeave(int index, IStormToken token, bool hasChanged)
@@ -120,7 +113,6 @@ namespace StormDotNet.Implementations
                 else
                     LeaveUnchanged(CurrentToken);
 
-                _hasEmitEnter = false;
                 _hasChanged = false;
                 for (var i = 0; i < _sourceStates.Length; i++)
                     _sourceStates[i] = EStormSourceState.Idle;
