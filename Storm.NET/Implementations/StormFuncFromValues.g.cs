@@ -19,6 +19,49 @@ namespace StormDotNet.Implementations
     using System.Collections.Generic;
     using System.Linq;
 
+    internal class StormFuncFromValues<TFirst, TResult>
+                 : StormFuncBase<TFirst, TResult>
+    {
+        private readonly Func<TFirst, TResult> _func;
+
+        public StormFuncFromValues(
+            IStorm<TFirst> first,
+            Func<TFirst, TResult> func,
+            IEqualityComparer<TResult> comparer) : base(first, comparer)
+        {
+            _func = func;
+            Update();
+        }
+
+        protected sealed override bool Update()
+        {            
+            if (
+                First.TryGetValue(out var firstValue))
+            {
+                try
+                {
+                    return SetValue(_func(firstValue));
+                }
+                catch (StormError e)
+                {
+                    return SetError(e);
+                }
+                catch (Exception e)
+                {
+                    return SetError(Error.Func.Evaluation(e));
+                }
+            }
+
+            var errors = GetErrors().ToArray();
+            if (errors.Length > 0)
+            {
+                return SetError(Error.Func.SourceError(errors));
+            }
+
+            return SetError(Error.EmptyContent);
+        }
+    }
+
     internal class StormFuncFromValues<TFirst, TSecond, TResult>
                  : StormFuncBase<TFirst, TSecond, TResult>
     {
@@ -31,42 +74,36 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
                 First.TryGetValue(out var firstValue) &&
                 Second.TryGetValue(out var secondValue))
             {
-                TResult result;
                 try
                 {
-                    result = _func(firstValue, secondValue);
+                    return SetValue(_func(firstValue, secondValue));
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 
@@ -83,43 +120,37 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
                 First.TryGetValue(out var firstValue) &&
                 Second.TryGetValue(out var secondValue) &&
                 Third.TryGetValue(out var thirdValue))
             {
-                TResult result;
                 try
                 {
-                    result = _func(firstValue, secondValue, thirdValue);
+                    return SetValue(_func(firstValue, secondValue, thirdValue));
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 
@@ -137,44 +168,38 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
                 First.TryGetValue(out var firstValue) &&
                 Second.TryGetValue(out var secondValue) &&
                 Third.TryGetValue(out var thirdValue) &&
                 Fourth.TryGetValue(out var fourthValue))
             {
-                TResult result;
                 try
                 {
-                    result = _func(firstValue, secondValue, thirdValue, fourthValue);
+                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue));
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 
@@ -193,10 +218,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
                 First.TryGetValue(out var firstValue) &&
                 Second.TryGetValue(out var secondValue) &&
@@ -204,34 +230,27 @@ namespace StormDotNet.Implementations
                 Fourth.TryGetValue(out var fourthValue) &&
                 Fifth.TryGetValue(out var fifthValue))
             {
-                TResult result;
                 try
                 {
-                    result = _func(firstValue, secondValue, thirdValue, fourthValue, fifthValue);
+                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue));
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 
@@ -251,10 +270,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, sixth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
                 First.TryGetValue(out var firstValue) &&
                 Second.TryGetValue(out var secondValue) &&
@@ -263,34 +283,27 @@ namespace StormDotNet.Implementations
                 Fifth.TryGetValue(out var fifthValue) &&
                 Sixth.TryGetValue(out var sixthValue))
             {
-                TResult result;
                 try
                 {
-                    result = _func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue);
+                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue));
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 
@@ -311,10 +324,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, sixth, seventh, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
                 First.TryGetValue(out var firstValue) &&
                 Second.TryGetValue(out var secondValue) &&
@@ -324,34 +338,27 @@ namespace StormDotNet.Implementations
                 Sixth.TryGetValue(out var sixthValue) &&
                 Seventh.TryGetValue(out var seventhValue))
             {
-                TResult result;
                 try
                 {
-                    result = _func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue);
+                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue));
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 
@@ -373,10 +380,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, sixth, seventh, eighth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
                 First.TryGetValue(out var firstValue) &&
                 Second.TryGetValue(out var secondValue) &&
@@ -387,34 +395,27 @@ namespace StormDotNet.Implementations
                 Seventh.TryGetValue(out var seventhValue) &&
                 Eighth.TryGetValue(out var eighthValue))
             {
-                TResult result;
                 try
                 {
-                    result = _func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue, eighthValue);
+                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue, eighthValue));
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 

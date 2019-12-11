@@ -32,7 +32,7 @@ namespace StormDotNet.Implementations
             if (error == null) throw new ArgumentNullException(nameof(error));
 
             Enter(token);
-            token.Disposing += () => LeaveWithError(token, error);
+            token.Disposing += () => Leave(token, SetError(error));
         }
 
         public void SetValue(IStormToken token, [AllowNull] [MaybeNull] T value)
@@ -41,7 +41,7 @@ namespace StormDotNet.Implementations
             if (token.IsDisposed) throw new ArgumentException("Object is disposed.", nameof(token));
 
             Enter(token);
-            token.Disposing += () => LeaveWithValue(token, value);
+            token.Disposing += () => Leave(token, SetValue(value));
         }
     }
 }

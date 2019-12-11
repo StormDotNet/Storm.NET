@@ -33,34 +33,26 @@ namespace StormDotNet.Implementations
             _selector.OnVisit += SelectorOnVisit;
         }
 
-        protected override void Leave(IStormToken token)
+        protected override bool Update()
         {
-            if (_selector.TryGetError(out var error))
-            {
-                LeaveWithError(token, error);
-            }
-            else if (_target == null)
-            {
-                LeaveWithError(token, Error.Switch.Disconnected);
-            }
-            else if (_target == this)
-            {
-                LeaveWithError(token, Error.Switch.Looped);
-            }
-            else if (_target.TryGetValue(out var targetValue))
-            {
-                LeaveWithValue(token, targetValue);
-            }
-            else if (_target.TryGetError(out var targetError))
-            {
-                LeaveWithError(token, targetError);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unexpected state");
-            }
-
             _hasTargetChanged = false;
+
+            if (_selector.TryGetError(out var error))
+                return SetError(error);
+
+            if (_target == null)
+                return SetError(Error.Switch.Disconnected);
+
+            if (_target == this)
+                return SetError(Error.Switch.Looped);
+
+            if (_target.TryGetValue(out var targetValue))
+                return SetValue(targetValue);
+
+            if (_target.TryGetError(out var targetError))
+                return SetError(targetError);
+            
+            return SetError(Storm.Error.Create("Unknown error"));
         }
 
         protected override void OnValidatedLeave(int index, bool hasChanged)
@@ -70,7 +62,7 @@ namespace StormDotNet.Implementations
                 UpdateTarget();
                 if (GetSourceState(1) == EStormSourceState.Enter)
                 {
-                    OnVisit(1, CurrentToken, EStormVisitType.LeaveChanged);
+                    SourceOnVisit(1, CurrentToken, EStormVisitType.LeaveChanged);
                 }
             }
 
@@ -79,12 +71,12 @@ namespace StormDotNet.Implementations
 
         private void SelectorOnVisit(IStormToken token, EStormVisitType visitType)
         {
-            OnVisit(0, token, visitType);
+            SourceOnVisit(0, token, visitType);
         }
 
         private void TargetOnVisit(IStormToken token, EStormVisitType visitType)
         {
-            OnVisit(_hasTargetChanged ? 2 : 1, token, visitType);
+            SourceOnVisit(_hasTargetChanged ? 2 : 1, token, visitType);
         }
 
         private void UpdateTarget()

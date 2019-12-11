@@ -18,6 +18,39 @@ namespace StormDotNet.Implementations
     using System;
     using System.Collections.Generic;
 
+    internal class StormFuncFromStates<TFirst, TResult>
+                 : StormFuncBase<TFirst, TResult>
+    {
+        private readonly Func<StormFuncInput<TFirst>, TResult> _func;
+
+        public StormFuncFromStates(
+            IStorm<TFirst> first,
+            Func<StormFuncInput<TFirst>, TResult> func,
+            IEqualityComparer<TResult> comparer) : base(first, comparer)
+        {
+            _func = func;
+            Update();
+        }
+
+        protected sealed override bool Update()
+        {
+            try
+            {
+                var firstState = new StormFuncInput<TFirst>(First, GetState(0));
+
+                return SetValue(_func(firstState));
+            }
+            catch (StormError e)
+            {
+                return SetError(e);
+            }
+            catch (Exception e)
+            {
+                return SetError(Error.Func.Evaluation(e));
+            }
+        }
+    }
+
     internal class StormFuncFromStates<TFirst, TSecond, TResult>
                  : StormFuncBase<TFirst, TSecond, TResult>
     {
@@ -30,30 +63,26 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
                 var secondState = new StormFuncInput<TSecond>(Second, GetState(1));
 
-                value = _func(firstState, secondState);
+                return SetValue(_func(firstState, secondState));
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 
@@ -70,31 +99,27 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
                 var secondState = new StormFuncInput<TSecond>(Second, GetState(1));
                 var thirdState = new StormFuncInput<TThird>(Third, GetState(2));
 
-                value = _func(firstState, secondState, thirdState);
+                return SetValue(_func(firstState, secondState, thirdState));
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 
@@ -112,11 +137,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
@@ -124,20 +149,16 @@ namespace StormDotNet.Implementations
                 var thirdState = new StormFuncInput<TThird>(Third, GetState(2));
                 var fourthState = new StormFuncInput<TFourth>(Fourth, GetState(3));
 
-                value = _func(firstState, secondState, thirdState, fourthState);
+                return SetValue(_func(firstState, secondState, thirdState, fourthState));
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 
@@ -156,11 +177,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
@@ -169,20 +190,16 @@ namespace StormDotNet.Implementations
                 var fourthState = new StormFuncInput<TFourth>(Fourth, GetState(3));
                 var fifthState = new StormFuncInput<TFifth>(Fifth, GetState(4));
 
-                value = _func(firstState, secondState, thirdState, fourthState, fifthState);
+                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState));
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 
@@ -202,11 +219,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, sixth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
@@ -216,20 +233,16 @@ namespace StormDotNet.Implementations
                 var fifthState = new StormFuncInput<TFifth>(Fifth, GetState(4));
                 var sixthState = new StormFuncInput<TSixth>(Sixth, GetState(5));
 
-                value = _func(firstState, secondState, thirdState, fourthState, fifthState, sixthState);
+                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState));
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 
@@ -250,11 +263,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, sixth, seventh, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
@@ -265,20 +278,16 @@ namespace StormDotNet.Implementations
                 var sixthState = new StormFuncInput<TSixth>(Sixth, GetState(5));
                 var seventhState = new StormFuncInput<TSeventh>(Seventh, GetState(6));
 
-                value = _func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState);
+                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState));
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 
@@ -300,11 +309,11 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(first, second, third, fourth, fifth, sixth, seventh, eighth, comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
@@ -316,20 +325,16 @@ namespace StormDotNet.Implementations
                 var seventhState = new StormFuncInput<TSeventh>(Seventh, GetState(6));
                 var eighthState = new StormFuncInput<TEighth>(Eighth, GetState(7));
 
-                value = _func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState, eighthState);
+                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState, eighthState));
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 

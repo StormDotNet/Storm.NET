@@ -34,7 +34,7 @@
     };
 
     var overloads =
-        from argCount in Enumerable.Range(2, 7)
+        from argCount in Enumerable.Range(1, 8)
         from args in new[]
         {
             from argIndex in Enumerable.Range(0, argCount)
@@ -91,7 +91,7 @@ namespace StormDotNet.Implementations
         }
 
 <#  foreach (var a in o.Arguments) { #>
-        private void <#= a.Name #>OnVisit(IStormToken token, EStormVisitType visitType) => OnVisit(<#= a.Index #>, token, visitType);
+        private void <#= a.Name #>OnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(<#= a.Index #>, token, visitType);
 <#  } #>
     }
 

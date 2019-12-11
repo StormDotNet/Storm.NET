@@ -34,7 +34,7 @@
     };
 
     var overloads =
-        from argCount in Enumerable.Range(2, 7)
+        from argCount in Enumerable.Range(1, 8)
         from args in new[]
         {
             from argIndex in Enumerable.Range(0, argCount)
@@ -75,31 +75,27 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(<# foreach (var a in o.Arguments) { #><#= a.name #>, <# } #>comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
+        protected sealed override bool Update()
         {
-            TResult value;
             try
             {
 <#  foreach (var a in o.Arguments) { #>
                 var <#= a.name #>State = new StormFuncInput<<#= a.Type #>>(<#= a.Name #>, GetState(<#= a.Index #>));
 <#  } #>
 
-                value = _func(<# foreach (var a in o.Arguments) { #><#= a.name #>State<#= a.IsLast ? ")" : ", " #><# } #>;
+                return SetValue(_func(<# foreach (var a in o.Arguments) { #><#= a.name #>State<#= a.IsLast ? ")" : ", " #><# } #>);
             }
             catch (StormError e)
             {
-                LeaveWithError(token, e);
-                return;
+                return SetError(e);
             }
             catch (Exception e)
             {
-                LeaveWithError(token, Error.Func.Evaluation(e));
-                return;
+                return SetError(Error.Func.Evaluation(e));
             }
-
-            LeaveWithValue(token, value);
         }
     }
 

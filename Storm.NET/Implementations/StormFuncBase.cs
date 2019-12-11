@@ -31,7 +31,7 @@ namespace StormDotNet.Implementations
             _sourceStates = new EStormSourceState[length];
         }
 
-        protected void OnVisit(int index, IStormToken token, EStormVisitType visitType)
+        protected void SourceOnVisit(int index, IStormToken token, EStormVisitType visitType)
         {
             switch (visitType)
             {
@@ -69,7 +69,7 @@ namespace StormDotNet.Implementations
 
         protected EStormSourceState GetSourceState(int index) => _sourceStates[index];
 
-        protected abstract void Leave(IStormToken token);
+        protected abstract bool Update();
 
         protected virtual void OnValidatedLeave(int index, bool hasChanged)
         {
@@ -109,9 +109,9 @@ namespace StormDotNet.Implementations
             if (_enteredCount == 0)
             {
                 if (_hasChanged)
-                    Leave(CurrentToken);
-                else
-                    LeaveUnchanged(CurrentToken);
+                    _hasChanged = Update();
+
+                Leave(token, _hasChanged);
 
                 _hasChanged = false;
                 for (var i = 0; i < _sourceStates.Length; i++)
@@ -125,7 +125,7 @@ namespace StormDotNet.Implementations
                 throw new InvalidOperationException("Unknown token");
 
             if (_enteredLoopSearchCount == 0)
-                EnterLoopSearch(token);
+                LoopSearchEnter(token);
 
             _enteredLoopSearchCount++;
         }
@@ -138,9 +138,8 @@ namespace StormDotNet.Implementations
             _enteredLoopSearchCount--;
 
             if (_enteredLoopSearchCount == 0)
-                LeaveLoopSearch(token);
+                LoopSearchLeave(token);
         }
-
         protected enum EStormSourceState
         {
             Idle = 0,

@@ -34,7 +34,7 @@
     };
 
     var overloads =
-        from argCount in Enumerable.Range(2, 7)
+        from argCount in Enumerable.Range(1, 8)
         from args in new[]
         {
             from argIndex in Enumerable.Range(0, argCount)
@@ -75,43 +75,37 @@ namespace StormDotNet.Implementations
             IEqualityComparer<TResult> comparer) : base(<# foreach (var a in o.Arguments) { #><#= a.name #>, <# } #>comparer)
         {
             _func = func;
+            Update();
         }
 
-        protected override void Leave(IStormToken token)
-        {
+        protected sealed override bool Update()
+        {            
             if (
 <#  foreach (var a in o.Arguments) { #>
                 <#= a.Name #>.TryGetValue(out var <#= a.name #>Value)<#= a.IsLast ? ")" : " &&" #>
 <#  } #>
             {
-                TResult result;
                 try
                 {
-                    result = _func(<# foreach (var a in o.Arguments) { #><#= a.name #>Value<#= a.IsLast ? ")" : ", " #><# } #>;
+                    return SetValue(_func(<# foreach (var a in o.Arguments) { #><#= a.name #>Value<#= a.IsLast ? ")" : ", " #><# } #>);
                 }
                 catch (StormError e)
                 {
-                    LeaveWithError(token, e);
-                    return;
+                    return SetError(e);
                 }
                 catch (Exception e)
                 {
-                    LeaveWithError(token, Error.Func.Evaluation(e));
-                    return;
+                    return SetError(Error.Func.Evaluation(e));
                 }
-
-                LeaveWithValue(token, result);
-                return;
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                LeaveWithError(token, Error.Func.SourceError(errors));
-                return;
+                return SetError(Error.Func.SourceError(errors));
             }
 
-            LeaveWithError(token, Error.EmptyContent);
+            return SetError(Error.EmptyContent);
         }
     }
 

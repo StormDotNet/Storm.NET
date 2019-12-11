@@ -18,7 +18,7 @@ namespace StormDotNet.Implementations
     using System;
     using System.Collections.Generic;
 
-    public abstract class StormBase<T> : StormContentBase<T>, IStorm<T>
+    internal abstract class StormBase<T> : StormContentBase<T>, IStorm<T>
     {
         private EState _visitState = EState.Idle;
         private bool _inLoopSearch;
@@ -26,6 +26,21 @@ namespace StormDotNet.Implementations
         protected StormBase(IEqualityComparer<T>? comparer) : base(comparer)
         {
             CurrentToken = Storm.Token.Initial;
+        }
+
+        private event Action<IStormToken, EStormVisitType>? OnVisit;
+
+        event Action<IStormToken, EStormVisitType>? IStormNode.OnVisit
+        {
+            add
+            {
+                OnVisit += value;
+                if (_visitState == EState.Entered)
+                {
+                    value?.Invoke(CurrentToken, EStormVisitType.Enter);
+                }
+            }
+            remove => OnVisit -= value;
         }
 
         protected IStormToken CurrentToken { get; private set; }
@@ -45,16 +60,18 @@ namespace StormDotNet.Implementations
             CurrentToken = token;
         }
 
-        protected void EnterLoopSearch(IStormToken token)
+        protected void Leave(IStormToken token, bool hasChanged)
         {
-            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
+            if (token != CurrentToken)
                 throw new InvalidOperationException("Unknown token");
 
-            if (_inLoopSearch)
-                throw new InvalidOperationException("Already in loop search");
+            if (_visitState != EState.Entered || _inLoopSearch)
+                throw new InvalidOperationException("Can't leave now");
 
-            _inLoopSearch = true;
-            OnVisit?.Invoke(token, EStormVisitType.EnterLoopSearch);
+            _visitState = EState.Leaving;
+            OnVisit?.Invoke(token, hasChanged ? EStormVisitType.LeaveChanged : EStormVisitType.LeaveUnchanged);
+            _visitState = EState.Idle;
+            CurrentToken = Storm.Token.Initial;
         }
 
         protected bool IsDescendant(IStormNode node)
@@ -83,15 +100,19 @@ namespace StormDotNet.Implementations
             return hasEntered;
         }
 
-        private void Leave(IStormToken token, bool hasChanged)
+        protected void LoopSearchEnter(IStormToken token)
         {
-            _visitState = EState.Leaving;
-            OnVisit?.Invoke(token, hasChanged ? EStormVisitType.LeaveChanged : EStormVisitType.LeaveUnchanged);
-            _visitState = EState.Idle;
-            CurrentToken = Storm.Token.Initial;
+            if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
+                throw new InvalidOperationException("Unknown token");
+
+            if (_inLoopSearch)
+                throw new InvalidOperationException("Already in loop search");
+
+            _inLoopSearch = true;
+            OnVisit?.Invoke(token, EStormVisitType.EnterLoopSearch);
         }
 
-        protected void LeaveLoopSearch(IStormToken token)
+        protected void LoopSearchLeave(IStormToken token)
         {
             if (CurrentToken != Storm.Token.Initial && CurrentToken != token)
                 throw new InvalidOperationException("Unknown token");
@@ -101,56 +122,6 @@ namespace StormDotNet.Implementations
 
             OnVisit?.Invoke(token, EStormVisitType.LeaveLoopSearch);
             _inLoopSearch = false;
-        }
-
-        protected void LeaveUnchanged(IStormToken token)
-        {
-            if (token != CurrentToken)
-                throw new InvalidOperationException("Unknown token");
-
-            if (_visitState != EState.Entered || _inLoopSearch)
-                throw new InvalidOperationException("Can't leave now");
-
-            Leave(token, false);
-        }
-
-        protected void LeaveWithError(IStormToken token, StormError error)
-        {
-            if (token != CurrentToken)
-                throw new InvalidOperationException("Unknown token");
-
-            if (_visitState != EState.Entered || _inLoopSearch)
-                throw new InvalidOperationException("Can't leave now");
-
-            var hasChanged = SetError(error);
-            Leave(token, hasChanged);
-        }
-
-        protected void LeaveWithValue(IStormToken token, T value)
-        {
-            if (token != CurrentToken)
-                throw new InvalidOperationException("Unknown token");
-
-            if (_visitState != EState.Entered || _inLoopSearch)
-                throw new InvalidOperationException("Can't leave now");
-
-            var hasChanged = SetValue(value);
-            Leave(token, hasChanged);
-        }
-
-        private event Action<IStormToken, EStormVisitType>? OnVisit;
-
-        event Action<IStormToken, EStormVisitType>? IStormNode.OnVisit
-        {
-            add
-            {
-                OnVisit += value;
-                if (_visitState == EState.Entered)
-                {
-                    value?.Invoke(CurrentToken, EStormVisitType.Enter);
-                }
-            }
-            remove => OnVisit -= value;
         }
 
         private enum EState
