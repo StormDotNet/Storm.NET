@@ -39,5 +39,14 @@ namespace StormDotNet.Tests
             Assert.DoesNotThrow(() => f.Match(error => { },
                                               value => throw new Exception()));
         }
+
+        [Test]
+        public void StormFuncInitialValue()
+        {
+            var s = Storm.Input.Create<int>();
+            s.SetValue(0);
+            var f = Storm.Func.Create(s, v => v);
+            Assert.That(f.GetValueOrThrow(), Is.EqualTo(0));
+        }
     }
 }

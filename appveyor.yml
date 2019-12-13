@@ -1,0 +1,13 @@
+version: '{build}'
+image: Visual Studio 2019
+before_build:
+- nuget restore
+- dotnet --info
+- choco install opencover.portable
+- choco install codecov
+build:
+  project: Storm.NET.sln
+  verbosity: minimal
+test_script:
+- OpenCover.Console.exe -register -output:"coverage.xml" -target:"dotnet.exe" -targetargs:"test" -filter:"+[StormDotNet*]* -[StormDotNet.Demo*]* -[StormDotNet.Tests*]*"
+- codecov -f "coverage.xml"
