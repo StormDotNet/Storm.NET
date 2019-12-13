@@ -1,5 +1,9 @@
 version: '{build}'
 image: Visual Studio 2019
+install:
+  - ps: (new-object net.webclient).DownloadFile('https://github.com/OpenCover/opencover/releases/download/4.7.922/opencover.4.7.922.msi', 'opencover.msi')
+  - ps: msiexec /i opencover.msi /quiet /qn /norestart /log opencover-install.log
+  - ps: Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
 before_build:
 - nuget restore
 - dotnet --info
