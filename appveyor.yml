@@ -9,5 +9,5 @@ build:
   project: Storm.NET.sln
   verbosity: minimal
 test_script:
-- OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:".\Storm.NET.Tests\bin\Debug\netcoreapp3.0\Storm.NET.Tests.dll -noshadow" -filter:"+[Storm.NET*]* -[Storm.NET.Tests*]*" -output:".\coverage.xml"
+- OpenCover.Console.exe -register:user -target:"nunit3-console" -targetargs:".\Storm.NET.Tests\bin\Debug\netcoreapp3.0\Storm.NET.Tests.dll -noshadow" -filter:"+[Storm.NET*]* -[Storm.NET.Tests*]*" -output:".\coverage.xml"
 - codecov -f "coverage.xml"
