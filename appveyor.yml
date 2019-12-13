@@ -9,5 +9,5 @@ build:
   project: Storm.NET.sln
   verbosity: minimal
 test_script:
-- OpenCover.Console.exe -register:Path64 -output:"coverage.xml" -target:"dotnet.exe" -targetargs:"test" -filter:"+[StormDotNet*]* -[StormDotNet.Demo*]* -[StormDotNet.Tests*]*"
+- OpenCover.Console.exe -register -output:"coverage.xml" -target:"dotnet.exe" -targetargs:"test" -filter:"+[StormDotNet*]* -[StormDotNet.Demo*]* -[StormDotNet.Tests*]*"
 - codecov -f "coverage.xml"
