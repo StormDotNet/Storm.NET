@@ -78,7 +78,7 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void ToString()
+        public new void ToString()
         {
             Assert.That(Sut.ToString(), Is.EqualTo("err: 'test'"));
         }
