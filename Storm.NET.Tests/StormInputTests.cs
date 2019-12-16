@@ -33,7 +33,8 @@ namespace StormDotNet.Tests
             Sut = Storm.Input.Create<object>();
         }
 
-        protected override IStorm<object> Sut { get; set; }
+        private IStorm<object> Sut { get; set; }
+        protected override IStorm<object> SutStorm => Sut;
     }
 
     [TestFixture]
@@ -46,7 +47,8 @@ namespace StormDotNet.Tests
             Sut = Storm.Input.Create(mockComparer.Object);
         }
 
-        protected override IStorm<object> Sut { get; set; }
+        private IStorm<object> Sut { get; set; }
+        protected override IStorm<object> SutStorm => Sut;
     }
 
     [TestFixture]
@@ -58,6 +60,7 @@ namespace StormDotNet.Tests
             Sut = Storm.Input.WithoutCompare.Create<object>();
         }
 
-        protected override IStorm<object> Sut { get; set; }
+        private IStorm<object> Sut { get; set; }
+        protected override IStorm<object> SutStorm => Sut;
     }
 }

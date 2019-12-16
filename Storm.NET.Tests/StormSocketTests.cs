@@ -20,7 +20,7 @@ namespace StormDotNet.Tests
     using NUnit.Framework;
 
     [TestFixture]
-    public class StormSocketTests
+    public class StormSocketTests : StormTests
     {
         [SetUp]
         public void SetUp()
@@ -29,6 +29,7 @@ namespace StormDotNet.Tests
         }
 
         private IStormSocket<object> Sut { get; set; }
+        protected override IStorm<object> SutStorm => Sut;
 
         [Test]
         public void ConnectTwiceThrow()

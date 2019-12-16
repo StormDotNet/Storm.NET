@@ -20,32 +20,32 @@ namespace StormDotNet.Tests
 
     public abstract class StormTests : StormNodeTests
     {
-        protected abstract IStorm<object> Sut { get; set; }
+        protected abstract IStorm<object> SutStorm { get; }
 
-        protected sealed override IStormNode SutNode => Sut;
+        protected sealed override IStormNode SutNode => SutStorm;
 
         [Test]
         public void VoidMatchThrownOnNullOnErrorParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => Sut.Match(null, o => { }));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(null, o => { }));
         }
 
         [Test]
         public void VoidMatchThrownOnNullOnValueParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => Sut.Match(e => { }, null));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(e => { }, null));
         }
 
         [Test]
         public void ValueMatchThrownOnNullOnErrorParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => Sut.Match(null, o => o));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(null, o => o));
         }
 
         [Test]
         public void ValueMatchThrownOnNullOnValueParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => Sut.Match(e => e, null));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(e => e, null));
         }
     }
 }

@@ -28,7 +28,8 @@ namespace StormDotNet.Tests
             Sut = Storm.Immutable.CreateValue(Value);
         }
 
-        protected override IStorm<object> Sut { get; set; }
+        private IStorm<object> Sut { get; set; }
+        protected override IStorm<object> SutStorm => Sut;
         private object Value { get; set; }
 
         [Test]

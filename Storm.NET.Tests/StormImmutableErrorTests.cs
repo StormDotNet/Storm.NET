@@ -28,7 +28,8 @@ namespace StormDotNet.Tests
             Sut = Storm.Immutable.CreateError<object>(Error);
         }
 
-        protected override IStorm<object> Sut { get; set; }
+        private IStorm<object> Sut { get; set; }
+        protected override IStorm<object> SutStorm => Sut;
         private StormError Error { get; set; }
 
         [Test]
