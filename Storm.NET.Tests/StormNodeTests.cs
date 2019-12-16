@@ -24,11 +24,19 @@ namespace StormDotNet.Tests
         protected abstract IStormNode CreateSubject();
 
         [Test]
-        public void OnVisitUnRegisterNotExistingDelegateDoNotThrow()
+        public void UnRegisterOnVisitNotExistingDelegateDoNotThrow()
         {
             var subject = CreateSubject();
-            var subjectOnVisit = new Mock<Action<IStormToken, EStormVisitType>>();
+            var subjectOnVisit = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
             subject.OnVisit -= subjectOnVisit.Object;
+        }
+
+        [Test]
+        public void RegisterOnVisitDoNotRaiseEvent()
+        {
+            var subject = CreateSubject();
+            var subjectOnVisit = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
+            subject.OnVisit += subjectOnVisit.Object;
         }
     }
 }
