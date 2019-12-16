@@ -15,9 +15,17 @@
 
 namespace StormDotNet
 {
-    public interface IStormSocket<T> : IStorm<T>
+    using System;
+
+    public static partial class StormExtensions
     {
-        IStorm<T>? Target { get; }
-        void Connect(IStormToken token, IStorm<T> target);
+        public static void Connect<T>(this IStormSocket<T> socket, IStorm<T> target)
+        {
+            if (socket == null) throw new ArgumentNullException(nameof(socket));
+            if (target == null) throw new ArgumentNullException(nameof(target));
+
+            using var token = Storm.Token.Create();
+            socket.Connect(token, target);
+        }
     }
 }

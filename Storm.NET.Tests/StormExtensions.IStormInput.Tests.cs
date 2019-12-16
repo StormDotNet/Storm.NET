@@ -21,7 +21,7 @@ namespace StormDotNet.Tests
     using NUnit.Framework;
 
     [TestFixture]
-    public class StormExtensionsInputTests
+    public class StormExtensionsIStormInputTests
     {
         [Test]
         public void SetEmptyCallSetError()

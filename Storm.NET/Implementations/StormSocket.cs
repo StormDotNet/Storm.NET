@@ -54,7 +54,7 @@ namespace StormDotNet.Implementations
             }
         }
 
-        public void Connect(IStorm<T> target)
+        public void Connect(IStormToken token, IStorm<T> target)
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
 
