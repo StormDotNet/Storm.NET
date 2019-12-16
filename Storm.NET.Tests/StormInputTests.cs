@@ -15,30 +15,89 @@
 
 namespace StormDotNet.Tests
 {
+    using System;
     using System.Collections.Generic;
     using Moq;
     using NUnit.Framework;
 
-    [TestFixture]
-    public class StormInputTests
+    public abstract class StormInputTests : StormTests
     {
+        protected IStorm<object> Sut { get; set; }
+        protected override IStorm<object> SutStorm => Sut;
+
+        [Test]
+        public void ContentType()
+        {
+            Assert.That(Sut.ContentType, Is.EqualTo(EStormContentType.Error));
+        }
+
+        [Test]
+        public void GetValueOr()
+        {
+            var fallBack = new object();
+            Assert.That(Sut.GetValueOr(fallBack), Is.EqualTo(fallBack));
+        }
+
+        [Test]
+        public void GetValueOrThrow()
+        {
+            Assert.Throws<StormError>(() => Sut.GetValueOrThrow());
+        }
+
+        [Test]
+        public void VoidMatch()
+        {
+            static void OnError(StormError obj) => Assert.That(obj, Is.InstanceOf<StormError>());
+            static void OnValue(object obj) => throw new Exception();
+
+            Sut.Match(OnError, OnValue);
+        }
+
+        [Test]
+        public void ValueMatch()
+        {
+            static object OnError(StormError obj) => obj;
+            static object OnValue(object obj) => obj;
+
+            var actual = Sut.Match(OnError, OnValue);
+            Assert.That(actual, Is.InstanceOf<StormError>());
+        }
+
+        [Test]
+        public void TryGetError()
+        {
+            var result = Sut.TryGetError(out var error);
+            Assert.That(result, Is.True);
+            Assert.That(error, Is.InstanceOf<StormError>());
+        }
+
+        [Test]
+        public void TryGetValue()
+        {
+            var result = Sut.TryGetValue(out var value);
+            Assert.That(result, Is.False);
+            Assert.That(value, Is.Null);
+        }
+
+        [Test]
+        public new void ToString()
+        {
+            Assert.That(Sut.ToString(), Is.EqualTo("err: 'Empty content.'"));
+        }
     }
 
     [TestFixture]
-    public class StormInputWithNullComparerAsStormTests : StormTests
+    public class StormInputWithDefaultComparer : StormInputTests
     {
         [SetUp]
         public void SetUp()
         {
             Sut = Storm.Input.Create<object>();
         }
-
-        private IStorm<object> Sut { get; set; }
-        protected override IStorm<object> SutStorm => Sut;
     }
 
     [TestFixture]
-    public class StormInputWithComparerAsStormTests : StormTests
+    public class StormInputWithComparer : StormInputTests
     {
         [SetUp]
         public void SetUp()
@@ -46,21 +105,15 @@ namespace StormDotNet.Tests
             var mockComparer = new Mock<IEqualityComparer<object>>();
             Sut = Storm.Input.Create(mockComparer.Object);
         }
-
-        private IStorm<object> Sut { get; set; }
-        protected override IStorm<object> SutStorm => Sut;
     }
 
     [TestFixture]
-    public class StormInputWithoutCompareAsStormTests : StormTests
+    public class StormInputWithoutComparer : StormInputTests
     {
         [SetUp]
         public void SetUp()
         {
             Sut = Storm.Input.WithoutCompare.Create<object>();
         }
-
-        private IStorm<object> Sut { get; set; }
-        protected override IStorm<object> SutStorm => Sut;
     }
 }
