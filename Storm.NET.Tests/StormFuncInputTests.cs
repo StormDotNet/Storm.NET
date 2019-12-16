@@ -16,6 +16,7 @@
 namespace StormDotNet.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Moq;
     using NUnit.Framework;
@@ -26,14 +27,16 @@ namespace StormDotNet.Tests
         [Test]
         public void ConstructorThrowOnNullContent()
         {
-            Assert.Throws<ArgumentNullException>(() => new StormFuncInput<object>(null, EStormFuncInputState.NotVisited));
+            Assert.Throws<ArgumentNullException>(
+                () => new StormFuncInput<object>(null, EStormFuncInputState.NotVisited));
         }
 
         [Test]
         public void ConstructorThrowOnOutOfRangeState()
         {
             var content = Mock.Of<IStormContent<object>>();
-            var state = (EStormFuncInputState) (Enum.GetValues(typeof(EStormFuncInputState)).Cast<EStormFuncInputState>().Min(e => (int) e) - 1);
+            var state = (EStormFuncInputState) (Enum.GetValues(typeof(EStormFuncInputState))
+                                                    .Cast<EStormFuncInputState>().Min(e => (int) e) - 1);
 
             Assert.Throws<ArgumentOutOfRangeException>(() => new StormFuncInput<object>(content, state));
         }
@@ -45,6 +48,49 @@ namespace StormDotNet.Tests
             var sut = new StormFuncInput<object>(content, EStormFuncInputState.NotVisited);
 
             Assert.That(sut.Content, Is.EqualTo(content));
+        }
+
+        [Test]
+        public void ExposeProvidedStatus([Values] EStormFuncInputState state)
+        {
+            var content = Mock.Of<IStormContent<object>>();
+            var sut = new StormFuncInput<object>(content, state);
+
+            Assert.That(sut.State, Is.EqualTo(state));
+        }
+
+        [Test]
+        public void ToStringCallContentToString()
+        {
+            var content = new Mock<IStormContent<object>>(MockBehavior.Strict);
+            content.Setup(c => c.ToString());
+            var sut = new StormFuncInput<object>(content.Object, EStormFuncInputState.NotVisited);
+            sut.ToString();
+
+            content.Verify(c => c.ToString(), Times.Once);
+        }
+
+        private static IStormContent<object> ToStringContentMock(string content)
+        {
+            var mock = new Mock<IStormContent<object>>();
+            mock.Setup(m => m.ToString()).Returns(content);
+            return mock.Object;
+        }
+
+        public static IEnumerable<TestCaseData> ToStringTestCases { get; } =
+            from t in new[]
+            {
+                new {Content = "test", State = EStormFuncInputState.NotVisited, Expected = "not visited, test"},
+                new {Content = "test", State = EStormFuncInputState.VisitedWithChange, Expected = "changed, test"},
+                new {Content = "test", State = EStormFuncInputState.VisitedWithoutChange, Expected = "unchanged, test"}
+            }
+            select new TestCaseData(ToStringContentMock(t.Content), t.State).Returns(t.Expected);
+
+        [Test, TestCaseSource(nameof(ToStringTestCases))]
+        public string ToStringCallContentToString(IStormContent<object> content, EStormFuncInputState state)
+        {
+            var sut = new StormFuncInput<object>(content, state);
+            return sut.ToString();
         }
     }
 }
