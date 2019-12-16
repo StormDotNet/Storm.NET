@@ -25,13 +25,13 @@ namespace StormDotNet.Tests
     }
 
     [TestFixture]
-    public class StormInputWithNullComparerAsStormTests : StormTests
+    public class StormInputWithNullComparerAsStormTests : StormNodeTests
     {
         protected override IStormNode CreateSubject() => Storm.Input.Create<object>();
     }
 
     [TestFixture]
-    public class StormInputWithComparerAsStormTests : StormTests
+    public class StormInputWithComparerAsStormTests : StormNodeTests
     {
         protected override IStormNode CreateSubject()
         {
@@ -41,7 +41,7 @@ namespace StormDotNet.Tests
     }
 
     [TestFixture]
-    public class StormInputWithoutCompareAsStormTests : StormTests
+    public class StormInputWithoutCompareAsStormTests : StormNodeTests
     {
         protected override IStormNode CreateSubject() => Storm.Input.WithoutCompare.Create<object>();
     }

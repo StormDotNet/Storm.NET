@@ -15,8 +15,20 @@
 
 namespace StormDotNet.Tests
 {
-    public abstract class StormTests
+    using System;
+    using Moq;
+    using NUnit.Framework;
+
+    public abstract class StormNodeTests
     {
         protected abstract IStormNode CreateSubject();
+
+        [Test]
+        public void OnVisitUnRegisterNotExistingDelegateDoNotThrow()
+        {
+            var subject = CreateSubject();
+            var subjectOnVisit = new Mock<Action<IStormToken, EStormVisitType>>();
+            subject.OnVisit -= subjectOnVisit.Object;
+        }
     }
 }
