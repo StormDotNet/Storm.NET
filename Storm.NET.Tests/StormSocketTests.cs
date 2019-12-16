@@ -35,29 +35,33 @@ namespace StormDotNet.Tests
         public void ConnectTwiceThrow()
         {
             var mock = Mock.Of<IStorm<object>>();
-            Sut.Connect(mock);
-            Assert.Throws<InvalidOperationException>(() => Sut.Connect(mock));
+            var token = Mock.Of<IStormToken>();
+            Sut.Connect(token, mock);
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(token, mock));
         }
 
         [Test]
         public void SelfConnectThrow()
         {
-            Assert.Throws<InvalidOperationException>(() => Sut.Connect(Sut));
+            var token = Mock.Of<IStormToken>();
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(token, Sut));
         }
 
         [Test]
         public void Connect69Throw()
         {
             var other = Storm.Socket.Create<object>();
-            other.Connect(Sut);
-            Assert.Throws<InvalidOperationException>(() => Sut.Connect(other));
+            var token = Mock.Of<IStormToken>();
+            other.Connect(token, Sut);
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(token, other));
         }
 
         [Test]
         public void ConnectDescendantThrow()
         {
             var descendant = Storm.Func.Create(Sut, v => v);
-            Assert.Throws<InvalidOperationException>(() => Sut.Connect(descendant));
+            var token = Mock.Of<IStormToken>();
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(token, descendant));
         }
 
         [Test]
