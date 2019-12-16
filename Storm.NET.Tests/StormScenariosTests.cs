@@ -18,7 +18,7 @@ namespace StormDotNet.Tests
     using NUnit.Framework;
 
     [TestFixture]
-    public class StormImmutableTests
+    public class StormScenariosTests
     {
         [Test]
         public void FuncOfImmutableEvaluate()
