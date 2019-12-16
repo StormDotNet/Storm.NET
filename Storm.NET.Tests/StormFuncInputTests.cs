@@ -14,7 +14,6 @@
 // limitations under the License.
 
 // ReSharper disable ObjectCreationAsStatement
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace StormDotNet.Tests
 {
@@ -67,8 +66,9 @@ namespace StormDotNet.Tests
         {
             var content = new Mock<IStormContent<object>>(MockBehavior.Strict);
             content.Setup(c => c.ToString());
-            new StormFuncInput<object>(content.Object, EStormFuncInputState.NotVisited).ToString();
+            var s = new StormFuncInput<object>(content.Object, EStormFuncInputState.NotVisited).ToString();
 
+            Assert.That(s, Is.Not.Null);
             content.Verify(c => c.ToString(), Times.Once);
         }
 
