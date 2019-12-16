@@ -16,13 +16,22 @@
 // ReSharper disable MemberCanBeMadeStatic.Global
 namespace StormDotNet.Factories.Error
 {
+    using System;
+
     public class StormErrorFactory
     {
         internal StormErrorFactory()
         {
         }
 
-        public StormError Create(string message) => new StormError(message);
+        public StormError Create(string message)
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("empty errorMessage", nameof(message));
+
+            return new StormError(message);
+        }
+
         public StormError EmptyContent { get; } = new StormError("Empty content.");
     }
 }
