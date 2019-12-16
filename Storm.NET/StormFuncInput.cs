@@ -21,7 +21,10 @@ namespace StormDotNet
     {
         public StormFuncInput(IStormContent<T> content, EStormFuncInputState state)
         {
-            Content = content;
+            if (!Enum.IsDefined(typeof(EStormFuncInputState), state))
+                throw new ArgumentOutOfRangeException(nameof(state));
+            
+            Content = content ?? throw new ArgumentNullException(nameof(content));
             State = state;
         }
 
@@ -35,7 +38,7 @@ namespace StormDotNet
                 EStormFuncInputState.NotVisited =>           "not visited",
                 EStormFuncInputState.VisitedWithChange =>    "changed",
                 EStormFuncInputState.VisitedWithoutChange => "unchanged",
-                _ => throw new ArgumentException()
+                _ => throw new ArgumentOutOfRangeException()
             };
 
             return $"{visitState}, {Content}";
