@@ -65,9 +65,18 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void ConnectNullThrow()
+        public void ConnectNullTargetThrow()
         {
-            Assert.Throws<ArgumentNullException>(() => Sut.Connect(null));
+            var token = Mock.Of<IStormToken>();
+            Assert.Throws<ArgumentNullException>(() => Sut.Connect(token, null));
+        }
+
+
+        [Test]
+        public void ConnectNullTokenThrow()
+        {
+            var target = Mock.Of<IStorm<object>>();
+            Assert.Throws<ArgumentNullException>(() => Sut.Connect(null, target));
         }
 
         [Test]
