@@ -16,11 +16,10 @@
 namespace StormDotNet.Tests
 {
     using System;
-    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
-    public class StormImmutableErrorTests
+    public class StormImmutableErrorTests : StormTests
     {
         [SetUp]
         public void SetUp()
@@ -29,7 +28,7 @@ namespace StormDotNet.Tests
             Sut = Storm.Immutable.CreateError<object>(Error);
         }
 
-        private IStorm<object> Sut { get; set; }
+        protected override IStorm<object> Sut { get; set; }
         private StormError Error { get; set; }
 
         [Test]
@@ -52,13 +51,22 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void Match()
+        public void VoidMatch()
         {
             void OnError(StormError obj) => Assert.That(obj, Is.EqualTo(Error));
-
             static void OnValue(object obj) => throw new Exception();
 
             Sut.Match(OnError, OnValue);
+        }
+
+        [Test]
+        public void ValueMatch()
+        {
+            static object OnError(StormError obj) => obj;
+            static object OnValue(object obj) => obj;
+
+            var actual = Sut.Match(OnError, OnValue);
+            Assert.That(actual, Is.EqualTo(Error));
         }
 
         [Test]

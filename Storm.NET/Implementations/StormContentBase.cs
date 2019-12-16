@@ -58,6 +58,9 @@ namespace StormDotNet.Implementations
 
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
+            if (onError == null) throw new ArgumentNullException(nameof(onError));
+            if (onValue == null) throw new ArgumentNullException(nameof(onValue));
+
             switch (ContentType)
             {
                 case EStormContentType.Error:
@@ -73,6 +76,9 @@ namespace StormDotNet.Implementations
 
         public TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue)
         {
+            if (onError == null) throw new ArgumentNullException(nameof(onError));
+            if (onValue == null) throw new ArgumentNullException(nameof(onValue));
+
             return ContentType switch
             {
                 EStormContentType.Error => onError(_error!),

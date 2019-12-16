@@ -25,24 +25,39 @@ namespace StormDotNet.Tests
     }
 
     [TestFixture]
-    public class StormInputWithNullComparerAsStormTests : StormNodeTests
+    public class StormInputWithNullComparerAsStormTests : StormTests
     {
-        protected override IStormNode CreateSubject() => Storm.Input.Create<object>();
+        [SetUp]
+        public void SetUp()
+        {
+            Sut = Storm.Input.Create<object>();
+        }
+
+        protected override IStorm<object> Sut { get; set; }
     }
 
     [TestFixture]
-    public class StormInputWithComparerAsStormTests : StormNodeTests
+    public class StormInputWithComparerAsStormTests : StormTests
     {
-        protected override IStormNode CreateSubject()
+        [SetUp]
+        public void SetUp()
         {
             var mockComparer = new Mock<IEqualityComparer<object>>();
-            return Storm.Input.Create(mockComparer.Object);
+            Sut = Storm.Input.Create(mockComparer.Object);
         }
+
+        protected override IStorm<object> Sut { get; set; }
     }
 
     [TestFixture]
-    public class StormInputWithoutCompareAsStormTests : StormNodeTests
+    public class StormInputWithoutCompareAsStormTests : StormTests
     {
-        protected override IStormNode CreateSubject() => Storm.Input.WithoutCompare.Create<object>();
+        [SetUp]
+        public void SetUp()
+        {
+            Sut = Storm.Input.WithoutCompare.Create<object>();
+        }
+
+        protected override IStorm<object> Sut { get; set; }
     }
 }
