@@ -22,7 +22,7 @@ namespace StormDotNet.Tests
 
     public abstract class StormInputTests : StormTests
     {
-        protected IStorm<object> Sut { get; set; }
+        protected IStormInput<object> Sut { get; set; }
         protected override IStorm<object> SutStorm => Sut;
 
         [Test]
@@ -83,6 +83,13 @@ namespace StormDotNet.Tests
         public new void ToString()
         {
             Assert.That(Sut.ToString(), Is.EqualTo("err: 'Empty content.'"));
+        }
+
+        [Test]
+        public void SetEmptyWhenEmptyDoNotRaiseOnVisit()
+        {
+            Sut.OnVisit += (token, type) => throw new Exception();
+            Sut.SetEmpty();
         }
     }
 

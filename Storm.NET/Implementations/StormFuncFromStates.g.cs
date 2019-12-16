@@ -38,15 +38,15 @@ namespace StormDotNet.Implementations
             {
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
 
-                return SetValue(_func(firstState));
+                return TrySetValue(_func(firstState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }
@@ -73,15 +73,15 @@ namespace StormDotNet.Implementations
                 var firstState = new StormFuncInput<TFirst>(First, GetState(0));
                 var secondState = new StormFuncInput<TSecond>(Second, GetState(1));
 
-                return SetValue(_func(firstState, secondState));
+                return TrySetValue(_func(firstState, secondState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }
@@ -110,15 +110,15 @@ namespace StormDotNet.Implementations
                 var secondState = new StormFuncInput<TSecond>(Second, GetState(1));
                 var thirdState = new StormFuncInput<TThird>(Third, GetState(2));
 
-                return SetValue(_func(firstState, secondState, thirdState));
+                return TrySetValue(_func(firstState, secondState, thirdState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }
@@ -149,15 +149,15 @@ namespace StormDotNet.Implementations
                 var thirdState = new StormFuncInput<TThird>(Third, GetState(2));
                 var fourthState = new StormFuncInput<TFourth>(Fourth, GetState(3));
 
-                return SetValue(_func(firstState, secondState, thirdState, fourthState));
+                return TrySetValue(_func(firstState, secondState, thirdState, fourthState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }
@@ -190,15 +190,15 @@ namespace StormDotNet.Implementations
                 var fourthState = new StormFuncInput<TFourth>(Fourth, GetState(3));
                 var fifthState = new StormFuncInput<TFifth>(Fifth, GetState(4));
 
-                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState));
+                return TrySetValue(_func(firstState, secondState, thirdState, fourthState, fifthState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }
@@ -233,15 +233,15 @@ namespace StormDotNet.Implementations
                 var fifthState = new StormFuncInput<TFifth>(Fifth, GetState(4));
                 var sixthState = new StormFuncInput<TSixth>(Sixth, GetState(5));
 
-                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState));
+                return TrySetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }
@@ -278,15 +278,15 @@ namespace StormDotNet.Implementations
                 var sixthState = new StormFuncInput<TSixth>(Sixth, GetState(5));
                 var seventhState = new StormFuncInput<TSeventh>(Seventh, GetState(6));
 
-                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState));
+                return TrySetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }
@@ -325,15 +325,15 @@ namespace StormDotNet.Implementations
                 var seventhState = new StormFuncInput<TSeventh>(Seventh, GetState(6));
                 var eighthState = new StormFuncInput<TEighth>(Eighth, GetState(7));
 
-                return SetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState, eighthState));
+                return TrySetValue(_func(firstState, secondState, thirdState, fourthState, fifthState, sixthState, seventhState, eighthState));
             }
             catch (StormError e)
             {
-                return SetError(e);
+                return TrySetError(e);
             }
             catch (Exception e)
             {
-                return SetError(Error.Func.Evaluation(e));
+                return TrySetError(Error.Func.Evaluation(e));
             }
         }
     }

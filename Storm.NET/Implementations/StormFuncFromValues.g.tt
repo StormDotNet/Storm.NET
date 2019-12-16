@@ -87,25 +87,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(<# foreach (var a in o.Arguments) { #><#= a.name #>Value<#= a.IsLast ? ")" : ", " #><# } #>);
+                    return TrySetValue(_func(<# foreach (var a in o.Arguments) { #><#= a.name #>Value<#= a.IsLast ? ")" : ", " #><# } #>);
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 

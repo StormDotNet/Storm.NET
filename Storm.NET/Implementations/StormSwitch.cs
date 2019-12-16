@@ -38,21 +38,21 @@ namespace StormDotNet.Implementations
             _hasTargetChanged = false;
 
             if (_selector.TryGetError(out var error))
-                return SetError(error);
+                return TrySetError(error);
 
             if (_target == null)
-                return SetError(Error.Switch.Disconnected);
+                return TrySetError(Error.Switch.Disconnected);
 
             if (_target == this)
-                return SetError(Error.Switch.Looped);
+                return TrySetError(Error.Switch.Looped);
 
             if (_target.TryGetValue(out var targetValue))
-                return SetValue(targetValue);
+                return TrySetValue(targetValue);
 
             if (_target.TryGetError(out var targetError))
-                return SetError(targetError);
+                return TrySetError(targetError);
             
-            return SetError(Storm.Error.Create("Unknown error"));
+            return TrySetError(Storm.Error.Create("Unknown error"));
         }
 
         protected override void SourceOnChanged(int index)

@@ -101,7 +101,8 @@ namespace StormDotNet.Implementations
             return true;
         }
 
-        public bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)] out T value)
+        public bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)]
+                                out T value)
         {
             if (ContentType != EStormContentType.Value)
             {
@@ -113,27 +114,41 @@ namespace StormDotNet.Implementations
             return true;
         }
 
-        protected bool SetError(StormError error)
+        protected bool IsError(StormError error) => ContentType == EStormContentType.Error && Equals(error, _error);
+
+        protected void SetError(StormError error)
         {
-            if (error == null) throw new ArgumentNullException(nameof(error));
-
-            if (ContentType == EStormContentType.Error && Equals(error, _error))
-                return false;
-
             ContentType = EStormContentType.Error;
             _error = error;
             _value = default;
+        }
+
+        protected bool TrySetError(StormError error)
+        {
+            if (IsError(error))
+                return false;
+
+            SetError(error);
             return true;
         }
 
-        protected bool SetValue(T value)
-        {
-            if (_comparer != null && ContentType == EStormContentType.Value && _comparer.Equals(value, _value))
-                return false;
+        protected bool IsValue(T value) => ContentType == EStormContentType.Value &&
+                                           _comparer != null &&
+                                           _comparer.Equals(value, _value);
 
+        protected void SetValue(T value)
+        {
             ContentType = EStormContentType.Value;
             _error = null;
             _value = value;
+        }
+
+        protected bool TrySetValue(T value)
+        {
+            if (IsValue(value))
+                return false;
+
+            SetValue(value);
             return true;
         }
     }

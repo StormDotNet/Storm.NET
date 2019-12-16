@@ -40,25 +40,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue));
+                    return TrySetValue(_func(firstValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
@@ -85,25 +85,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue, secondValue));
+                    return TrySetValue(_func(firstValue, secondValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
@@ -132,25 +132,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue, secondValue, thirdValue));
+                    return TrySetValue(_func(firstValue, secondValue, thirdValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
@@ -181,25 +181,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue));
+                    return TrySetValue(_func(firstValue, secondValue, thirdValue, fourthValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
@@ -232,25 +232,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue));
+                    return TrySetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
@@ -285,25 +285,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue));
+                    return TrySetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
@@ -340,25 +340,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue));
+                    return TrySetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
@@ -397,25 +397,25 @@ namespace StormDotNet.Implementations
             {
                 try
                 {
-                    return SetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue, eighthValue));
+                    return TrySetValue(_func(firstValue, secondValue, thirdValue, fourthValue, fifthValue, sixthValue, seventhValue, eighthValue));
                 }
                 catch (StormError e)
                 {
-                    return SetError(e);
+                    return TrySetError(e);
                 }
                 catch (Exception e)
                 {
-                    return SetError(Error.Func.Evaluation(e));
+                    return TrySetError(Error.Func.Evaluation(e));
                 }
             }
 
             var errors = GetErrors().ToArray();
             if (errors.Length > 0)
             {
-                return SetError(Error.Func.SourceError(errors));
+                return TrySetError(Error.Func.SourceError(errors));
             }
 
-            return SetError(Error.EmptyContent);
+            return TrySetError(Error.EmptyContent);
         }
     }
 
