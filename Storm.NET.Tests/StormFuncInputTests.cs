@@ -65,7 +65,7 @@ namespace StormDotNet.Tests
         public void ToStringCallContentToString()
         {
             var content = new Mock<IStormContent<object>>(MockBehavior.Strict);
-            content.Setup(c => c.ToString());
+            content.Setup(c => c.ToString()).Returns("test");
             var s = new StormFuncInput<object>(content.Object, EStormFuncInputState.NotVisited).ToString();
 
             Assert.That(s, Is.Not.Null);
@@ -89,7 +89,7 @@ namespace StormDotNet.Tests
             select new TestCaseData(ToStringContentMock(t.Content), t.State).Returns(t.Expected);
 
         [Test, TestCaseSource(nameof(ToStringTestCases))]
-        public string ToStringCallContentToString(IStormContent<object> content, EStormFuncInputState state)
+        public string ToString(IStormContent<object> content, EStormFuncInputState state)
         {
             var sut = new StormFuncInput<object>(content, state);
             return sut.ToString();
