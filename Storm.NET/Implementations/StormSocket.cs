@@ -108,7 +108,7 @@ namespace StormDotNet.Implementations
             if (target == null)
             {
                 error = Error.Socket.Disconnected;
-                return false;
+                return true;
             }
 
             return target.TryGetError(out error);

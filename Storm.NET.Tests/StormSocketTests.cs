@@ -16,24 +16,119 @@
 namespace StormDotNet.Tests
 {
     using System;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class StormSocketTests
     {
-        [Test]
-        public void StormSocketSelfConnectThrow()
+        [SetUp]
+        public void SetUp()
         {
-            var subject = Storm.Socket.Create<object>();
-            Assert.Throws<InvalidOperationException>(() => subject.Connect(subject));
+            Sut = Storm.Socket.Create<object>();
+        }
+
+        private IStormSocket<object> Sut { get; set; }
+
+        [Test]
+        public void ConnectTwiceThrow()
+        {
+            var mock = Mock.Of<IStorm<object>>();
+            Sut.Connect(mock);
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(mock));
         }
 
         [Test]
-        public void StormSocketConnectDescendantThrow()
+        public void SelfConnectThrow()
         {
-            var subject = Storm.Socket.Create<object>();
-            var descendant = Storm.Func.Create(subject, v => v);
-            Assert.Throws<InvalidOperationException>(() => subject.Connect(descendant));
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(Sut));
+        }
+
+        [Test]
+        public void Connect69Throw()
+        {
+            var other = Storm.Socket.Create<object>();
+            other.Connect(Sut);
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(other));
+        }
+
+        [Test]
+        public void ConnectDescendantThrow()
+        {
+            var descendant = Storm.Func.Create(Sut, v => v);
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(descendant));
+        }
+
+        [Test]
+        public void ConnectNullThrow()
+        {
+            Assert.Throws<ArgumentNullException>(() => Sut.Connect(null));
+        }
+
+        [Test]
+        public void Target()
+        {
+            Assert.That(Sut.Target, Is.Null);
+        }
+
+        [Test]
+        public void ContentType()
+        {
+            Assert.That(Sut.ContentType, Is.EqualTo(EStormContentType.Error));
+        }
+
+        [Test]
+        public void GetValueOr()
+        {
+            var fallBack = new object();
+            Assert.That(Sut.GetValueOr(fallBack), Is.EqualTo(fallBack));
+        }
+
+        [Test]
+        public void GetValueOrThrow()
+        {
+            Assert.Throws<StormError>(() => Sut.GetValueOrThrow());
+        }
+
+        [Test]
+        public void VoidMatch()
+        {
+            static void OnError(StormError obj) => Assert.That(obj, Is.InstanceOf<StormError>());
+            static void OnValue(object obj) => throw new Exception();
+
+            Sut.Match(OnError, OnValue);
+        }
+
+        [Test]
+        public void ValueMatch()
+        {
+            static object OnError(StormError obj) => obj;
+            static object OnValue(object obj) => obj;
+
+            var actual = Sut.Match(OnError, OnValue);
+            Assert.That(actual, Is.InstanceOf<StormError>());
+        }
+
+        [Test]
+        public void TryGetError()
+        {
+            var result = Sut.TryGetError(out var error);
+            Assert.That(result, Is.True);
+            Assert.That(error, Is.InstanceOf<StormError>());
+        }
+
+        [Test]
+        public void TryGetValue()
+        {
+            var result = Sut.TryGetValue(out var value);
+            Assert.That(result, Is.False);
+            Assert.That(value, Is.Null);
+        }
+
+        [Test]
+        public new void ToString()
+        {
+            Assert.That(Sut.ToString(), Is.EqualTo("err: 'Disconnected socket.'"));
         }
     }
 }
