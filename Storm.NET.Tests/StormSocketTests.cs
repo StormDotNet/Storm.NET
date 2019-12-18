@@ -129,6 +129,25 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void ConnectToNotConnectedSocketDoNotRaiseUpdate()
+        {
+            var listener = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
+            var sequence = new MockSequence();
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchEnter));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchLeave));
+
+            var target = Storm.Socket.Create<int>();
+            var socket = Storm.Socket.Create<int>();
+
+            socket.OnVisit += listener.Object;
+            socket.Connect(target);
+
+            Assert.That(socket.TryGetError(out var error), Is.True);
+            Assert.That(error, Is.EqualTo(Error.Socket.Disconnected));
+            listener.Verify(a => a.Invoke(It.IsAny<IStormToken>(), It.IsAny<EStormVisitType>()), Times.Exactly(2));
+        }
+
+        [Test]
         public void ConnectDescendantThrow()
         {
             var descendant = Storm.Func.Create(Sut, v => v);
