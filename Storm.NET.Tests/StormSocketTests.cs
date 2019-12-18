@@ -108,6 +108,27 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void ConnectToValueRaiseChanged()
+        {
+            var listener = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
+            var sequence = new MockSequence();
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchEnter));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchLeave));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.UpdateEnter));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.UpdateLeaveChanged));
+
+            var target = Storm.Immutable.CreateValue(42);
+            var socket = Storm.Socket.Create<int>();
+
+            socket.OnVisit += listener.Object;
+
+            socket.Connect(target);
+
+            Assert.That(socket.GetValueOrThrow(), Is.EqualTo(42));
+            listener.Verify(a => a.Invoke(It.IsAny<IStormToken>(), It.IsAny<EStormVisitType>()), Times.Exactly(4));
+        }
+
+        [Test]
         public void ConnectDescendantThrow()
         {
             var descendant = Storm.Func.Create(Sut, v => v);
