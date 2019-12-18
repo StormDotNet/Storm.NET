@@ -20,5 +20,6 @@ namespace StormDotNet
     public interface IStormNode
     {
         event Action<IStormToken, EStormVisitType>? OnVisit;
+        bool TryGetEnteredToken(out IStormToken? token);
     }
 }

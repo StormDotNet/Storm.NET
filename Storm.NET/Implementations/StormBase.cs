@@ -22,13 +22,12 @@ namespace StormDotNet.Implementations
     {
         private EState _visitState = EState.Idle;
         private bool _inLoopSearch;
+        private event Action<IStormToken, EStormVisitType>? OnVisit;
 
         protected StormBase(IEqualityComparer<T>? comparer) : base(comparer)
         {
             CurrentToken = Storm.Token.Initial;
         }
-
-        private event Action<IStormToken, EStormVisitType>? OnVisit;
 
         event Action<IStormToken, EStormVisitType>? IStormNode.OnVisit
         {
@@ -44,6 +43,12 @@ namespace StormDotNet.Implementations
         }
 
         protected IStormToken CurrentToken { get; private set; }
+
+        public bool TryGetEnteredToken(out IStormToken? token)
+        {
+            token = CurrentToken;
+            return token != Storm.Token.Initial;
+        }
 
         protected bool IsDescendant(IStormNode node)
         {

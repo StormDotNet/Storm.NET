@@ -29,9 +29,15 @@ namespace StormDotNet.Implementations
 
         public EStormContentType ContentType => EStormContentType.Error;
 
+        public event Action<IStormToken, EStormVisitType>? OnVisit
+        {
+            add { }
+            remove { }
+        }
+
         public T GetValueOr(T fallBack) => fallBack;
         public T GetValueOrThrow() => throw _error;
-        
+
         public void Match(Action<StormError> onError, Action<T> onValue)
         {
             if (onError == null) throw new ArgumentNullException(nameof(onError));
@@ -48,6 +54,12 @@ namespace StormDotNet.Implementations
             return onError(_error);
         }
 
+        public bool TryGetEnteredToken(out IStormToken? token)
+        {
+            token = null;
+            return false;
+        }
+
         public bool TryGetError([NotNullWhen(true)] out StormError? error)
         {
             error = _error;
@@ -58,12 +70,6 @@ namespace StormDotNet.Implementations
         {
             value = default!;
             return false;
-        }
-
-        public event Action<IStormToken, EStormVisitType>? OnVisit
-        {
-            add { }
-            remove { }
         }
 
         public override string ToString() => ToStringHelper.ToString(this);

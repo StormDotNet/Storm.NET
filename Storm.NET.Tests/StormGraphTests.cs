@@ -52,7 +52,8 @@ namespace StormDotNet.Tests
             var left = Storm.Func.Create(input, v => v / 2);
             var right = Storm.Socket.Create<int>();
             var output = Storm.Func.Create(left, right, (lValue, rValue) => lValue * 2 + rValue);
-            right.Connect(Storm.Func.Create(input, v => v % 2));
+            var rightTarget = Storm.Func.Create(input, v => v % 2);
+            right.Connect(rightTarget);
 
             Assert.That(output.TryGetValue(out _), Is.False);
             Assert.That(output.TryGetError(out _), Is.True);

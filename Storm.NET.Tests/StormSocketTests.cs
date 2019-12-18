@@ -16,6 +16,7 @@
 namespace StormDotNet.Tests
 {
     using System;
+    using Implementations;
     using Moq;
     using NUnit.Framework;
 
@@ -51,9 +52,59 @@ namespace StormDotNet.Tests
         public void Connect69Throw()
         {
             var other = Storm.Socket.Create<object>();
-            var token = Mock.Of<IStormToken>();
-            other.Connect(token, Sut);
-            Assert.Throws<InvalidOperationException>(() => Sut.Connect(token, other));
+            other.Connect(Sut);
+            Assert.Throws<InvalidOperationException>(() => Sut.Connect(other));
+        }
+
+        [Test]
+        public void BatchConnectAndModifyTargetToValue()
+        {
+            var listener = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
+            var sequence = new MockSequence();
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchEnter));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchLeave));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.UpdateEnter));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.UpdateLeaveChanged));
+
+            var target = Storm.Input.Create<int>();
+            var socket = Storm.Socket.Create<int>();
+
+            socket.OnVisit += listener.Object;
+
+            using (var token = Storm.Token.Create())
+            {
+                target.SetValue(token, 42);
+                socket.Connect(token, target);
+            }
+
+            Assert.That(socket.GetValueOrThrow(), Is.EqualTo(42));
+            listener.Verify(a => a.Invoke(It.IsAny<IStormToken>(), It.IsAny<EStormVisitType>()), Times.Exactly(4));
+        }
+
+        [Test]
+        public void BatchConnectAndModifyTargetToDisconnected()
+        {
+            var listener = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
+            var sequence = new MockSequence();
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchEnter));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.LoopSearchLeave));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.UpdateEnter));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<IStormToken>(), EStormVisitType.UpdateLeaveUnchanged));
+
+            var target = Storm.Input.Create<int>();
+            var socket = Storm.Socket.Create<int>();
+
+            socket.OnVisit += listener.Object;
+
+            using (var token = Storm.Token.Create())
+            {
+                target.SetError(token, Error.Socket.Disconnected);
+                socket.Connect(token, target);
+            }
+
+            Assert.That(socket.TryGetError(out var error), Is.True);
+            Assert.That(error, Is.EqualTo(Error.Socket.Disconnected));
+            listener.Verify(a => a.Invoke(It.IsAny<IStormToken>(), It.IsAny<EStormVisitType>()), Times.Exactly(4));
         }
 
         [Test]
