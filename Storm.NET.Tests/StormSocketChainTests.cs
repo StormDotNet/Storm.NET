@@ -49,5 +49,41 @@ namespace StormDotNet.Tests
             Assert.That(s2.GetValueOrThrow(), Is.EqualTo(0));
             Assert.That(s2.Target, Is.EqualTo(i));
         }
+
+        [Test]
+        public void Test3ElementsInBatchChainConnect1Then2()
+        {
+            var i = Storm.Input.WithCompare.Create<int>();
+            var s1 = Storm.Socket.Create<int>();
+            var s2 = Storm.Socket.Create<int>();
+
+            using (var token = Storm.Token.Create())
+            {
+                s1.Connect(token, i);
+                s2.Connect(token, s1);
+                i.SetValue(token, 0);
+            }
+            
+            Assert.That(s2.GetValueOrThrow(), Is.EqualTo(0));
+            Assert.That(s2.Target, Is.EqualTo(i));
+        }
+
+        [Test]
+        public void Test3ElementsInBatchChainConnect2Then1()
+        {
+            var i = Storm.Input.WithCompare.Create<int>();
+            var s1 = Storm.Socket.Create<int>();
+            var s2 = Storm.Socket.Create<int>();
+
+            using (var token = Storm.Token.Create())
+            {
+                s2.Connect(token, s1);
+                s1.Connect(token, i);
+                i.SetValue(token, 0);
+            }
+
+            Assert.That(s2.GetValueOrThrow(), Is.EqualTo(0));
+            Assert.That(s2.Target, Is.EqualTo(i));
+        }
     }
 }
