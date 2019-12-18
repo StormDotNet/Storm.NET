@@ -57,6 +57,21 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void Connect69InBatchThrow()
+        {
+            static void Code()
+            {
+                var socket1 = Storm.Socket.Create<object>();
+                var socket2 = Storm.Socket.Create<object>();
+                using var token = Storm.Token.Create();
+                socket1.Connect(token, socket2);
+                socket2.Connect(token, socket1);
+            }
+
+            Assert.Throws<InvalidOperationException>(Code);
+        }
+
+        [Test]
         public void BatchConnectAndModifyTargetToValue()
         {
             var listener = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
