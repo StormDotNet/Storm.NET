@@ -24,6 +24,7 @@ namespace StormDotNet.Factories.Immutable
         }
 
         public IStorm<T> CreateError<T>(StormError error) => new ImmutableError<T>(error);
+        public IStorm<T> CreateError<T>(string message) => new ImmutableError<T>(Storm.Error.Create(message));
         public IStorm<T> CreateValue<T>(T value) => new ImmutableValue<T>(value);
     }
 }

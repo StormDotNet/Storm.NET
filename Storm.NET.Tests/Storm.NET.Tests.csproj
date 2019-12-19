@@ -16,6 +16,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>StormFuncFactoryFromStatesTests.g.tt</DependentUpon>
     </None>
+    <None Include="StormFuncFactoryFromValuesTests.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFactoryFromValuesTests.g.tt</DependentUpon>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +50,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Update="StormFuncFactoryFromValuesTests.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormFuncFactoryFromValuesTests.g.tt</DependentUpon>
+    </Compile>
     <Compile Update="StormFuncFactoryFromValuesWithCompareTests.g.cs">
       <DependentUpon>StormFuncFactoryFromValuesWithCompareTests.g.tt</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -69,6 +79,10 @@
     <None Update="StormFuncFactoryFromStatesWithoutCompareTests.g.tt">
       <LastGenOutput>StormFuncFactoryFromStatesWithoutCompareTests.g.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="StormFuncFactoryFromValuesTests.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormFuncFactoryFromValuesTests.g.cs</LastGenOutput>
     </None>
     <None Update="StormFuncFactoryFromValuesWithCompareTests.g.tt">
       <LastGenOutput>StormFuncFactoryFromValuesWithCompareTests.g.cs</LastGenOutput>

@@ -1,0 +1,113 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// Storm.NET - Simple Topologically Ordered Reactive Model
+// Copyright © 2019 Storm.NET. All rights reserved.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+<#
+    var ordinals = new[]
+    {
+        string.Empty,
+        "First", "Second", "Third", "Fourth",
+        "Fifth", "Sixth", "Seventh", "Eighth"
+    };
+
+    var cardinals = new[]
+    {
+        "Zero",
+        "One", "Two", "Three", "Four",
+        "Five", "Six", "Seven", "Eight"
+    };
+
+    var overloads =
+        from argCount in Enumerable.Range(1, 8)
+        from args in new[]
+        {
+            from argIndex in Enumerable.Range(0, argCount)
+            select new
+            {
+                Index = argIndex,
+                IsLast = (argIndex == argCount - 1),
+                name = ordinals[argIndex + 1].ToLower()
+            }
+        }
+        select new
+        {
+            argCount,
+            Arguments = args.ToList(),
+            CreateParams = string.Join(", ", args.Select(a => a.name)),
+            FuncParameters = string.Join(", ", args.Select(a => $"int {a.name}Input")),
+            TestParams = string.Join(", ", args.Select(a => $"IStorm<int> {a.name}")),
+        };
+#>
+
+namespace StormDotNet.Tests
+{
+    using System;
+    using System.Collections.Generic;
+    using NUnit.Framework;
+
+    [TestFixture]
+    public class StormFuncFactoryFromValuesTests
+    {
+        private static IStorm<int> CreateInput(bool isValue)
+        {
+            return isValue ? Storm.Immutable.CreateValue(0) : Storm.Immutable.CreateError<int>("error");
+        }
+
+        private static int BitCount(int i)
+        {
+            var r = 0;
+            while (i > 0)
+            {
+                r += i & 1;
+                i >>= 1;
+            }
+
+            return r;
+        }
+<#  foreach (var o in overloads) { #>
+        public static IEnumerable<TestCaseData> FuncWith<#= o.argCount #>InputCases()
+        {
+            for (var i = 1; i < Math.Pow(2, <#= o.argCount #>); i++)
+            {
+                yield return new TestCaseData(
+<#  foreach (var a in o.Arguments) { #>
+                    CreateInput((i & (1 << <#= a.Index #>)) == 0)<#= a.IsLast ? "" : "," #>
+<#  } #>
+                ).Returns(BitCount(i)).SetName($"FuncWith<#= o.argCount #>Input. Case #{i:000}");
+            }
+        }
+
+        [Test, TestCaseSource(nameof(FuncWith<#= o.argCount #>InputCases))]
+        public int FuncWith<#= o.argCount #>InputWithErrors(<#= o.TestParams #>)
+        {
+            static int Func(<#= o.FuncParameters #>) => 0;
+
+            var sut = Storm.Func.Create(<#= o.CreateParams #>, Func);
+
+            Assert.That(sut.TryGetError(out var error), Is.True);
+            Assert.That(error, Is.InstanceOf<StormError>());
+            Assert.That(error.InnerException, Is.InstanceOf<AggregateException>());
+
+            // ReSharper disable once PossibleNullReferenceException
+            return (error.InnerException as AggregateException).InnerExceptions.Count;
+        }
+<#  } #>
+
+    }
+}
