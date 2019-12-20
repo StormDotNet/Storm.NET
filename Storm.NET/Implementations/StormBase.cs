@@ -69,21 +69,8 @@ namespace StormDotNet.Implementations
             }
 
             node.OnVisit += TargetOnVisit;
-            if (CurrentToken.Equals(default))
-            {
-                var tokenSource = Storm.TokenSource.CreateDisposedSource();
-                var token = tokenSource.Token;
-                CurrentToken = token;
-                OnVisitEvent.Invoke(token, EStormVisitType.LoopSearchEnter);
-                OnVisitEvent.Invoke(token, EStormVisitType.LoopSearchLeave);
-                CurrentToken = default;
-            }
-            else
-            {
-                OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
-                OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
-            }
-
+            OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
+            OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
             node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
