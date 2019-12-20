@@ -80,6 +80,18 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void NotEqualsDefault()
+        {
+            Assert.That(Token.Equals(new StormToken()), Is.False);
+        }
+
+        [Test]
+        public void NotEqualsDefaultAsObject()
+        {
+            Assert.That(Token.Equals((object)new StormToken()), Is.False);
+        }
+
+        [Test]
         public void GetHashCodeReturns()
         {
             Token.GetHashCode();
