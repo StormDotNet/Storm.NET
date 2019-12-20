@@ -52,13 +52,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 
@@ -97,13 +91,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 
@@ -144,13 +132,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 
@@ -193,13 +175,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 
@@ -244,13 +220,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 
@@ -297,13 +267,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 
@@ -352,13 +316,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 
@@ -409,13 +367,7 @@ namespace StormDotNet.Implementations
                 }
             }
 
-            var errors = GetErrors().ToArray();
-            if (errors.Length > 0)
-            {
-                return TrySetError(Error.Func.SourceError(errors));
-            }
-
-            return TrySetError(Error.EmptyContent);
+            return TrySetError(Error.Func.SourceError(GetErrors()));
         }
     }
 

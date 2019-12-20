@@ -16,12 +16,13 @@
 namespace StormDotNet.Implementations
 {
     using System;
+    using System.Collections.Generic;
 
     internal static partial class Error
     {
         public static class Func
         {
-            public static StormError SourceError(Exception[] innerExceptions)
+            public static StormError SourceError(IEnumerable<Exception> innerExceptions)
             {
                 return new StormError("StormFunc sources have errors.", new AggregateException(innerExceptions));
             }
