@@ -13,28 +13,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace StormDotNet
+namespace StormDotNet.Tests
 {
     using System;
+    using System.Linq;
+    using NUnit.Framework;
 
-    public enum EStormFuncInputState
+    [TestFixture]
+    public class StormFuncInputStateExtensionsTests
     {
-        NotVisited,
-        VisitedWithChange,
-        VisitedWithoutChange
-    }
-
-    public static class StormFuncInputStateExtensions
-    {
-        public static string GetDescription(this EStormFuncInputState state)
+        [Test]
+        public void GetDescriptionReturns([Values] EStormFuncInputState state)
         {
-            return state switch
-            {
-                EStormFuncInputState.NotVisited => "not visited",
-                EStormFuncInputState.VisitedWithChange => "changed",
-                EStormFuncInputState.VisitedWithoutChange => "unchanged",
-                _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
-            };
+            Assert.That(string.IsNullOrWhiteSpace(state.GetDescription()), Is.False);
+        }
+
+        [Test]
+        public void GetDescriptionWithInvalidStateThrow()
+        {
+            var state = (EStormFuncInputState)(Enum.GetValues(typeof(EStormFuncInputState))
+                                                   .Cast<EStormFuncInputState>().Min(e => (int)e) - 1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => state.GetDescription());
         }
     }
 }

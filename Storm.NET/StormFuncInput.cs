@@ -31,17 +31,6 @@ namespace StormDotNet
         public IStormContent<T> Content { get; }
         public EStormFuncInputState State { get; }
 
-        public override string ToString()
-        {
-            var visitState = State switch
-            {
-                EStormFuncInputState.NotVisited =>           "not visited",
-                EStormFuncInputState.VisitedWithChange =>    "changed",
-                EStormFuncInputState.VisitedWithoutChange => "unchanged",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            return $"{visitState}, {Content}";
-        }
+        public override string ToString() => $"{State.GetDescription()}, {Content}";
     }
 }
