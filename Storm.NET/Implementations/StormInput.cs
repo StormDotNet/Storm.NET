@@ -25,16 +25,15 @@ namespace StormDotNet.Implementations
         {
         }
 
-        public void SetError(IStormToken token, StormError error)
+        public void SetError(StormToken token, StormError error)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
-            if (token.IsDisposed) throw new ArgumentException("Object is disposed.", nameof(token));
+            if(token.Equals(default)) throw new ArgumentException("Default token not allowed", nameof(token));
             if (error == null) throw new ArgumentNullException(nameof(error));
 
             if (IsError(error))
                 return;
 
-            token.Disposing += () =>
+            token.OnLeave += () =>
             {
                 SetError(error);
                 RaiseUpdateLeave(token, true);
@@ -43,15 +42,13 @@ namespace StormDotNet.Implementations
             RaiseUpdateEnter(token);
         }
 
-        public void SetValue(IStormToken token, [AllowNull] [MaybeNull] T value)
+        public void SetValue(StormToken token, [AllowNull] [MaybeNull] T value)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
-            if (token.IsDisposed) throw new ArgumentException("Object is disposed.", nameof(token));
-
+            if (token.Equals(default)) throw new ArgumentException("Default token not allowed", nameof(token));
             if (IsValue(value))
                 return;
 
-            token.Disposing += () =>
+            token.OnLeave += () =>
             {
                 SetValue(value);
                 RaiseUpdateLeave(token, true);

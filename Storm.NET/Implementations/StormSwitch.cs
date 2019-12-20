@@ -63,17 +63,17 @@ namespace StormDotNet.Implementations
                 UpdateTarget();
                 if (GetSourceState(1) == EStormSourceState.Enter)
                 {
-                    SourceOnVisit(1, CurrentToken, EStormVisitType.UpdateLeaveChanged);
+                    SourceOnVisit(1, CurrentToken!, EStormVisitType.UpdateLeaveChanged);
                 }
             }
         }
 
-        private void SelectorOnVisit(IStormToken token, EStormVisitType visitType)
+        private void SelectorOnVisit(StormToken token, EStormVisitType visitType)
         {
             SourceOnVisit(0, token, visitType);
         }
 
-        private void TargetOnVisit(IStormToken token, EStormVisitType visitType)
+        private void TargetOnVisit(StormToken token, EStormVisitType visitType)
         {
             SourceOnVisit(_hasTargetChanged ? 2 : 1, token, visitType);
         }

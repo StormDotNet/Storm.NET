@@ -74,7 +74,7 @@ namespace WpfUnitConverter
             set => UserInput.SetValue(value);
         }
 
-        private void OutputOnVisit(IStormToken token, EStormVisitType visitType)
+        private void OutputOnVisit(StormToken token, EStormVisitType visitType)
         {
             if (visitType == EStormVisitType.UpdateLeaveChanged)
             {

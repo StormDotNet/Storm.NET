@@ -37,7 +37,7 @@ namespace StormDotNet.Implementations
             if (First.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
     }
 
     internal abstract class StormFuncBase<TFirst, TSecond, TResult> : StormFuncBase<TResult>
@@ -64,8 +64,8 @@ namespace StormDotNet.Implementations
             if (Second.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
-        private void SecondOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void SecondOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
     }
 
     internal abstract class StormFuncBase<TFirst, TSecond, TThird, TResult> : StormFuncBase<TResult>
@@ -97,9 +97,9 @@ namespace StormDotNet.Implementations
             if (Third.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
-        private void SecondOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
-        private void ThirdOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void SecondOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
+        private void ThirdOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
     }
 
     internal abstract class StormFuncBase<TFirst, TSecond, TThird, TFourth, TResult> : StormFuncBase<TResult>
@@ -136,10 +136,10 @@ namespace StormDotNet.Implementations
             if (Fourth.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
-        private void SecondOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
-        private void ThirdOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
-        private void FourthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void SecondOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
+        private void ThirdOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
+        private void FourthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
     }
 
     internal abstract class StormFuncBase<TFirst, TSecond, TThird, TFourth, TFifth, TResult> : StormFuncBase<TResult>
@@ -181,11 +181,11 @@ namespace StormDotNet.Implementations
             if (Fifth.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
-        private void SecondOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
-        private void ThirdOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
-        private void FourthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
-        private void FifthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void SecondOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
+        private void ThirdOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
+        private void FourthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
+        private void FifthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
     }
 
     internal abstract class StormFuncBase<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TResult> : StormFuncBase<TResult>
@@ -232,12 +232,12 @@ namespace StormDotNet.Implementations
             if (Sixth.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
-        private void SecondOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
-        private void ThirdOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
-        private void FourthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
-        private void FifthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
-        private void SixthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(5, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void SecondOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
+        private void ThirdOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
+        private void FourthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
+        private void FifthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
+        private void SixthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(5, token, visitType);
     }
 
     internal abstract class StormFuncBase<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TResult> : StormFuncBase<TResult>
@@ -289,13 +289,13 @@ namespace StormDotNet.Implementations
             if (Seventh.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
-        private void SecondOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
-        private void ThirdOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
-        private void FourthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
-        private void FifthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
-        private void SixthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(5, token, visitType);
-        private void SeventhOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(6, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void SecondOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
+        private void ThirdOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
+        private void FourthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
+        private void FifthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
+        private void SixthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(5, token, visitType);
+        private void SeventhOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(6, token, visitType);
     }
 
     internal abstract class StormFuncBase<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TEighth, TResult> : StormFuncBase<TResult>
@@ -352,14 +352,14 @@ namespace StormDotNet.Implementations
             if (Eighth.TryGetError(out error)) yield return error;
         }
 
-        private void FirstOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
-        private void SecondOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
-        private void ThirdOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
-        private void FourthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
-        private void FifthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
-        private void SixthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(5, token, visitType);
-        private void SeventhOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(6, token, visitType);
-        private void EighthOnVisit(IStormToken token, EStormVisitType visitType) => SourceOnVisit(7, token, visitType);
+        private void FirstOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(0, token, visitType);
+        private void SecondOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(1, token, visitType);
+        private void ThirdOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(2, token, visitType);
+        private void FourthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(3, token, visitType);
+        private void FifthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(4, token, visitType);
+        private void SixthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(5, token, visitType);
+        private void SeventhOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(6, token, visitType);
+        private void EighthOnVisit(StormToken token, EStormVisitType visitType) => SourceOnVisit(7, token, visitType);
     }
 
 }

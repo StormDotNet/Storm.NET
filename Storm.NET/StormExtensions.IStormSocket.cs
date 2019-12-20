@@ -24,8 +24,8 @@ namespace StormDotNet
             if (socket == null) throw new ArgumentNullException(nameof(socket));
             if (target == null) throw new ArgumentNullException(nameof(target));
 
-            using var token = Storm.Token.Create();
-            socket.Connect(token, target);
+            using var tokenSource = Storm.TokenSource.CreateSource();
+            socket.Connect(tokenSource.Token, target);
         }
     }
 }

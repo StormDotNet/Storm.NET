@@ -18,6 +18,6 @@ namespace StormDotNet
     public interface IStormSocket<T> : IStorm<T>
     {
         IStorm<T>? Target { get; }
-        void Connect(IStormToken token, IStorm<T> target);
+        void Connect(StormToken token, IStorm<T> target);
     }
 }

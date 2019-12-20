@@ -31,7 +31,7 @@ namespace StormDotNet.Implementations
             _sourceStates = new EStormSourceState[length];
         }
 
-        protected void SourceOnVisit(int index, IStormToken token, EStormVisitType visitType)
+        protected void SourceOnVisit(int index, StormToken token, EStormVisitType visitType)
         {
             switch (visitType)
             {
@@ -75,9 +75,9 @@ namespace StormDotNet.Implementations
         {
         }
 
-        private void SourceOnLoopSearchEnter(IStormToken token)
+        private void SourceOnLoopSearchEnter(StormToken token)
         {
-            if (CurrentToken != null && CurrentToken != token)
+            if (!CurrentToken.Equals(default) && !CurrentToken.Equals(token))
                 throw new InvalidOperationException("Unknown token");
 
             if (_enteredLoopSearchCount == 0)
@@ -86,9 +86,9 @@ namespace StormDotNet.Implementations
             _enteredLoopSearchCount++;
         }
 
-        private void SourceOnLoopSearchLeave(IStormToken token)
+        private void SourceOnLoopSearchLeave(StormToken token)
         {
-            if (CurrentToken != null && CurrentToken != token)
+            if (!CurrentToken.Equals(default) && !CurrentToken.Equals(token))
                 throw new InvalidOperationException("Unknown token");
 
             _enteredLoopSearchCount--;
@@ -97,13 +97,13 @@ namespace StormDotNet.Implementations
                 RaiseLoopSearchLeave(token);
         }
 
-        private void SourceOnUpdateEnter(int index, IStormToken token)
+        private void SourceOnUpdateEnter(int index, StormToken token)
         {
             if (_enteredCount == 0)
             {
                 RaiseUpdateEnter(token);
             }
-            else if (!Equals(token, CurrentToken))
+            else if (!CurrentToken.Equals(token))
             {
                 throw new InvalidOperationException("Unknown token");
             }
@@ -114,9 +114,9 @@ namespace StormDotNet.Implementations
             _enteredCount++;
         }
 
-        private void SourceOnUpdateLeave(int index, IStormToken token, bool hasChanged)
+        private void SourceOnUpdateLeave(int index, StormToken token, bool hasChanged)
         {
-            if (token != CurrentToken)
+            if (!CurrentToken.Equals(token))
                 throw new InvalidOperationException("Unknown token");
 
             _sourceStates[index] = _sourceStates[index] == EStormSourceState.Enter

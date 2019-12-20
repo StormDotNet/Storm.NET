@@ -57,8 +57,9 @@ namespace StormDotNet.Tests
             var s1 = Storm.Socket.Create<int>();
             var s2 = Storm.Socket.Create<int>();
 
-            using (var token = Storm.Token.Create())
+            using (var tokenSource = Storm.TokenSource.CreateSource())
             {
+                var token = tokenSource.Token;
                 s1.Connect(token, i);
                 s2.Connect(token, s1);
                 i.SetValue(token, 0);
@@ -75,8 +76,9 @@ namespace StormDotNet.Tests
             var s1 = Storm.Socket.Create<int>();
             var s2 = Storm.Socket.Create<int>();
 
-            using (var token = Storm.Token.Create())
+            using (var tokenSource = Storm.TokenSource.CreateSource())
             {
+                var token = tokenSource.Token;
                 s2.Connect(token, s1);
                 s1.Connect(token, i);
                 i.SetValue(token, 0);

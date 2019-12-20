@@ -26,14 +26,14 @@ namespace StormDotNet.Tests
         [Test]
         public void UnRegisterOnVisitNotExistingDelegateDoNotThrow()
         {
-            var subjectOnVisit = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
+            var subjectOnVisit = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
             SutNode.OnVisit -= subjectOnVisit.Object;
         }
 
         [Test]
         public void RegisterOnVisitDoNotRaiseEvent()
         {
-            var subjectOnVisit = new Mock<Action<IStormToken, EStormVisitType>>(MockBehavior.Strict);
+            var subjectOnVisit = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
             SutNode.OnVisit += subjectOnVisit.Object;
         }
     }

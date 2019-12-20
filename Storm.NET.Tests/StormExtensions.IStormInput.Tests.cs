@@ -27,7 +27,7 @@ namespace StormDotNet.Tests
         public void SetEmptyCallSetError()
         {
             var input = new Mock<IStormInput<object>>(MockBehavior.Strict);
-            input.Setup(i => i.SetError(It.IsAny<IStormToken>(), Storm.Error.EmptyContent));
+            input.Setup(i => i.SetError(It.IsAny<StormToken>(), Storm.Error.EmptyContent));
             StormExtensions.SetEmpty(input.Object);
         }
 
@@ -43,7 +43,7 @@ namespace StormDotNet.Tests
         {
             const string message = "test";
             var input = new Mock<IStormInput<object>>(MockBehavior.Strict);
-            input.Setup(i => i.SetError(It.IsAny<IStormToken>(), It.Is<StormError>(e => e.Message == message)));
+            input.Setup(i => i.SetError(It.IsAny<StormToken>(), It.Is<StormError>(e => e.Message == message)));
             StormExtensions.SetError(input.Object, message);
         }
 
@@ -74,7 +74,7 @@ namespace StormDotNet.Tests
         {
             var value = new object();
             var input = new Mock<IStormInput<object>>(MockBehavior.Strict);
-            input.Setup(i => i.SetValue(It.IsAny<IStormToken>(), value));
+            input.Setup(i => i.SetValue(It.IsAny<StormToken>(), value));
             StormExtensions.SetValue(input.Object, value);
         }
 

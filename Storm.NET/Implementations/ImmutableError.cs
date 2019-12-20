@@ -29,7 +29,7 @@ namespace StormDotNet.Implementations
 
         public EStormContentType ContentType => EStormContentType.Error;
 
-        public event Action<IStormToken, EStormVisitType>? OnVisit
+        public event Action<StormToken, EStormVisitType>? OnVisit
         {
             add { }
             remove { }
@@ -54,9 +54,9 @@ namespace StormDotNet.Implementations
             return onError(_error);
         }
 
-        public bool TryGetEnteredToken(out IStormToken? token)
+        public bool TryGetEnteredToken(out StormToken token)
         {
-            token = null;
+            token = default;
             return false;
         }
 

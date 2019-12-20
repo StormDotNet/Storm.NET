@@ -23,24 +23,24 @@ namespace StormDotNet
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            using var token = Storm.Token.Create();
-            input.SetError(token, Storm.Error.EmptyContent);
+            using var tokenSource = Storm.TokenSource.CreateSource();
+            input.SetError(tokenSource.Token, Storm.Error.EmptyContent);
         }
 
         public static void SetError<T>(this IStormInput<T> input, string errorMessage)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            using var token = Storm.Token.Create();
-            input.SetError(token, Storm.Error.Create(errorMessage));
+            using var tokenSource = Storm.TokenSource.CreateSource();
+            input.SetError(tokenSource.Token, Storm.Error.Create(errorMessage));
         }
 
         public static void SetValue<T>(this IStormInput<T> input, T value)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             
-            using var token = Storm.Token.Create();
-            input.SetValue(token, value);
+            using var tokenSource = Storm.TokenSource.CreateSource();
+            input.SetValue(tokenSource.Token, value);
         }
     }
 }

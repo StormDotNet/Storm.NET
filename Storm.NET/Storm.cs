@@ -21,7 +21,7 @@ namespace StormDotNet
     using Factories.Input;
     using Factories.Socket;
     using Factories.Switch;
-    using Factories.Token;
+    using Factories.TokenSource;
 
     public static class Storm
     {
@@ -31,6 +31,6 @@ namespace StormDotNet
         public static StormInputFactoryWithCompare Input => InputFactories.Default;
         public static StormSocketFactory Socket => SocketFactories.Default;
         public static StormSwitchFactoryFromValuesWithCompare Switch => SwitchFactories.Default;
-        public static StormTokenFactory Token => TokenFactories.Default;
+        public static StormTokenSourceFactory TokenSource => TokenSourceFactories.Default;
     }
 }

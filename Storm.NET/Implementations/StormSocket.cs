@@ -20,13 +20,13 @@ namespace StormDotNet.Implementations
 
     internal class StormSocket<T> : IStormSocket<T>
     {
-        private event Action<IStormToken, EStormVisitType>? OnVisitCache;
+        private event Action<StormToken, EStormVisitType>? OnVisitCache;
         private IStorm<T>? _target;
 
         public EStormContentType ContentType => GetDeepTarget()?.ContentType ?? EStormContentType.Error;
         public IStorm<T>? Target => GetDeepTarget() ?? _target;
 
-        public event Action<IStormToken, EStormVisitType>? OnVisit
+        public event Action<StormToken, EStormVisitType>? OnVisit
         {
             add
             {
@@ -54,9 +54,9 @@ namespace StormDotNet.Implementations
             }
         }
 
-        public void Connect(IStormToken token, IStorm<T> target)
+        public void Connect(StormToken token, IStorm<T> target)
         {
-            if (token == null) throw new ArgumentNullException(nameof(token));
+            if (token.Equals(default)) throw new ArgumentException("Default token not allowed", nameof(token));
             if (target == null) throw new ArgumentNullException(nameof(target));
 
             if (_target != null)
@@ -69,7 +69,7 @@ namespace StormDotNet.Implementations
             Connect(token);
         }
 
-        private void Connect(IStormToken token)
+        private void Connect(StormToken token)
         {
             var target = GetDeepTarget();
             if (target == null)
@@ -86,7 +86,7 @@ namespace StormDotNet.Implementations
             var isEntered = target.TryGetEnteredToken(out var enteredToken);
             if (isEntered)
             {
-                if (!Equals(token, enteredToken))
+                if (!token.Equals(enteredToken))
                     throw new InvalidOperationException("Unknown token");
                 target.OnVisit += OnMiddleConnectionVisit;
             }
@@ -100,7 +100,7 @@ namespace StormDotNet.Implementations
                 else
                 {
                     onVisit.Invoke(token, EStormVisitType.UpdateEnter);
-                    token.Disposing += () =>
+                    token.OnLeave += () =>
                     {
                         onVisit.Invoke(token, EStormVisitType.UpdateLeaveChanged);
                         target.OnVisit += OnVisitCache;
@@ -110,7 +110,7 @@ namespace StormDotNet.Implementations
             }
         }
 
-        private void OnMiddleConnectionVisit(IStormToken token, EStormVisitType visitType)
+        private void OnMiddleConnectionVisit(StormToken token, EStormVisitType visitType)
         {
             var onVisit = OnVisitCache;
             var target = GetDeepTarget()!;
@@ -172,12 +172,12 @@ namespace StormDotNet.Implementations
             return target == null ? onError(Error.Socket.Disconnected) : target.Match(onError, onValue);
         }
 
-        public bool TryGetEnteredToken(out IStormToken? token)
+        public bool TryGetEnteredToken(out StormToken token)
         {
             var target = GetDeepTarget();
             if (target == null)
             {
-                token = null;
+                token = default;
                 return false;
             }
 
@@ -235,10 +235,11 @@ namespace StormDotNet.Implementations
             if (OnVisitCache == null)
                 return false;
 
-            var token = Storm.Token.Create();
+            var tokenSource = Storm.TokenSource.CreateDisposedSource();
+            var token = tokenSource.Token;
             var hasEntered = false;
 
-            void TargetOnVisit(IStormToken enteredToken, EStormVisitType visitType)
+            void TargetOnVisit(StormToken enteredToken, EStormVisitType visitType)
             {
                 hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.LoopSearchEnter;
             }

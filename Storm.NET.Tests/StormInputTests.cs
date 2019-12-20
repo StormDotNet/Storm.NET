@@ -64,11 +64,38 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void SetErrorWithDefaultTokenThrow()
+        {
+            var error = Storm.Error.Create("error");
+            Assert.Throws<ArgumentException>(() => Sut.SetError(default, error));
+        }
+
+        [Test]
+        public void SetErrorWithNullErrorThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<ArgumentNullException>(() => Sut.SetError(token, null));
+        }
+
+        [Test]
+        public void SetValueWithDefaultTokenThrow()
+        {
+            Assert.Throws<ArgumentException>(() => Sut.SetValue(default, new object()));
+        }
+
+        [Test]
+        public void SetValueWithNullValue()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SetValue(token, null);
+        }
+
+        [Test]
         public void TryGetEnteredTokenIdle()
         {
             var result = Sut.TryGetEnteredToken(out var token);
             Assert.That(result, Is.False);
-            Assert.That(token, Is.Null);
+            Assert.That(token, Is.EqualTo(new StormToken()));
         }
 
         [Test]

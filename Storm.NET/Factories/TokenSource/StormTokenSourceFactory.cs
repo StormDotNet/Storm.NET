@@ -13,15 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace StormDotNet.Factories.Token
+namespace StormDotNet.Factories.TokenSource
 {
-    public static class TokenFactories
-    {
-        static TokenFactories()
-        {
-            Default = new StormTokenFactory();
-        }
+    using Implementations;
 
-        public static StormTokenFactory Default { get; }
+    public class StormTokenSourceFactory
+    {
+        public IStormTokenSource CreateSource() => new StormTokenSource();
+        public IStormTokenSource CreateDisposedSource() => new StormTokenSource(true);
     }
 }

@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace StormDotNet.Factories.Token
+namespace StormDotNet
 {
-    using Implementations;
+    using System;
 
-    public class StormTokenFactory
+    public interface IStormTokenSource : IDisposable
     {
-        public IStormToken Create() => new StormToken();
+        StormToken Token { get; }
     }
 }

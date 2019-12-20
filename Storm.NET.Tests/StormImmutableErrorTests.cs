@@ -75,7 +75,7 @@ namespace StormDotNet.Tests
         {
             var result = Sut.TryGetEnteredToken(out var token);
             Assert.That(result, Is.False);
-            Assert.That(token, Is.Null);
+            Assert.That(token, Is.EqualTo(new StormToken()));
         }
 
         [Test]

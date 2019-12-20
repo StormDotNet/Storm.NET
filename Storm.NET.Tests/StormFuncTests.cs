@@ -74,7 +74,7 @@ namespace StormDotNet.Tests
         [Test]
         public void VisitEnterTwiceThrow()
         {
-            var token = Mock.Of<IStormToken>();
+            var token = Storm.TokenSource.CreateSource().Token;
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
             s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter);
@@ -84,8 +84,8 @@ namespace StormDotNet.Tests
         [Test]
         public void VisitEnterWithDifferentTokenThrow()
         {
-            var token1 = Mock.Of<IStormToken>();
-            var token2 = Mock.Of<IStormToken>();
+            var token1 = Storm.TokenSource.CreateSource().Token;
+            var token2 = Storm.TokenSource.CreateSource().Token;
             var s1 = new Mock<IStorm<int>>();
             var s2 = new Mock<IStorm<int>>();
             Storm.Func.Create(s1.Object, s2.Object, (v1, v2) => 0);
@@ -96,7 +96,7 @@ namespace StormDotNet.Tests
         [Test]
         public void VisitLeaveTwiceThrow()
         {
-            var token = Mock.Of<IStormToken>();
+            var token = Storm.TokenSource.CreateSource().Token;
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
             s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter);
@@ -107,7 +107,7 @@ namespace StormDotNet.Tests
         [Test]
         public void VisitLeaveWithoutEnterThrow()
         {
-            var token = Mock.Of<IStormToken>();
+            var token = Storm.TokenSource.CreateSource().Token;
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
             Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateLeaveChanged));

@@ -13,13 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace StormDotNet
+namespace StormDotNet.Factories.TokenSource
 {
-    using System;
-
-    public interface IStormToken : IDisposable
+    public static class TokenSourceFactories
     {
-        bool IsDisposed { get; }
-        event Action Disposing;
+        static TokenSourceFactories()
+        {
+            Default = new StormTokenSourceFactory();
+        }
+
+        public static StormTokenSourceFactory Default { get; }
     }
 }

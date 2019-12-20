@@ -28,7 +28,7 @@ namespace StormDotNet.Tests
         {
             var target = Mock.Of<IStorm<object>>();
             var input = new Mock<IStormSocket<object>>(MockBehavior.Strict);
-            input.Setup(i => i.Connect(It.IsAny<IStormToken>(), target));
+            input.Setup(i => i.Connect(It.IsAny<StormToken>(), target));
             StormExtensions.Connect(input.Object, target);
         }
 
