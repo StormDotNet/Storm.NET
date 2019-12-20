@@ -19,12 +19,6 @@ namespace StormDotNet.Factories.Token
 
     public class StormTokenFactory
     {
-        internal StormTokenFactory()
-        {
-            Initial = new StormTokenDisposed();
-        }
-
-        public IStormToken Initial { get; }
         public IStormToken Create() => new StormToken();
     }
 }

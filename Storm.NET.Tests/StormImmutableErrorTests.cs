@@ -71,6 +71,14 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void TryGetEnteredToken()
+        {
+            var result = Sut.TryGetEnteredToken(out var token);
+            Assert.That(result, Is.False);
+            Assert.That(token, Is.Null);
+        }
+
+        [Test]
         public void TryGetError()
         {
             var result = Sut.TryGetError(out var error);

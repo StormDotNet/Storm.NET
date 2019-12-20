@@ -64,6 +64,31 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void TryGetEnteredTokenIdle()
+        {
+            var result = Sut.TryGetEnteredToken(out var token);
+            Assert.That(result, Is.False);
+            Assert.That(token, Is.Null);
+        }
+
+        [Test]
+        public void TryGetEnteredTokenEntered()
+        {
+            var visitCount = 0;
+            Sut.OnVisit += (token, type) =>
+            {
+                var result = Sut.TryGetEnteredToken(out var enteredToken);
+                Assert.That(result, Is.True);
+                Assert.That(token, Is.EqualTo(enteredToken));
+                visitCount++;
+            };
+
+            Sut.SetValue(0);
+
+            Assert.That(visitCount, Is.EqualTo(2));
+        }
+
+        [Test]
         public void TryGetError()
         {
             var result = Sut.TryGetError(out var error);
