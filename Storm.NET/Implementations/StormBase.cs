@@ -64,12 +64,25 @@ namespace StormDotNet.Implementations
 
             void TargetOnVisit(IStormToken enteredToken, EStormVisitType visitType)
             {
-                hasEntered |= CurrentToken.Equals(enteredToken) && visitType == EStormVisitType.LoopSearchEnter;
+                if (enteredToken != CurrentToken)
+                    throw new InvalidOperationException("Unknown token");
+                hasEntered |= visitType == EStormVisitType.LoopSearchEnter;
             }
 
             node.OnVisit += TargetOnVisit;
-            OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
-            OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
+            if (CurrentToken == null)
+            {
+                CurrentToken = Storm.Token.Create();
+                OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
+                OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
+                CurrentToken = null;
+            }
+            else
+            {
+                OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
+                OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
+            }
+
             node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
@@ -77,7 +90,7 @@ namespace StormDotNet.Implementations
 
         protected void RaiseLoopSearchEnter(IStormToken token)
         {
-            if (CurrentToken != token)
+            if (CurrentToken != null && CurrentToken != token)
                 throw new InvalidOperationException("Unknown token");
 
             if (_inLoopSearch)
@@ -89,7 +102,7 @@ namespace StormDotNet.Implementations
 
         protected void RaiseLoopSearchLeave(IStormToken token)
         {
-            if (CurrentToken != token)
+            if (CurrentToken != null && CurrentToken != token)
                 throw new InvalidOperationException("Unknown token");
 
             if (!_inLoopSearch)

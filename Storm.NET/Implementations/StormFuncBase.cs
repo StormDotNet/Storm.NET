@@ -77,7 +77,7 @@ namespace StormDotNet.Implementations
 
         private void SourceOnLoopSearchEnter(IStormToken token)
         {
-            if (CurrentToken != token)
+            if (CurrentToken != null && CurrentToken != token)
                 throw new InvalidOperationException("Unknown token");
 
             if (_enteredLoopSearchCount == 0)
@@ -88,7 +88,7 @@ namespace StormDotNet.Implementations
 
         private void SourceOnLoopSearchLeave(IStormToken token)
         {
-            if (CurrentToken != token)
+            if (CurrentToken != null && CurrentToken != token)
                 throw new InvalidOperationException("Unknown token");
 
             _enteredLoopSearchCount--;

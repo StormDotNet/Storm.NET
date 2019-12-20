@@ -72,12 +72,53 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void UnknownVisitTypeThrow()
+        public void VisitEnterTwiceThrow()
+        {
+            var token = Mock.Of<IStormToken>();
+            var s = new Mock<IStorm<int>>();
+            Storm.Func.Create(s.Object, v => v);
+            s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter);
+            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter));
+        }
+
+        [Test]
+        public void VisitEnterWithDifferentTokenThrow()
+        {
+            var token1 = Mock.Of<IStormToken>();
+            var token2 = Mock.Of<IStormToken>();
+            var s1 = new Mock<IStorm<int>>();
+            var s2 = new Mock<IStorm<int>>();
+            Storm.Func.Create(s1.Object, s2.Object, (v1, v2) => 0);
+            s1.Raise(m => m.OnVisit += null, token1, EStormVisitType.UpdateEnter);
+            Assert.Throws<InvalidOperationException>(() => s2.Raise(m => m.OnVisit += null, token2, EStormVisitType.UpdateEnter));
+        }
+
+        [Test]
+        public void VisitLeaveTwiceThrow()
+        {
+            var token = Mock.Of<IStormToken>();
+            var s = new Mock<IStorm<int>>();
+            Storm.Func.Create(s.Object, v => v);
+            s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter);
+            s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateLeaveChanged);
+            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateLeaveChanged));
+        }
+
+        [Test]
+        public void VisitLeaveWithoutEnterThrow()
+        {
+            var token = Mock.Of<IStormToken>();
+            var s = new Mock<IStorm<int>>();
+            Storm.Func.Create(s.Object, v => v);
+            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateLeaveChanged));
+        }
+
+        [Test]
+        public void VisitUnknownVisitTypeThrow()
         {
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
             Assert.Throws<ArgumentOutOfRangeException>(() => s.Raise(m => m.OnVisit += null, null, (EStormVisitType)(-1)));
         }
-
     }
 }
