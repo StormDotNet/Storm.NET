@@ -46,13 +46,7 @@ namespace StormDotNet.Implementations
             if (_target == this)
                 return TrySetError(Error.Switch.Looped);
 
-            if (_target.TryGetValue(out var targetValue))
-                return TrySetValue(targetValue);
-
-            if (_target.TryGetError(out var targetError))
-                return TrySetError(targetError);
-            
-            return TrySetError(Storm.Error.Create("Unknown error"));
+            return _target.Match(TrySetError, TrySetValue);
         }
 
         protected override void SourceOnChanged(int index)
