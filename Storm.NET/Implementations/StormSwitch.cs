@@ -74,9 +74,6 @@ namespace StormDotNet.Implementations
 
         private void UpdateTarget()
         {
-            if (_hasTargetChanged)
-                throw new InvalidOperationException("Target already changed");
-
             _hasTargetChanged = true;
 
             if (_target != null)
