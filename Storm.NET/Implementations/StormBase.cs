@@ -20,8 +20,8 @@ namespace StormDotNet.Implementations
 
     internal abstract class StormBase<T> : StormContentBase<T>, IStorm<T>
     {
-        private EState _visitState = EState.Idle;
-        private bool _inLoopSearch;
+        private bool _isInUpdate;
+        private bool _isInLoopSearch;
 
         protected StormBase(IEqualityComparer<T>? comparer) : base(comparer)
         {
@@ -34,7 +34,7 @@ namespace StormDotNet.Implementations
             add
             {
                 OnVisitEvent += value;
-                if (_visitState == EState.Entered)
+                if (_isInUpdate)
                 {
                     value?.Invoke(CurrentToken, EStormVisitType.UpdateEnter);
                 }
@@ -78,69 +78,69 @@ namespace StormDotNet.Implementations
 
         protected void RaiseLoopSearchEnter(StormToken token)
         {
-            if (!CurrentToken.Equals(default) && !CurrentToken.Equals(token))
-                throw new InvalidOperationException("Unknown token");
-
-            if (_inLoopSearch)
+            if (_isInLoopSearch)
                 throw new InvalidOperationException("Already in loop search");
 
-            _inLoopSearch = true;
+            if (_isInUpdate)
+            {
+                if (!CurrentToken.Equals(token))
+                    throw new InvalidOperationException("Unknown token");
+            }
+            else
+            {
+                CurrentToken = token;
+            }
+
+            _isInLoopSearch = true;
             OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchEnter);
         }
 
         protected void RaiseLoopSearchLeave(StormToken token)
         {
-            if (!CurrentToken.Equals(default) && !CurrentToken.Equals(token))
-                throw new InvalidOperationException("Unknown token");
-
-            if (!_inLoopSearch)
+            if (!_isInLoopSearch)
                 throw new InvalidOperationException("Not in loop search");
 
+            if (!CurrentToken.Equals(token))
+                throw new InvalidOperationException("Unknown token");
+
+            if (_isInUpdate)
+            {
+                if (!CurrentToken.Equals(token))
+                    throw new InvalidOperationException("Unknown token");
+            }
+            else
+            {
+                CurrentToken = default;
+            }
+
             OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchLeave);
-            _inLoopSearch = false;
+            _isInLoopSearch = false;
         }
 
         protected void RaiseUpdateEnter(StormToken token)
         {
-            if (!CurrentToken.Equals(default))
-                throw new InvalidOperationException("Unexpected state");
-
-            if (_visitState != EState.Idle || _inLoopSearch)
+            if (_isInUpdate || _isInLoopSearch)
                 throw new InvalidOperationException("Can't enter now");
 
             CurrentToken = token;
-
-            _visitState = EState.Entering;
-            try
-            {
-                OnVisitEvent?.Invoke(token, EStormVisitType.UpdateEnter);
-            }
-            finally
-            {
-                _visitState = EState.Entered;
-            }
+            _isInUpdate = true;
+            
+            OnVisitEvent?.Invoke(token, EStormVisitType.UpdateEnter);
         }
 
         protected void RaiseUpdateLeave(StormToken token, bool hasChanged)
         {
+            if (!_isInUpdate || _isInLoopSearch)
+                throw new InvalidOperationException("Can't leave now");
+
             if (!CurrentToken.Equals(token))
                 throw new InvalidOperationException("Unknown token");
 
-            if (_visitState != EState.Entered || _inLoopSearch)
-                throw new InvalidOperationException("Can't leave now");
-
-            _visitState = EState.Leaving;
-            OnVisitEvent?.Invoke(token, hasChanged ? EStormVisitType.UpdateLeaveChanged : EStormVisitType.UpdateLeaveUnchanged);
-            _visitState = EState.Idle;
             CurrentToken = default;
-        }
+            _isInUpdate = false;
 
-        private enum EState
-        {
-            Idle,
-            Entering,
-            Entered,
-            Leaving
+            var visitType = hasChanged ? EStormVisitType.UpdateLeaveChanged : EStormVisitType.UpdateLeaveUnchanged;
+            OnVisitEvent?.Invoke(token, visitType);
         }
     }
 }
