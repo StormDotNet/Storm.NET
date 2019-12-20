@@ -97,7 +97,16 @@ namespace StormDotNet.Tests
             Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token2, true));
         }
 
-        internal class TestableStormBase : StormBase<int>
+        [Test]
+        public void RaiseUpdateLeaveWhileInLoopSearchThrow()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+            Sut.RaiseUpdateEnter(token);
+            Sut.RaiseLoopSearchEnter(token);
+            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token, true));
+        }
+
+        private class TestableStormBase : StormBase<int>
         {
             public TestableStormBase(IEqualityComparer<int> comparer) : base(comparer)
             {
