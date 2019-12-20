@@ -22,23 +22,24 @@ namespace StormDotNet.Implementations
     {
         private EState _visitState = EState.Idle;
         private bool _inLoopSearch;
-        private event Action<StormToken, EStormVisitType>? OnVisit;
 
         protected StormBase(IEqualityComparer<T>? comparer) : base(comparer)
         {
         }
 
-        event Action<StormToken, EStormVisitType>? IStormNode.OnVisit
+        private event Action<StormToken, EStormVisitType>? OnVisitEvent;
+
+        public event Action<StormToken, EStormVisitType>? OnVisit
         {
             add
             {
-                OnVisit += value;
+                OnVisitEvent += value;
                 if (_visitState == EState.Entered)
                 {
                     value?.Invoke(CurrentToken, EStormVisitType.UpdateEnter);
                 }
             }
-            remove => OnVisit -= value;
+            remove => OnVisitEvent -= value;
         }
 
         protected StormToken CurrentToken { get; private set; }
@@ -57,7 +58,7 @@ namespace StormDotNet.Implementations
             if (node is IStormSocket<T> socket && socket.Target == this)
                 return true;
 
-            if (OnVisit == null)
+            if (OnVisitEvent == null)
                 return false;
 
             var hasEntered = false;
@@ -73,14 +74,14 @@ namespace StormDotNet.Implementations
                 var tokenSource = Storm.TokenSource.CreateDisposedSource();
                 var token = tokenSource.Token;
                 CurrentToken = token;
-                OnVisit.Invoke(token, EStormVisitType.LoopSearchEnter);
-                OnVisit.Invoke(token, EStormVisitType.LoopSearchLeave);
+                OnVisitEvent.Invoke(token, EStormVisitType.LoopSearchEnter);
+                OnVisitEvent.Invoke(token, EStormVisitType.LoopSearchLeave);
                 CurrentToken = default;
             }
             else
             {
-                OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
-                OnVisit.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
+                OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
+                OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
             }
 
             node.OnVisit -= TargetOnVisit;
@@ -97,7 +98,7 @@ namespace StormDotNet.Implementations
                 throw new InvalidOperationException("Already in loop search");
 
             _inLoopSearch = true;
-            OnVisit?.Invoke(token, EStormVisitType.LoopSearchEnter);
+            OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchEnter);
         }
 
         protected void RaiseLoopSearchLeave(StormToken token)
@@ -108,7 +109,7 @@ namespace StormDotNet.Implementations
             if (!_inLoopSearch)
                 throw new InvalidOperationException("Not in loop search");
 
-            OnVisit?.Invoke(token, EStormVisitType.LoopSearchLeave);
+            OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchLeave);
             _inLoopSearch = false;
         }
 
@@ -125,7 +126,7 @@ namespace StormDotNet.Implementations
             _visitState = EState.Entering;
             try
             {
-                OnVisit?.Invoke(token, EStormVisitType.UpdateEnter);
+                OnVisitEvent?.Invoke(token, EStormVisitType.UpdateEnter);
             }
             finally
             {
@@ -142,7 +143,7 @@ namespace StormDotNet.Implementations
                 throw new InvalidOperationException("Can't leave now");
 
             _visitState = EState.Leaving;
-            OnVisit?.Invoke(token, hasChanged ? EStormVisitType.UpdateLeaveChanged : EStormVisitType.UpdateLeaveUnchanged);
+            OnVisitEvent?.Invoke(token, hasChanged ? EStormVisitType.UpdateLeaveChanged : EStormVisitType.UpdateLeaveUnchanged);
             _visitState = EState.Idle;
             CurrentToken = default;
         }

@@ -106,6 +106,26 @@ namespace StormDotNet.Tests
             Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token, true));
         }
 
+        [Test]
+        public void RaiseUpdateEnterWhileRaiseUpdateThrow()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+
+            Sut.OnVisit += (visitToken, visitType) => Sut.RaiseUpdateEnter(token);
+
+            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateEnter(token));
+        }
+
+        [Test]
+        public void RaiseUpdateLeaveWhileRaiseUpdateThrow()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+
+            Sut.OnVisit += (visitToken, visitType) => Sut.RaiseUpdateLeave(token, true);
+
+            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateEnter(token));
+        }
+
         private class TestableStormBase : StormBase<int>
         {
             public TestableStormBase(IEqualityComparer<int> comparer) : base(comparer)
