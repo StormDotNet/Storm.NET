@@ -107,7 +107,7 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void RaiseUpdateEnterWhileRaiseUpdateThrow()
+        public void RaiseUpdateEnterWhileRaiseUpdateEnterThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
 
@@ -117,13 +117,41 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void RaiseUpdateLeaveWhileRaiseUpdateThrow()
+        public void RaiseUpdateLeaveWhileRaiseUpdateEnterThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
 
             Sut.OnVisit += (visitToken, visitType) => Sut.RaiseUpdateLeave(token, true);
 
             Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateEnter(token));
+        }
+
+        [Test]
+        public void RaiseUpdateEnterWhileRaiseUpdateLeaveThrow()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+            Sut.OnVisit += (visitToken, visitType) =>
+            {
+                if (visitType != EStormVisitType.UpdateEnter)
+                    Sut.RaiseUpdateLeave(token, true);
+            };
+            
+            Sut.RaiseUpdateEnter(token);
+            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token, true));
+        }
+
+        [Test]
+        public void RegisterWhileEnteredRaise()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+            Sut.RaiseUpdateEnter(token);
+
+            Sut.OnVisit += null;
+            Sut.OnVisit += (enteredToken, visitType) =>
+            {
+                Assert.That(enteredToken, Is.EqualTo(token));
+                Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+            };
         }
 
         private class TestableStormBase : StormBase<int>
