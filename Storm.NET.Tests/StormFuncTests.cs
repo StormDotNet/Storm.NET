@@ -16,6 +16,7 @@
 namespace StormDotNet.Tests
 {
     using System;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -62,12 +63,21 @@ namespace StormDotNet.Tests
                 return v;
             }
 
-            var u = Storm.Func.Create(t, Func);
+            Storm.Func.Create(t, Func);
 
             s.SetValue(0);
             Assert.That(callCount, Is.EqualTo(1));
             s.SetValue(1);
             Assert.That(callCount, Is.EqualTo(1));
         }
+
+        [Test]
+        public void UnknownVisitTypeThrow()
+        {
+            var s = new Mock<IStorm<int>>();
+            Storm.Func.Create(s.Object, v => v);
+            Assert.Throws<ArgumentOutOfRangeException>(() => s.Raise(m => m.OnVisit += null, null, (EStormVisitType)(-1)));
+        }
+
     }
 }
