@@ -186,7 +186,7 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void OldTargetIsIdleNewTargetIsIdle()
+        public void OldTargetIsIdleNewTargetIsIdle1()
         {
             var select = Storm.Input.Create<int>();
             var oldTarget = Storm.Immutable.CreateValue(42);
@@ -212,7 +212,7 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void OldTargetIsInGraphNewTargetIsIdle()
+        public void OldTargetIsInGraphNewTargetIsIdle1()
         {
             var select = Storm.Input.Create<int>();
             var oldTarget = Storm.Func.Create(select, v => 42);
@@ -238,7 +238,7 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void OldTargetIsIdleNewTargetIsInGraph()
+        public void OldTargetIsIdleNewTargetIsInGraph1()
         {
             var select = Storm.Input.Create<int>();
             var oldTarget = Storm.Immutable.CreateValue(42);
@@ -264,7 +264,7 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void OldTargetIsInGraphNewTargetIsInGraph()
+        public void OldTargetIsInGraphNewTargetIsInGraph1()
         {
             var select = Storm.Input.Create<int>();
             var oldTarget = Storm.Func.Create(select, v => 42);
@@ -281,6 +281,123 @@ namespace StormDotNet.Tests
             }
 
             var swicht = Storm.Switch.Create(select, Selector);
+
+            Assert.That(swicht.TryGetError(out _), Is.True);
+            select.SetValue(0);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(42));
+            select.SetValue(1);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(69));
+        }
+
+
+        [Test]
+        public void OldTargetIsIdleNewTargetIsIdle2()
+        {
+            var select = Storm.Input.Create<int>();
+            
+            IStorm<int> oldTarget = null;
+            IStorm<int> newTarget = null;
+
+            var swicht = Storm.Switch.Create(select, Selector);
+            oldTarget = Storm.Immutable.CreateValue(42);
+            newTarget = Storm.Immutable.CreateValue(69);
+
+            IStorm<int> Selector(int value)
+            {
+                return value switch
+                {
+                    0 => oldTarget,
+                    1 => newTarget,
+                    _ => null
+                };
+            }
+
+            Assert.That(swicht.TryGetError(out _), Is.True);
+            select.SetValue(0);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(42));
+            select.SetValue(1);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(69));
+        }
+
+        [Test]
+        public void OldTargetIsInGraphNewTargetIsIdle2()
+        {
+            var select = Storm.Input.Create<int>();
+
+            IStorm<int> oldTarget = null;
+            IStorm<int> newTarget = null;
+
+            var swicht = Storm.Switch.Create(select, Selector);
+            oldTarget = Storm.Func.Create(select, v => 42);
+            newTarget = Storm.Immutable.CreateValue(69);
+
+            IStorm<int> Selector(int value)
+            {
+                return value switch
+                {
+                    0 => oldTarget,
+                    1 => newTarget,
+                    _ => null
+                };
+            }
+
+            Assert.That(swicht.TryGetError(out _), Is.True);
+            select.SetValue(0);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(42));
+            select.SetValue(1);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(69));
+        }
+
+        [Test]
+        public void OldTargetIsIdleNewTargetIsInGraph2()
+        {
+            var select = Storm.Input.Create<int>();
+
+            IStorm<int> oldTarget = null;
+            IStorm<int> newTarget = null;
+
+            var swicht = Storm.Switch.Create(select, Selector);
+            oldTarget = Storm.Immutable.CreateValue(42);
+            newTarget = Storm.Func.Create(select, v => 69);
+
+            IStorm<int> Selector(int value)
+            {
+                return value switch
+                {
+                    0 => oldTarget,
+                    1 => newTarget,
+                    _ => null
+                };
+            }
+
+            Assert.That(swicht.TryGetError(out _), Is.True);
+            select.SetValue(0);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(42));
+            select.SetValue(1);
+            Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(69));
+        }
+
+        [Test]
+        public void OldTargetIsInGraphNewTargetIsInGraph2()
+        {
+            var select = Storm.Input.Create<int>();
+
+            IStorm<int> oldTarget = null;
+            IStorm<int> newTarget = null;
+
+            var swicht = Storm.Switch.Create(select, Selector);
+            oldTarget = Storm.Func.Create(select, v => 42);
+            newTarget = Storm.Func.Create(select, v => 69);
+
+            IStorm<int> Selector(int value)
+            {
+                return value switch
+                {
+                    0 => oldTarget,
+                    1 => newTarget,
+                    _ => null
+                };
+            }
 
             Assert.That(swicht.TryGetError(out _), Is.True);
             select.SetValue(0);

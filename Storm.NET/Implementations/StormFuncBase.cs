@@ -123,11 +123,11 @@ namespace StormDotNet.Implementations
                                        ? hasChanged ? EStormSourceState.LeaveChanged : EStormSourceState.LeaveUnchanged
                                        : throw new InvalidOperationException("Can't leave here.");
 
-            _enteredCount--;
-            _hasChanged |= hasChanged;
-
             if (hasChanged)
                 SourceOnChanged(index);
+
+            _enteredCount--;
+            _hasChanged |= hasChanged;
 
             if (_enteredCount == 0)
             {
