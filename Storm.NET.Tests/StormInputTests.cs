@@ -153,6 +153,15 @@ namespace StormDotNet.Tests
         {
             Sut = Storm.Input.Create<object>();
         }
+
+        [Test]
+        public void SetValueTwice()
+        {
+            var value = new object();
+            Sut.SetValue(value);
+            Sut.OnVisit += (token, visitType) => throw new Exception();
+            Sut.SetValue(value);
+        }
     }
 
     [TestFixture]
