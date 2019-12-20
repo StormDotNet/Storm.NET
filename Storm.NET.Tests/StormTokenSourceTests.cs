@@ -15,6 +15,7 @@
 
 namespace StormDotNet.Tests
 {
+    using System;
     using NUnit.Framework;
 
     [TestFixture]
@@ -63,14 +64,26 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void DisposeRaiseOnLeave()
+        public void DisposeRaiseLeave()
         {
             var count = 0;
-            Sut.Token.OnLeave += () => count++;
+            Sut.Token.Leave += () => count++;
 
             Assert.That(count, Is.EqualTo(0));
             Sut.Dispose();
             Assert.That(count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void UnRegisterLeaveWork()
+        {
+            var count = 0;
+            void OnLeave() => count++;
+            Sut.Token.Leave += OnLeave;
+            Sut.Token.Leave -= OnLeave;
+            Assert.That(count, Is.EqualTo(0));
+            Sut.Dispose();
+            Assert.That(count, Is.EqualTo(0));
         }
     }
 }

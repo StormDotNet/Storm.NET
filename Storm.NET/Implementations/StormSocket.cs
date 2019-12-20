@@ -100,7 +100,7 @@ namespace StormDotNet.Implementations
                 else
                 {
                     onVisit.Invoke(token, EStormVisitType.UpdateEnter);
-                    token.OnLeave += () =>
+                    token.Leave += () =>
                     {
                         onVisit.Invoke(token, EStormVisitType.UpdateLeaveChanged);
                         target.OnVisit += OnVisitCache;

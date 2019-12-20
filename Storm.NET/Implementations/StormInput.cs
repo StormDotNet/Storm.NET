@@ -33,7 +33,7 @@ namespace StormDotNet.Implementations
             if (IsError(error))
                 return;
 
-            token.OnLeave += () =>
+            token.Leave += () =>
             {
                 SetError(error);
                 RaiseUpdateLeave(token, true);
@@ -48,7 +48,7 @@ namespace StormDotNet.Implementations
             if (IsValue(value))
                 return;
 
-            token.OnLeave += () =>
+            token.Leave += () =>
             {
                 SetValue(value);
                 RaiseUpdateLeave(token, true);

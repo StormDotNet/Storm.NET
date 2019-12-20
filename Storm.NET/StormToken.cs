@@ -27,19 +27,19 @@ namespace StormDotNet
             _source = source;
         }
 
-        public event Action? OnLeave
+        public event Action? Leave
         {
             add
             {
                 if (_source == null)
                     throw new ObjectDisposedException(nameof(IStormTokenSource));
-                _source.OnDispose += value;
+                _source.Disposing += value;
             }
             remove
             {
                 if (_source == null)
                     throw new ObjectDisposedException(nameof(IStormTokenSource));
-                _source.OnDispose -= value;
+                _source.Disposing -= value;
             }
         }
 

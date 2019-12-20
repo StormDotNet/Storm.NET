@@ -33,7 +33,7 @@ namespace StormDotNet.Implementations
         
         public StormToken Token { get; }
 
-        public event Action? OnDispose
+        public event Action? Disposing
         {
             add
             {
