@@ -65,7 +65,7 @@ namespace StormDotNet.Implementations
 
             void TargetOnVisit(StormToken enteredToken, EStormVisitType visitType)
             {
-                hasEntered |= CurrentToken.Equals(enteredToken) && visitType == EStormVisitType.LoopSearchEnter;
+                hasEntered |= visitType == EStormVisitType.LoopSearchEnter;
             }
 
             node.OnVisit += TargetOnVisit;
