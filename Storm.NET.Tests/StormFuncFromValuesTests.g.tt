@@ -62,7 +62,7 @@ namespace StormDotNet.Tests
     using NUnit.Framework;
 
     [TestFixture]
-    public class StormFuncFactoryFromValuesTests
+    public class StormFuncFromValuesTests
     {
         private static IStorm<int> CreateInput(bool isValue)
         {
@@ -106,6 +106,49 @@ namespace StormDotNet.Tests
 
             // ReSharper disable once PossibleNullReferenceException
             return (error.InnerException as AggregateException).InnerExceptions.Count;
+        }
+
+        [Test]
+        public void FuncWith<#= o.argCount #>InputReturnError()
+        {
+<#  foreach (var a in o.Arguments) { #>
+            var <#= a.name #> = Storm.Immutable.CreateValue(0);
+<#  } #>
+            static int Func(<#= o.FuncParameters #>) => throw Storm.Error.Create("error");
+
+            var sut = Storm.Func.Create(<#= o.CreateParams #>, Func);
+
+            Assert.That(sut.TryGetError(out var error), Is.True);
+            Assert.That(error, Is.InstanceOf<StormError>());
+            Assert.That(error.Message, Is.EqualTo("error"));
+        }
+
+        [Test]
+        public void FuncWith<#= o.argCount #>InputReturnException()
+        {
+<#  foreach (var a in o.Arguments) { #>
+            var <#= a.name #> = Storm.Immutable.CreateValue(0);
+<#  } #>
+            static int Func(<#= o.FuncParameters #>) => throw new Exception();
+
+            var sut = Storm.Func.Create(<#= o.CreateParams #>, Func);
+
+            Assert.That(sut.TryGetError(out var error), Is.True);
+            Assert.That(error, Is.InstanceOf<StormError>());
+            Assert.That(error.InnerException, Is.InstanceOf<Exception>());
+        }
+
+        [Test]
+        public void FuncWith<#= o.argCount #>InputReturnValue()
+        {
+<#  foreach (var a in o.Arguments) { #>
+            var <#= a.name #> = Storm.Immutable.CreateValue(0);
+<#  } #>
+            static int Func(<#= o.FuncParameters #>) => 42;
+
+            var sut = Storm.Func.Create(<#= o.CreateParams #>, Func);
+
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
 <#  } #>
 
