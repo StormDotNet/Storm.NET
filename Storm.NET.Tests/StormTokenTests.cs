@@ -80,6 +80,12 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void NotEqualsOtherObject()
+        {
+            Assert.That(Token.Equals(new object()), Is.False);
+        }
+
+        [Test]
         public void NotEqualsDefault()
         {
             Assert.That(Token.Equals(new StormToken()), Is.False);
