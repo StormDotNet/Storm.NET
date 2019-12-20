@@ -150,6 +150,22 @@ namespace StormDotNet.Tests
 
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
+
+        [Test]
+        public void FuncWith<#= o.argCount #>InputReturnValueAndUpdate()
+        {
+<#  foreach (var a in o.Arguments) { #>
+            var <#= a.name #> = Storm.Input.Create<int>();
+<#  } #>
+            static int Func(<#= o.FuncParameters #>) => 42;
+
+            var sut = Storm.Func.Create(<#= o.CreateParams #>, Func);
+<#  foreach (var a in o.Arguments) { #>
+            Assert.That(sut.TryGetError(out _), Is.True);
+            <#= a.name #>.SetValue(0);
+<#  } #>
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
 <#  } #>
 
     }

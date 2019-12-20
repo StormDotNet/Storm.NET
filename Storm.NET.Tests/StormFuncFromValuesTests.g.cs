@@ -99,6 +99,18 @@ namespace StormDotNet.Tests
 
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
+
+        [Test]
+        public void FuncWith1InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            static int Func(int firstInput) => 42;
+
+            var sut = Storm.Func.Create(first, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
         public static IEnumerable<TestCaseData> FuncWith2InputCases()
         {
             for (var i = 1; i < Math.Pow(2, 2); i++)
@@ -162,6 +174,21 @@ namespace StormDotNet.Tests
 
             var sut = Storm.Func.Create(first, second, Func);
 
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
+
+        [Test]
+        public void FuncWith2InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            var second = Storm.Input.Create<int>();
+            static int Func(int firstInput, int secondInput) => 42;
+
+            var sut = Storm.Func.Create(first, second, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            second.SetValue(0);
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
         public static IEnumerable<TestCaseData> FuncWith3InputCases()
@@ -231,6 +258,24 @@ namespace StormDotNet.Tests
 
             var sut = Storm.Func.Create(first, second, third, Func);
 
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
+
+        [Test]
+        public void FuncWith3InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            var second = Storm.Input.Create<int>();
+            var third = Storm.Input.Create<int>();
+            static int Func(int firstInput, int secondInput, int thirdInput) => 42;
+
+            var sut = Storm.Func.Create(first, second, third, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            second.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            third.SetValue(0);
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
         public static IEnumerable<TestCaseData> FuncWith4InputCases()
@@ -304,6 +349,27 @@ namespace StormDotNet.Tests
 
             var sut = Storm.Func.Create(first, second, third, fourth, Func);
 
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
+
+        [Test]
+        public void FuncWith4InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            var second = Storm.Input.Create<int>();
+            var third = Storm.Input.Create<int>();
+            var fourth = Storm.Input.Create<int>();
+            static int Func(int firstInput, int secondInput, int thirdInput, int fourthInput) => 42;
+
+            var sut = Storm.Func.Create(first, second, third, fourth, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            second.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            third.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fourth.SetValue(0);
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
         public static IEnumerable<TestCaseData> FuncWith5InputCases()
@@ -381,6 +447,30 @@ namespace StormDotNet.Tests
 
             var sut = Storm.Func.Create(first, second, third, fourth, fifth, Func);
 
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
+
+        [Test]
+        public void FuncWith5InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            var second = Storm.Input.Create<int>();
+            var third = Storm.Input.Create<int>();
+            var fourth = Storm.Input.Create<int>();
+            var fifth = Storm.Input.Create<int>();
+            static int Func(int firstInput, int secondInput, int thirdInput, int fourthInput, int fifthInput) => 42;
+
+            var sut = Storm.Func.Create(first, second, third, fourth, fifth, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            second.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            third.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fourth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fifth.SetValue(0);
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
         public static IEnumerable<TestCaseData> FuncWith6InputCases()
@@ -462,6 +552,33 @@ namespace StormDotNet.Tests
 
             var sut = Storm.Func.Create(first, second, third, fourth, fifth, sixth, Func);
 
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
+
+        [Test]
+        public void FuncWith6InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            var second = Storm.Input.Create<int>();
+            var third = Storm.Input.Create<int>();
+            var fourth = Storm.Input.Create<int>();
+            var fifth = Storm.Input.Create<int>();
+            var sixth = Storm.Input.Create<int>();
+            static int Func(int firstInput, int secondInput, int thirdInput, int fourthInput, int fifthInput, int sixthInput) => 42;
+
+            var sut = Storm.Func.Create(first, second, third, fourth, fifth, sixth, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            second.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            third.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fourth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fifth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            sixth.SetValue(0);
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
         public static IEnumerable<TestCaseData> FuncWith7InputCases()
@@ -547,6 +664,36 @@ namespace StormDotNet.Tests
 
             var sut = Storm.Func.Create(first, second, third, fourth, fifth, sixth, seventh, Func);
 
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
+
+        [Test]
+        public void FuncWith7InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            var second = Storm.Input.Create<int>();
+            var third = Storm.Input.Create<int>();
+            var fourth = Storm.Input.Create<int>();
+            var fifth = Storm.Input.Create<int>();
+            var sixth = Storm.Input.Create<int>();
+            var seventh = Storm.Input.Create<int>();
+            static int Func(int firstInput, int secondInput, int thirdInput, int fourthInput, int fifthInput, int sixthInput, int seventhInput) => 42;
+
+            var sut = Storm.Func.Create(first, second, third, fourth, fifth, sixth, seventh, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            second.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            third.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fourth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fifth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            sixth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            seventh.SetValue(0);
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
         public static IEnumerable<TestCaseData> FuncWith8InputCases()
@@ -636,6 +783,39 @@ namespace StormDotNet.Tests
 
             var sut = Storm.Func.Create(first, second, third, fourth, fifth, sixth, seventh, eighth, Func);
 
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+        }
+
+        [Test]
+        public void FuncWith8InputReturnValueAndUpdate()
+        {
+            var first = Storm.Input.Create<int>();
+            var second = Storm.Input.Create<int>();
+            var third = Storm.Input.Create<int>();
+            var fourth = Storm.Input.Create<int>();
+            var fifth = Storm.Input.Create<int>();
+            var sixth = Storm.Input.Create<int>();
+            var seventh = Storm.Input.Create<int>();
+            var eighth = Storm.Input.Create<int>();
+            static int Func(int firstInput, int secondInput, int thirdInput, int fourthInput, int fifthInput, int sixthInput, int seventhInput, int eighthInput) => 42;
+
+            var sut = Storm.Func.Create(first, second, third, fourth, fifth, sixth, seventh, eighth, Func);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            first.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            second.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            third.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fourth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            fifth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            sixth.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            seventh.SetValue(0);
+            Assert.That(sut.TryGetError(out _), Is.True);
+            eighth.SetValue(0);
             Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
         }
 
