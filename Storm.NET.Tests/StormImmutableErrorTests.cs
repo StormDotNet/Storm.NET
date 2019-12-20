@@ -13,9 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ReSharper disable ObjectCreationAsStatement
 namespace StormDotNet.Tests
 {
     using System;
+    using Implementations;
     using NUnit.Framework;
 
     [TestFixture]
@@ -31,6 +33,12 @@ namespace StormDotNet.Tests
         private IStorm<object> Sut { get; set; }
         protected override IStorm<object> SutStorm => Sut;
         private StormError Error { get; set; }
+
+        [Test]
+        public void ConstructorWithNullErrorThrow()
+        {
+            Assert.Throws<ArgumentNullException>(() => new ImmutableError<int>(null));
+        }
 
         [Test]
         public void ContentType()
