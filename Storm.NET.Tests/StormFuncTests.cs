@@ -48,5 +48,26 @@ namespace StormDotNet.Tests
             var f = Storm.Func.Create(s, v => v);
             Assert.That(f.GetValueOrThrow(), Is.EqualTo(0));
         }
+
+        [Test]
+        public void FuncDotNotEvaluateOnSourceUnchanged()
+        {
+            var s = Storm.Input.Create<int>();
+            var t = Storm.Func.Create(s, v => v / 2);
+
+            var callCount = 0;
+            int Func(int v)
+            {
+                callCount++;
+                return v;
+            }
+
+            var u = Storm.Func.Create(t, Func);
+
+            s.SetValue(0);
+            Assert.That(callCount, Is.EqualTo(1));
+            s.SetValue(1);
+            Assert.That(callCount, Is.EqualTo(1));
+        }
     }
 }
