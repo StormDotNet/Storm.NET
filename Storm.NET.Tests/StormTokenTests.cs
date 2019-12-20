@@ -64,7 +64,7 @@ namespace StormDotNet.Tests
         public void DefaultUnRegisterOnLeaveThrow()
         {
             Token = default;
-            Assert.Throws<ObjectDisposedException>(() => Token.OnLeave += null);
+            Assert.Throws<ObjectDisposedException>(() => Token.OnLeave -= null);
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace StormDotNet.Tests
         public void UnRegisterOnLeaveWhenSourceDisposedThrow()
         {
             Source.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => Token.OnLeave += null);
+            Assert.Throws<ObjectDisposedException>(() => Token.OnLeave -= null);
         }
     }
 }
