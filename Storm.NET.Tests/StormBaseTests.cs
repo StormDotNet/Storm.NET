@@ -32,6 +32,32 @@ namespace StormDotNet.Tests
         private TestableStormBase Sut { get; set; }
 
         [Test]
+        public void UpdateEnterLeave()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+            Sut.RaiseUpdateEnter(token);
+            Sut.RaiseUpdateLeave(token, true);
+        }
+
+        [Test]
+        public void UpdateEnterLeaveWithLoopSearch()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+            Sut.RaiseUpdateEnter(token);
+            Sut.RaiseLoopSearchEnter(token);
+            Sut.RaiseLoopSearchLeave(token);
+            Sut.RaiseUpdateLeave(token, true);
+        }
+
+        [Test]
+        public void LoopSearchEnterLeave()
+        {
+            var token = Storm.TokenSource.CreateDisposedSource().Token;
+            Sut.RaiseLoopSearchEnter(token);
+            Sut.RaiseLoopSearchLeave(token);
+        }
+
+        [Test]
         public void RaiseLoopSearchEnterTwiceThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;

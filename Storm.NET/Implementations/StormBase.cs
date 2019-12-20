@@ -103,7 +103,8 @@ namespace StormDotNet.Implementations
             if (!CurrentToken.Equals(token))
                 throw new InvalidOperationException("Unknown token");
 
-            CurrentToken = default;
+            if (!_isInUpdate)
+                CurrentToken = default;
 
             OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchLeave);
             _isInLoopSearch = false;
