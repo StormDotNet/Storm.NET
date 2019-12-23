@@ -243,6 +243,32 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void TryGetEnteredTokenWithNoTarget()
+        {
+            Assert.That(SutNode.TryGetEnteredToken(out var token), Is.False);
+            Assert.That(token, Is.EqualTo(default(StormToken)));
+        }
+
+        [Test]
+        public void TryGetEnteredTokenWithNoDeepTarget()
+        {
+            Sut.Connect(Storm.Socket.Create<object>());
+            Assert.That(SutNode.TryGetEnteredToken(out var token), Is.False);
+            Assert.That(token, Is.EqualTo(default(StormToken)));
+        }
+
+        [Test]
+        public void TryGetEnteredTokenWithTarget()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            var mock = new Mock<IStorm<object>>(MockBehavior.Strict);
+            mock.Setup(m => m.TryGetEnteredToken(out token)).Returns(true);
+            Sut.Connect(mock.Object);
+            Assert.That(SutNode.TryGetEnteredToken(out var enteredToken), Is.True);
+            Assert.That(enteredToken, Is.EqualTo(token));
+        }
+
+        [Test]
         public new void ToString()
         {
             Assert.That(Sut.ToString(), Is.EqualTo("err: 'Disconnected socket.'"));

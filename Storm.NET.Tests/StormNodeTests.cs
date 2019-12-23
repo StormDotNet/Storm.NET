@@ -36,5 +36,12 @@ namespace StormDotNet.Tests
             var subjectOnVisit = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
             SutNode.OnVisit += subjectOnVisit.Object;
         }
+
+        [Test]
+        public void TryGetEnteredToken()
+        {
+            Assert.That(SutNode.TryGetEnteredToken(out var token), Is.False);
+            Assert.That(token, Is.EqualTo(default(StormToken)));
+        }
     }
 }
