@@ -95,10 +95,6 @@ namespace StormDotNet.Tests
 
             Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
             Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
-            Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
-            Assert.That(visitCount, Is.EqualTo(1));
             Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
             Assert.That(visitCount, Is.EqualTo(2));
         }
@@ -137,10 +133,6 @@ namespace StormDotNet.Tests
             Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
             Assert.That(visitCount, Is.EqualTo(1));
             Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
-            Assert.That(visitCount, Is.EqualTo(2));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
-            Assert.That(visitCount, Is.EqualTo(2));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
             Assert.That(visitCount, Is.EqualTo(2));
             Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
             Assert.That(visitCount, Is.EqualTo(3));
@@ -189,6 +181,40 @@ namespace StormDotNet.Tests
         public void SourceUpdateLeaveUnchangedWithoutEnterThrow()
         {
             var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged));
+        }
+
+        [Test]
+        public void UpdateLeaveChangedCycle()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged);
+        }
+
+        [Test]
+        public void UpdateLeaveUnchangedCycle()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
+        }
+
+        [Test]
+        public void UpdateEnterThenLeaveChangedTwiceThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged);
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
+        }
+
+        [Test]
+        public void UpdateEnterThenLeaveUnchangedTwiceThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
             Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged));
         }
 

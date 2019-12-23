@@ -113,9 +113,10 @@ namespace StormDotNet.Tests
         [Test]
         public void VisitUnknownVisitTypeThrow()
         {
+            var token = Storm.TokenSource.CreateSource().Token;
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
-            Assert.Throws<ArgumentOutOfRangeException>(() => s.Raise(m => m.OnVisit += null, null, (EStormVisitType)(-1)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => s.Raise(m => m.OnVisit += null, token, (EStormVisitType)(-1)));
         }
     }
 }

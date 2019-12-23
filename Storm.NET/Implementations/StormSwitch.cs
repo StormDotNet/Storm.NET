@@ -53,11 +53,10 @@ namespace StormDotNet.Implementations
             base.SourceOnChanged(index);
             if (index == 0)
             {
+                if (_target != null && _target.TryGetEnteredToken(out var token))
+                    SourceOnVisit(1, token, EStormVisitType.UpdateLeaveChanged);
+
                 UpdateTarget();
-                if (GetSourceState(1) == EStormSourceState.Enter)
-                {
-                    SourceOnVisit(1, CurrentToken!, EStormVisitType.UpdateLeaveChanged);
-                }
             }
         }
 

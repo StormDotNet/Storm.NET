@@ -16,10 +16,11 @@
 namespace StormDotNet
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     public interface IStormNode
     {
         event Action<StormToken, EStormVisitType>? OnVisit;
-        bool TryGetEnteredToken(out StormToken token);
+        bool TryGetEnteredToken([NotNullWhen(true)] out StormToken token);
     }
 }

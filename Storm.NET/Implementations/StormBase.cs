@@ -20,6 +20,7 @@ namespace StormDotNet.Implementations
 
     internal abstract class StormBase<T> : StormContentBase<T>, IStorm<T>
     {
+        private StormToken _currentToken;
         private bool _isInUpdate;
         private bool _isInLoopSearch;
 
@@ -36,17 +37,15 @@ namespace StormDotNet.Implementations
                 OnVisitEvent += value;
                 if (_isInUpdate)
                 {
-                    value?.Invoke(CurrentToken, EStormVisitType.UpdateEnter);
+                    value?.Invoke(_currentToken, EStormVisitType.UpdateEnter);
                 }
             }
             remove => OnVisitEvent -= value;
         }
 
-        protected StormToken CurrentToken { get; private set; }
-
         public bool TryGetEnteredToken(out StormToken token)
         {
-            token = CurrentToken;
+            token = _currentToken;
             return !token.Equals(default);
         }
 
@@ -69,8 +68,8 @@ namespace StormDotNet.Implementations
             }
 
             node.OnVisit += TargetOnVisit;
-            OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchEnter);
-            OnVisitEvent.Invoke(CurrentToken, EStormVisitType.LoopSearchLeave);
+            OnVisitEvent.Invoke(_currentToken, EStormVisitType.LoopSearchEnter);
+            OnVisitEvent.Invoke(_currentToken, EStormVisitType.LoopSearchLeave);
             node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
@@ -83,12 +82,12 @@ namespace StormDotNet.Implementations
 
             if (_isInUpdate)
             {
-                if (!CurrentToken.Equals(token))
+                if (!_currentToken.Equals(token))
                     throw new InvalidOperationException("Unknown token");
             }
             else
             {
-                CurrentToken = token;
+                _currentToken = token;
             }
 
             _isInLoopSearch = true;
@@ -100,11 +99,11 @@ namespace StormDotNet.Implementations
             if (!_isInLoopSearch)
                 throw new InvalidOperationException("Not in loop search");
 
-            if (!CurrentToken.Equals(token))
+            if (!_currentToken.Equals(token))
                 throw new InvalidOperationException("Unknown token");
 
             if (!_isInUpdate)
-                CurrentToken = default;
+                _currentToken = default;
 
             OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchLeave);
             _isInLoopSearch = false;
@@ -115,7 +114,7 @@ namespace StormDotNet.Implementations
             if (_isInUpdate || _isInLoopSearch)
                 throw new InvalidOperationException("Can't enter now");
 
-            CurrentToken = token;
+            _currentToken = token;
             _isInUpdate = true;
             
             OnVisitEvent?.Invoke(token, EStormVisitType.UpdateEnter);
@@ -126,10 +125,10 @@ namespace StormDotNet.Implementations
             if (!_isInUpdate || _isInLoopSearch)
                 throw new InvalidOperationException("Can't leave now");
 
-            if (!CurrentToken.Equals(token))
+            if (!_currentToken.Equals(token))
                 throw new InvalidOperationException("Unknown token");
 
-            CurrentToken = default;
+            _currentToken = default;
             _isInUpdate = false;
 
             var visitType = hasChanged ? EStormVisitType.UpdateLeaveChanged : EStormVisitType.UpdateLeaveUnchanged;
