@@ -508,6 +508,32 @@ namespace StormDotNet.Tests
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
+        [Test]
+        public void SourceOnUpdateLeaveWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+
+            var visitCount = 0;
+            Sut.OnVisit += (visitToken, visitType) =>
+            {
+                switch (visitCount)
+                {
+                    case 0:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        break;
+                }
+
+                visitCount++;
+            };
+
+            Assert.That(visitCount, Is.EqualTo(0));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(1));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
+            Assert.That(visitCount, Is.EqualTo(1));
+        }
+
         private class TestableStormFuncBase : StormFuncBase<object>
         {
             public TestableStormFuncBase(int length, IEqualityComparer<object> comparer) : base(length, comparer)
