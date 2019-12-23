@@ -79,6 +79,17 @@ namespace StormDotNet.Tests
 
 <#  foreach (var o in overloads) { #>
         [Test]
+        public void CreateWith<#= o.argCount #>SourceReturns()
+        {
+<#  foreach (var a in o.Arguments) { #>
+            var <#= a.name #> = Mock.Of<IStorm<object>>();
+<#  } #>
+            var func = Mock.Of<Func<<#= o.FuncSignature #>>>();
+
+            Assert.That(Sut.Create<<#= o.FuncSignature #>>(<#= o.CreateParams1(-1) #>), Is.Not.Null);
+        }
+
+        [Test]
         public void CreateWith<#= o.argCount #>SourceThrowOnNullArgument()
         {
 <#  foreach (var a in o.Arguments) { #>

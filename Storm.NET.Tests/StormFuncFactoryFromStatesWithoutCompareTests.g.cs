@@ -32,6 +32,15 @@ namespace StormDotNet.Tests
         private StormFuncFactoryFromStatesWithoutCompare Sut { get; set; }
 
         [Test]
+        public void CreateWith1SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object>(first, func), Is.Not.Null);
+        }
+
+        [Test]
         public void CreateWith1SourceThrowOnNullArgument()
         {
             var first = Mock.Of<IStorm<object>>();
@@ -39,6 +48,16 @@ namespace StormDotNet.Tests
 
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object>(null, func));
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object>(first, null));
+        }
+
+        [Test]
+        public void CreateWith2SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var second = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object, object>(first, second, func), Is.Not.Null);
         }
 
         [Test]
@@ -54,6 +73,17 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void CreateWith3SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var second = Mock.Of<IStorm<object>>();
+            var third = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object, object, object>(first, second, third, func), Is.Not.Null);
+        }
+
+        [Test]
         public void CreateWith3SourceThrowOnNullArgument()
         {
             var first = Mock.Of<IStorm<object>>();
@@ -65,6 +95,18 @@ namespace StormDotNet.Tests
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object>(first, null, third, func));
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object>(first, second, null, func));
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object>(first, second, third, null));
+        }
+
+        [Test]
+        public void CreateWith4SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var second = Mock.Of<IStorm<object>>();
+            var third = Mock.Of<IStorm<object>>();
+            var fourth = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object, object, object, object>(first, second, third, fourth, func), Is.Not.Null);
         }
 
         [Test]
@@ -84,6 +126,19 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void CreateWith5SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var second = Mock.Of<IStorm<object>>();
+            var third = Mock.Of<IStorm<object>>();
+            var fourth = Mock.Of<IStorm<object>>();
+            var fifth = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object, object, object, object, object>(first, second, third, fourth, fifth, func), Is.Not.Null);
+        }
+
+        [Test]
         public void CreateWith5SourceThrowOnNullArgument()
         {
             var first = Mock.Of<IStorm<object>>();
@@ -99,6 +154,20 @@ namespace StormDotNet.Tests
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object, object, object>(first, second, third, null, fifth, func));
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object, object, object>(first, second, third, fourth, null, func));
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object, object, object>(first, second, third, fourth, fifth, null));
+        }
+
+        [Test]
+        public void CreateWith6SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var second = Mock.Of<IStorm<object>>();
+            var third = Mock.Of<IStorm<object>>();
+            var fourth = Mock.Of<IStorm<object>>();
+            var fifth = Mock.Of<IStorm<object>>();
+            var sixth = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object, object, object, object, object, object>(first, second, third, fourth, fifth, sixth, func), Is.Not.Null);
         }
 
         [Test]
@@ -122,6 +191,21 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void CreateWith7SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var second = Mock.Of<IStorm<object>>();
+            var third = Mock.Of<IStorm<object>>();
+            var fourth = Mock.Of<IStorm<object>>();
+            var fifth = Mock.Of<IStorm<object>>();
+            var sixth = Mock.Of<IStorm<object>>();
+            var seventh = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object, object, object, object, object, object, object>(first, second, third, fourth, fifth, sixth, seventh, func), Is.Not.Null);
+        }
+
+        [Test]
         public void CreateWith7SourceThrowOnNullArgument()
         {
             var first = Mock.Of<IStorm<object>>();
@@ -141,6 +225,22 @@ namespace StormDotNet.Tests
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object, object, object, object, object>(first, second, third, fourth, fifth, null, seventh, func));
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object, object, object, object, object>(first, second, third, fourth, fifth, sixth, null, func));
             Assert.Throws<ArgumentNullException>(() => Sut.Create<object, object, object, object, object, object, object, object>(first, second, third, fourth, fifth, sixth, seventh, null));
+        }
+
+        [Test]
+        public void CreateWith8SourceReturns()
+        {
+            var first = Mock.Of<IStorm<object>>();
+            var second = Mock.Of<IStorm<object>>();
+            var third = Mock.Of<IStorm<object>>();
+            var fourth = Mock.Of<IStorm<object>>();
+            var fifth = Mock.Of<IStorm<object>>();
+            var sixth = Mock.Of<IStorm<object>>();
+            var seventh = Mock.Of<IStorm<object>>();
+            var eighth = Mock.Of<IStorm<object>>();
+            var func = Mock.Of<Func<StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, StormFuncInput<object>, object>>();
+
+            Assert.That(Sut.Create<object, object, object, object, object, object, object, object, object>(first, second, third, fourth, fifth, sixth, seventh, eighth, func), Is.Not.Null);
         }
 
         [Test]
