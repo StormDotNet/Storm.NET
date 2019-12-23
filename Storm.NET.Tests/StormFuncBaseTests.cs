@@ -33,6 +33,13 @@ namespace StormDotNet.Tests
 
         protected override IStorm<object> SutStorm => Sut;
 
+
+        [Test]
+        public void SourceOnVisitWithDefaultTokenThrow()
+        {
+            Assert.Throws<ArgumentException>(() => Sut.SourceOnVisit(0, new StormToken(), EStormVisitType.LoopSearchEnter));
+        }
+
         [Test]
         public void GetStateOnNotVisitedReturnsNotVisited()
         {
@@ -68,35 +75,6 @@ namespace StormDotNet.Tests
             Sut.SourceOnVisit(1, token, EStormVisitType.UpdateEnter);
             Sut.SourceOnVisit(1, token, EStormVisitType.UpdateLeaveUnchanged);
             Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.VisitedWithoutChange));
-        }
-
-        [Test]
-        public void LoopSearchVisit()
-        {
-            var token = Storm.TokenSource.CreateSource().Token;
-
-            var visitCount = 0;
-            Sut.OnVisit += (visitToken, visitType) =>
-            {
-                switch (visitCount)
-                {
-                    case 0:
-                        Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
-                        break;
-                    case 1:
-                        Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
-                        break;
-                }
-
-                visitCount++;
-            };
-
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
-            Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
-            Assert.That(visitCount, Is.EqualTo(2));
         }
 
         [Test]
@@ -141,6 +119,58 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void UpdateAndMultipleLoopSearchVisit()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+
+            var visitCount = 0;
+            Sut.OnVisit += (visitToken, visitType) =>
+            {
+                switch (visitCount)
+                {
+                    case 0:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        break;
+                    case 1:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        break;
+                    case 2:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
+                        break;
+                    case 3:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateLeaveUnchanged));
+                        break;
+                }
+
+                visitCount++;
+            };
+
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Assert.That(visitCount, Is.EqualTo(1));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(2));
+            Sut.SourceOnVisit(1, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(2));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Assert.That(visitCount, Is.EqualTo(2));
+            Sut.SourceOnVisit(1, token, EStormVisitType.LoopSearchLeave);
+            Assert.That(visitCount, Is.EqualTo(3));
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
+            Assert.That(visitCount, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void UpdateLeaveWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
+        }
+
+        [Test]
         public void LoopSearchEnterTwiceThrow()
         {
             var token = Storm.TokenSource.CreateSource().Token;
@@ -156,10 +186,32 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void UpdateLeaveWithoutEnterThrow()
+        public void LoopSearchVisit()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
+
+            var visitCount = 0;
+            Sut.OnVisit += (visitToken, visitType) =>
+            {
+                switch (visitCount)
+                {
+                    case 0:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        break;
+                    case 1:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
+                        break;
+                }
+
+                visitCount++;
+            };
+
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(1));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Assert.That(visitCount, Is.EqualTo(2));
         }
 
         [Test]
