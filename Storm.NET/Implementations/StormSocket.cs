@@ -185,28 +185,22 @@ namespace StormDotNet.Implementations
 
             public void OnVisit(StormToken token, EStormVisitType visitType)
             {
-                void Leave(bool hasChanged)
-                {
-                    _onVisitCache.Invoke(
-                        token,
-                        hasChanged ? EStormVisitType.LeaveUpdateChanged : EStormVisitType.LeaveUpdateUnchanged);
-
-                    _target.OnVisit -= OnVisit;
-                    _target.OnVisit += _onVisitCache;
-                }
-
                 switch (visitType)
                 {
                     case EStormVisitType.EnterUpdate:
                         _onVisitCache.Invoke(token, EStormVisitType.EnterUpdate);
                         break;
                     case EStormVisitType.LeaveUpdateUnchanged:
-                        Leave(false);
-                        break;
                     case EStormVisitType.LeaveUpdateChanged:
                         var hasChanged = !_target.TryGetError(out var error) ||
                                          !Equals(error, Error.Socket.Disconnected);
-                        Leave(hasChanged);
+
+                        _onVisitCache.Invoke(
+                            token,
+                            hasChanged ? EStormVisitType.LeaveUpdateChanged : EStormVisitType.LeaveUpdateUnchanged);
+
+                        _target.OnVisit -= OnVisit;
+                        _target.OnVisit += _onVisitCache;
                         break;
                     case EStormVisitType.EnterLoopSearch:
                         _onVisitCache.Invoke(token, EStormVisitType.EnterLoopSearch);

@@ -143,5 +143,32 @@ namespace StormDotNet.Tests
 
             Assert.That(l1.GetValueOrThrow(), Is.EqualTo(42));
         }
+
+        [Test]
+        public void DifficultCase2()
+        {
+            var i0 = Storm.Input.WithCompare.Create<int>();
+            var i1 = Storm.Input.WithCompare.Create<int>();
+            var i2 = Storm.Input.WithCompare.Create<int>();
+            var f1 = Storm.Func.Create(i1, v => v);
+            var f2 = Storm.Func.Create(i2, v => v);
+            var s1 = Storm.Switch.Create(i0, i => i % 2 == 0 ? f1 : f2);
+            var t1 = Storm.Socket.Create<int>();
+            var l1 = Storm.Func.Create(t1, v => v);
+
+            i0.SetValue(0);
+            i1.SetValue(42);
+
+            using (var tokenSource = Storm.TokenSource.CreateSource())
+            {
+                var token = tokenSource.Token;
+                i1.SetValue(token, 0);
+                i2.SetValue(token, 42);
+                t1.Connect(token, s1);
+                i0.SetValue(token, 1);
+            }
+
+            Assert.That(l1.GetValueOrThrow(), Is.EqualTo(42));
+        }
     }
 }
