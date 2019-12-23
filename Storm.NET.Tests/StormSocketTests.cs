@@ -13,9 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ReSharper disable UnusedVariable
 namespace StormDotNet.Tests
 {
     using System;
+    using System.Linq;
     using Implementations;
     using Moq;
     using NUnit.Framework;
@@ -80,7 +82,8 @@ namespace StormDotNet.Tests
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterLoopSearch));
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveLoopSearch));
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterUpdate));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateChanged));
+            listener.InSequence(sequence)
+                    .Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateChanged));
 
             var target = Storm.Input.Create<int>();
             var socket = Storm.Socket.Create<int>();
@@ -106,7 +109,8 @@ namespace StormDotNet.Tests
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterLoopSearch));
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveLoopSearch));
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterUpdate));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateUnchanged));
+            listener.InSequence(sequence)
+                    .Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateUnchanged));
 
             var target = Storm.Input.Create<int>();
             var socket = Storm.Socket.Create<int>();
@@ -134,7 +138,7 @@ namespace StormDotNet.Tests
 
             var tokenSource1 = Storm.TokenSource.CreateSource();
             var tokenSource2 = Storm.TokenSource.CreateSource();
-            
+
             target.SetError(tokenSource1.Token, Error.Socket.Disconnected);
             Assert.Throws<InvalidOperationException>(() => socket.Connect(tokenSource2.Token, target));
         }
@@ -147,7 +151,8 @@ namespace StormDotNet.Tests
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterLoopSearch));
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveLoopSearch));
             listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterUpdate));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateChanged));
+            listener.InSequence(sequence)
+                    .Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateChanged));
 
             var target = Storm.Immutable.CreateValue(42);
             var socket = Storm.Socket.Create<int>();
@@ -258,6 +263,19 @@ namespace StormDotNet.Tests
             Sut.Connect(mock.Object);
             Assert.That(SutNode.TryGetEnteredToken(out var enteredToken), Is.True);
             Assert.That(enteredToken, Is.EqualTo(token));
+        }
+
+        [Test]
+        public void UnknownVisitTypeInMiddleOfAConnectionThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            var mock = new Mock<IStorm<object>>(MockBehavior.Strict);
+            mock.Setup(m => m.TryGetEnteredToken(out token)).Returns(true);
+
+            var f = Storm.Func.Create(Sut, v => v);
+            Sut.Connect(token, mock.Object);
+            var visitType = (EStormVisitType) (Enum.GetValues(typeof(EStormVisitType)).Cast<EStormVisitType>().Min(e => (int) e) - 1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => mock.Raise(m => m.OnVisit += null, token, visitType));
         }
 
         [Test]

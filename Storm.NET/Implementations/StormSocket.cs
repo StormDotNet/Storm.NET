@@ -208,6 +208,8 @@ namespace StormDotNet.Implementations
                     case EStormVisitType.LeaveLoopSearch:
                         _onVisitCache.Invoke(token, EStormVisitType.LeaveLoopSearch);
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(visitType), visitType, null);
                 }
             }
         }
