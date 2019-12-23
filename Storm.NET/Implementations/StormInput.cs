@@ -27,7 +27,7 @@ namespace StormDotNet.Implementations
 
         public void SetError(StormToken token, StormError error)
         {
-            if(token.Equals(default)) throw new ArgumentException("Default token not allowed", nameof(token));
+            if (token.Equals(default)) throw new ArgumentException("Default token not allowed", nameof(token));
             if (error == null) throw new ArgumentNullException(nameof(error));
 
             if (IsError(error))

@@ -41,28 +41,6 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void GetValueOr()
-        {
-            var fallBack = new object();
-            Assert.That(Sut.GetValueOr(fallBack), Is.EqualTo(fallBack));
-        }
-
-        [Test]
-        public void GetValueOrThrow()
-        {
-            Assert.Throws<StormError>(() => Sut.GetValueOrThrow());
-        }
-
-        [Test]
-        public void VoidMatch()
-        {
-            void OnError(StormError obj) => Assert.That(obj, Is.EqualTo(Error));
-            static void OnValue(object obj) => throw new Exception();
-
-            Sut.Match(OnValue, OnError);
-        }
-
-        [Test]
         public void ValueMatch()
         {
             static object OnError(StormError obj) => obj;
@@ -70,30 +48,6 @@ namespace StormDotNet.Tests
 
             var actual = Sut.Match(OnValue, OnError);
             Assert.That(actual, Is.EqualTo(Error));
-        }
-
-        [Test]
-        public void TryGetEnteredToken()
-        {
-            var result = Sut.TryGetEnteredToken(out var token);
-            Assert.That(result, Is.False);
-            Assert.That(token, Is.EqualTo(new StormToken()));
-        }
-
-        [Test]
-        public void TryGetError()
-        {
-            var result = Sut.TryGetError(out var error);
-            Assert.That(result, Is.True);
-            Assert.That(error, Is.EqualTo(Error));
-        }
-
-        [Test]
-        public void TryGetValue()
-        {
-            var result = Sut.TryGetValue(out var value);
-            Assert.That(result, Is.False);
-            Assert.That(value, Is.Null);
         }
 
         [Test]

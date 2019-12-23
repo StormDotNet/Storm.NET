@@ -33,8 +33,7 @@ namespace StormDotNet.Implementations
 
         protected void SourceOnVisit(int index, StormToken token, EStormVisitType visitType)
         {
-            if (token.Equals(default))
-                throw new ArgumentException("default token is not accepted", nameof(token));
+            if (token.Equals(default)) throw new ArgumentException("Default token not allowed", nameof(token));
 
             switch (visitType)
             {

@@ -15,7 +15,6 @@
 
 namespace StormDotNet.Tests
 {
-    using System;
     using NUnit.Framework;
 
     [TestFixture]
@@ -33,27 +32,6 @@ namespace StormDotNet.Tests
         private object Value { get; set; }
 
         [Test]
-        public void GetValueOr()
-        {
-            Assert.That(Sut.GetValueOr(new object()), Is.EqualTo(Value));
-        }
-
-        [Test]
-        public void GetValueOrThrow()
-        {
-            Assert.That(Sut.GetValueOrThrow(), Is.EqualTo(Value));
-        }
-
-        [Test]
-        public void VoidMatch()
-        {
-            static void OnError(StormError obj) => throw new Exception();
-            void OnValue(object obj) => Assert.That(obj, Is.EqualTo(Value));
-
-            Sut.Match(OnValue, OnError);
-        }
-
-        [Test]
         public void ValueMatch()
         {
             static object OnError(StormError obj) => obj;
@@ -61,30 +39,6 @@ namespace StormDotNet.Tests
 
             var actual = Sut.Match(OnValue, OnError);
             Assert.That(actual, Is.EqualTo(Value));
-        }
-
-        [Test]
-        public void TryGetEnteredToken()
-        {
-            var result = Sut.TryGetEnteredToken(out var token);
-            Assert.That(result, Is.False);
-            Assert.That(token, Is.EqualTo(new StormToken()));
-        }
-
-        [Test]
-        public void TryGetError()
-        {
-            var result = Sut.TryGetError(out var error);
-            Assert.That(result, Is.False);
-            Assert.That(error, Is.Null);
-        }
-
-        [Test]
-        public void TryGetValue()
-        {
-            var result = Sut.TryGetValue(out var value);
-            Assert.That(result, Is.True);
-            Assert.That(value, Is.EqualTo(Value));
         }
 
         [Test]

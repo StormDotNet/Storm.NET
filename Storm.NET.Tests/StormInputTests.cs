@@ -26,28 +26,6 @@ namespace StormDotNet.Tests
         protected override IStorm<object> SutStorm => Sut;
 
         [Test]
-        public void GetValueOr()
-        {
-            var fallBack = new object();
-            Assert.That(Sut.GetValueOr(fallBack), Is.EqualTo(fallBack));
-        }
-
-        [Test]
-        public void GetValueOrThrow()
-        {
-            Assert.Throws<StormError>(() => Sut.GetValueOrThrow());
-        }
-
-        [Test]
-        public void VoidMatch()
-        {
-            static void OnError(StormError obj) => Assert.That(obj, Is.InstanceOf<StormError>());
-            static void OnValue(object obj) => throw new Exception();
-
-            Sut.Match(OnValue, OnError);
-        }
-
-        [Test]
         public void ValueMatch()
         {
             static object OnError(StormError obj) => obj;
