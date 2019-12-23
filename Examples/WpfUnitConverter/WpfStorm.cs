@@ -76,7 +76,7 @@ namespace WpfUnitConverter
 
         private void OutputOnVisit(StormToken token, EStormVisitType visitType)
         {
-            if (visitType == EStormVisitType.UpdateLeaveChanged)
+            if (visitType == EStormVisitType.LeaveUpdateChanged)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
             }

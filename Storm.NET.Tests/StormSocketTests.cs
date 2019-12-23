@@ -77,10 +77,10 @@ namespace StormDotNet.Tests
         {
             var listener = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
             var sequence = new MockSequence();
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchEnter));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchLeave));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.UpdateEnter));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.UpdateLeaveChanged));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterLoopSearch));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveLoopSearch));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterUpdate));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateChanged));
 
             var target = Storm.Input.Create<int>();
             var socket = Storm.Socket.Create<int>();
@@ -103,10 +103,10 @@ namespace StormDotNet.Tests
         {
             var listener = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
             var sequence = new MockSequence();
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchEnter));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchLeave));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.UpdateEnter));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.UpdateLeaveUnchanged));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterLoopSearch));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveLoopSearch));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterUpdate));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateUnchanged));
 
             var target = Storm.Input.Create<int>();
             var socket = Storm.Socket.Create<int>();
@@ -130,10 +130,10 @@ namespace StormDotNet.Tests
         {
             var listener = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
             var sequence = new MockSequence();
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchEnter));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchLeave));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.UpdateEnter));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.UpdateLeaveChanged));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterLoopSearch));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveLoopSearch));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterUpdate));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveUpdateChanged));
 
             var target = Storm.Immutable.CreateValue(42);
             var socket = Storm.Socket.Create<int>();
@@ -151,8 +151,8 @@ namespace StormDotNet.Tests
         {
             var listener = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
             var sequence = new MockSequence();
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchEnter));
-            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LoopSearchLeave));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.EnterLoopSearch));
+            listener.InSequence(sequence).Setup(a => a.Invoke(It.IsAny<StormToken>(), EStormVisitType.LeaveLoopSearch));
 
             var target = Storm.Socket.Create<int>();
             var socket = Storm.Socket.Create<int>();

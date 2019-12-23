@@ -37,7 +37,7 @@ namespace StormDotNet.Implementations
                 OnVisitEvent += value;
                 if (_isInUpdate)
                 {
-                    value?.Invoke(_currentToken, EStormVisitType.UpdateEnter);
+                    value?.Invoke(_currentToken, EStormVisitType.EnterUpdate);
                 }
             }
             remove => OnVisitEvent -= value;
@@ -64,12 +64,12 @@ namespace StormDotNet.Implementations
 
             void TargetOnVisit(StormToken enteredToken, EStormVisitType visitType)
             {
-                hasEntered |= visitType == EStormVisitType.LoopSearchEnter;
+                hasEntered |= visitType == EStormVisitType.EnterLoopSearch;
             }
 
             node.OnVisit += TargetOnVisit;
-            OnVisitEvent.Invoke(_currentToken, EStormVisitType.LoopSearchEnter);
-            OnVisitEvent.Invoke(_currentToken, EStormVisitType.LoopSearchLeave);
+            OnVisitEvent.Invoke(_currentToken, EStormVisitType.EnterLoopSearch);
+            OnVisitEvent.Invoke(_currentToken, EStormVisitType.LeaveLoopSearch);
             node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
@@ -91,7 +91,7 @@ namespace StormDotNet.Implementations
             }
 
             _isInLoopSearch = true;
-            OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchEnter);
+            OnVisitEvent?.Invoke(token, EStormVisitType.EnterLoopSearch);
         }
 
         protected void RaiseLoopSearchLeave(StormToken token)
@@ -105,7 +105,7 @@ namespace StormDotNet.Implementations
             if (!_isInUpdate)
                 _currentToken = default;
 
-            OnVisitEvent?.Invoke(token, EStormVisitType.LoopSearchLeave);
+            OnVisitEvent?.Invoke(token, EStormVisitType.LeaveLoopSearch);
             _isInLoopSearch = false;
         }
 
@@ -117,7 +117,7 @@ namespace StormDotNet.Implementations
             _currentToken = token;
             _isInUpdate = true;
             
-            OnVisitEvent?.Invoke(token, EStormVisitType.UpdateEnter);
+            OnVisitEvent?.Invoke(token, EStormVisitType.EnterUpdate);
         }
 
         protected void RaiseUpdateLeave(StormToken token, bool hasChanged)
@@ -131,7 +131,7 @@ namespace StormDotNet.Implementations
             _currentToken = default;
             _isInUpdate = false;
 
-            var visitType = hasChanged ? EStormVisitType.UpdateLeaveChanged : EStormVisitType.UpdateLeaveUnchanged;
+            var visitType = hasChanged ? EStormVisitType.LeaveUpdateChanged : EStormVisitType.LeaveUpdateUnchanged;
             OnVisitEvent?.Invoke(token, visitType);
         }
     }

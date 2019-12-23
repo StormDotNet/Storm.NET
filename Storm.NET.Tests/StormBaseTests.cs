@@ -158,7 +158,7 @@ namespace StormDotNet.Tests
             var token = Storm.TokenSource.CreateDisposedSource().Token;
             Sut.OnVisit += (visitToken, visitType) =>
             {
-                if (visitType != EStormVisitType.UpdateEnter)
+                if (visitType != EStormVisitType.EnterUpdate)
                     Sut.RaiseUpdateLeave(token, true);
             };
             
@@ -176,7 +176,7 @@ namespace StormDotNet.Tests
             Sut.OnVisit += (enteredToken, visitType) =>
             {
                 Assert.That(enteredToken, Is.EqualTo(token));
-                Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterUpdate));
             };
         }
 

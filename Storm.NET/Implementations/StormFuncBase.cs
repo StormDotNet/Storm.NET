@@ -38,20 +38,20 @@ namespace StormDotNet.Implementations
 
             switch (visitType)
             {
-                case EStormVisitType.UpdateEnter:
-                    SourceOnUpdateEnter(index, token);
+                case EStormVisitType.EnterUpdate:
+                    SourceOnEnterUpdate(index, token);
                     break;
-                case EStormVisitType.UpdateLeaveChanged:
-                    SourceOnUpdateLeave(index, token, true);
+                case EStormVisitType.LeaveUpdateChanged:
+                    SourceOnLeaveUpdate(index, token, true);
                     break;
-                case EStormVisitType.UpdateLeaveUnchanged:
-                    SourceOnUpdateLeave(index, token, false);
+                case EStormVisitType.LeaveUpdateUnchanged:
+                    SourceOnLeaveUpdate(index, token, false);
                     break;
-                case EStormVisitType.LoopSearchEnter:
-                    SourceOnLoopSearchEnter(index, token);
+                case EStormVisitType.EnterLoopSearch:
+                    SourceOnEnterLoopSearch(index, token);
                     break;
-                case EStormVisitType.LoopSearchLeave:
-                    SourceOnLoopSearchLeave(index, token);
+                case EStormVisitType.LeaveLoopSearch:
+                    SourceOnLeaveLoopSearch(index, token);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(visitType), visitType, null);
@@ -75,7 +75,7 @@ namespace StormDotNet.Implementations
         {
         }
 
-        private void SourceOnLoopSearchEnter(int index, StormToken token)
+        private void SourceOnEnterLoopSearch(int index, StormToken token)
         {
             if (TryGetEnteredToken(out var enteredToken) && !Equals(enteredToken, token))
                 throw new InvalidOperationException("Unknown token");
@@ -87,7 +87,7 @@ namespace StormDotNet.Implementations
                 RaiseLoopSearchEnter(token);
         }
 
-        private void SourceOnLoopSearchLeave(int index, StormToken token)
+        private void SourceOnLeaveLoopSearch(int index, StormToken token)
         {
             if (!TryGetEnteredToken(out var enteredToken))
                 throw new InvalidOperationException("Can't leave now");
@@ -102,7 +102,7 @@ namespace StormDotNet.Implementations
                 RaiseLoopSearchLeave(token);
         }
 
-        private void SourceOnUpdateEnter(int index, StormToken token)
+        private void SourceOnEnterUpdate(int index, StormToken token)
         {
             if (TryGetEnteredToken(out var enteredToken) && !Equals(enteredToken, token))
                 throw new InvalidOperationException("Unknown token");
@@ -114,7 +114,7 @@ namespace StormDotNet.Implementations
                 RaiseUpdateEnter(token);
         }
 
-        private void SourceOnUpdateLeave(int index, StormToken token, bool hasChanged)
+        private void SourceOnLeaveUpdate(int index, StormToken token, bool hasChanged)
         {
             if (!TryGetEnteredToken(out var enteredToken))
                 throw new InvalidOperationException("Can't leave now");

@@ -54,7 +54,7 @@ namespace StormDotNet.Implementations
             if (index == 0)
             {
                 if (_target != null && _target.TryGetEnteredToken(out var token))
-                    SourceOnVisit(1, token, EStormVisitType.UpdateLeaveChanged);
+                    SourceOnVisit(1, token, EStormVisitType.LeaveUpdateChanged);
 
                 UpdateTarget();
             }

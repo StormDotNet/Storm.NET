@@ -17,10 +17,10 @@ namespace StormDotNet
 {
     public enum EStormVisitType
     {
-        UpdateEnter,
-        UpdateLeaveChanged,
-        UpdateLeaveUnchanged,
-        LoopSearchEnter,
-        LoopSearchLeave
+        EnterLoopSearch,
+        EnterUpdate,
+        LeaveLoopSearch,
+        LeaveUpdateChanged,
+        LeaveUpdateUnchanged
     }
 }

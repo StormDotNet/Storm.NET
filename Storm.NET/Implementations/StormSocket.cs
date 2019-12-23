@@ -120,10 +120,10 @@ namespace StormDotNet.Implementations
                 }
                 else
                 {
-                    onVisit.Invoke(token, EStormVisitType.UpdateEnter);
+                    onVisit.Invoke(token, EStormVisitType.EnterUpdate);
                     token.Leave += () =>
                     {
-                        onVisit.Invoke(token, EStormVisitType.UpdateLeaveChanged);
+                        onVisit.Invoke(token, EStormVisitType.LeaveUpdateChanged);
                         target.OnVisit += OnVisitCache;
                         OnVisitCache = null;
                     };
@@ -148,12 +148,12 @@ namespace StormDotNet.Implementations
 
             void TargetOnVisit(StormToken enteredToken, EStormVisitType visitType)
             {
-                hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.LoopSearchEnter;
+                hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.EnterLoopSearch;
             }
 
             node.OnVisit += TargetOnVisit;
-            OnVisitCache.Invoke(token, EStormVisitType.LoopSearchEnter);
-            OnVisitCache.Invoke(token, EStormVisitType.LoopSearchLeave);
+            OnVisitCache.Invoke(token, EStormVisitType.EnterLoopSearch);
+            OnVisitCache.Invoke(token, EStormVisitType.LeaveLoopSearch);
             node.OnVisit -= TargetOnVisit;
 
             return hasEntered;
@@ -179,22 +179,22 @@ namespace StormDotNet.Implementations
             
             switch (visitType)
             {
-                case EStormVisitType.UpdateEnter:
-                    onVisit?.Invoke(token, EStormVisitType.UpdateEnter);
+                case EStormVisitType.EnterUpdate:
+                    onVisit?.Invoke(token, EStormVisitType.EnterUpdate);
                     break;
-                case EStormVisitType.UpdateLeaveChanged:
-                case EStormVisitType.UpdateLeaveUnchanged:
+                case EStormVisitType.LeaveUpdateChanged:
+                case EStormVisitType.LeaveUpdateUnchanged:
                     var isDisconnected = target.TryGetError(out var error) && Equals(error, Error.Socket.Disconnected);
-                    onVisit?.Invoke( token, isDisconnected ? EStormVisitType.UpdateLeaveUnchanged : EStormVisitType.UpdateLeaveChanged);
+                    onVisit?.Invoke( token, isDisconnected ? EStormVisitType.LeaveUpdateUnchanged : EStormVisitType.LeaveUpdateChanged);
 
                     target.OnVisit += OnVisitCache;
                     OnVisitCache = null;
                     break;
-                case EStormVisitType.LoopSearchEnter:
-                    OnVisitCache?.Invoke(token, EStormVisitType.LoopSearchEnter);
+                case EStormVisitType.EnterLoopSearch:
+                    OnVisitCache?.Invoke(token, EStormVisitType.EnterLoopSearch);
                     break;
-                case EStormVisitType.LoopSearchLeave:
-                    OnVisitCache?.Invoke(token, EStormVisitType.LoopSearchLeave);
+                case EStormVisitType.LeaveLoopSearch:
+                    OnVisitCache?.Invoke(token, EStormVisitType.LeaveLoopSearch);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(visitType), visitType, null);

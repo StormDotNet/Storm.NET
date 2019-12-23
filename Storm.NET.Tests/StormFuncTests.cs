@@ -74,8 +74,8 @@ namespace StormDotNet.Tests
             var token = Storm.TokenSource.CreateSource().Token;
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
-            s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter);
-            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter));
+            s.Raise(m => m.OnVisit += null, token, EStormVisitType.EnterUpdate);
+            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.EnterUpdate));
         }
 
         [Test]
@@ -86,8 +86,8 @@ namespace StormDotNet.Tests
             var s1 = new Mock<IStorm<int>>();
             var s2 = new Mock<IStorm<int>>();
             Storm.Func.Create(s1.Object, s2.Object, (v1, v2) => 0);
-            s1.Raise(m => m.OnVisit += null, token1, EStormVisitType.UpdateEnter);
-            Assert.Throws<InvalidOperationException>(() => s2.Raise(m => m.OnVisit += null, token2, EStormVisitType.UpdateEnter));
+            s1.Raise(m => m.OnVisit += null, token1, EStormVisitType.EnterUpdate);
+            Assert.Throws<InvalidOperationException>(() => s2.Raise(m => m.OnVisit += null, token2, EStormVisitType.EnterUpdate));
         }
 
         [Test]
@@ -96,9 +96,9 @@ namespace StormDotNet.Tests
             var token = Storm.TokenSource.CreateSource().Token;
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
-            s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateEnter);
-            s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateLeaveChanged);
-            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateLeaveChanged));
+            s.Raise(m => m.OnVisit += null, token, EStormVisitType.EnterUpdate);
+            s.Raise(m => m.OnVisit += null, token, EStormVisitType.LeaveUpdateChanged);
+            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.LeaveUpdateChanged));
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace StormDotNet.Tests
             var token = Storm.TokenSource.CreateSource().Token;
             var s = new Mock<IStorm<int>>();
             Storm.Func.Create(s.Object, v => v);
-            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.UpdateLeaveChanged));
+            Assert.Throws<InvalidOperationException>(() => s.Raise(m => m.OnVisit += null, token, EStormVisitType.LeaveUpdateChanged));
         }
 
         [Test]

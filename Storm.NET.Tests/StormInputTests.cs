@@ -98,13 +98,13 @@ namespace StormDotNet.Tests
             var visitCount = 0;
             Sut.OnVisit += (token, type) =>
             {
-                if (type == EStormVisitType.UpdateEnter)
+                if (type == EStormVisitType.EnterUpdate)
                 {
                     var result = Sut.TryGetEnteredToken(out var enteredToken);
                     Assert.That(result, Is.True);
                     Assert.That(token, Is.EqualTo(enteredToken));
                 }
-                else if (type == EStormVisitType.UpdateLeaveUnchanged)
+                else if (type == EStormVisitType.LeaveUpdateUnchanged)
                 {
                     var result = Sut.TryGetEnteredToken(out _);
                     Assert.That(result, Is.False);

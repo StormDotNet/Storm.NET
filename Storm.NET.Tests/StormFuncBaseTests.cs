@@ -37,14 +37,14 @@ namespace StormDotNet.Tests
         [Test]
         public void SourceOnVisitWithDefaultTokenThrow()
         {
-            Assert.Throws<ArgumentException>(() => Sut.SourceOnVisit(0, new StormToken(), EStormVisitType.LoopSearchEnter));
+            Assert.Throws<ArgumentException>(() => Sut.SourceOnVisit(0, new StormToken(), EStormVisitType.EnterLoopSearch));
         }
 
         [Test]
         public void GetStateOnNotVisitedReturnsNotVisited()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
             Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.NotVisited));
         }
 
@@ -52,8 +52,8 @@ namespace StormDotNet.Tests
         public void GetStateOnEnteredThrows()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
-            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
+            Sut.SourceOnVisit(1, token, EStormVisitType.EnterUpdate);
             Assert.Throws<InvalidOperationException>(() => Sut.GetState(1));
         }
 
@@ -61,9 +61,9 @@ namespace StormDotNet.Tests
         public void GetStateOnLeaveChangedReturnsVisitedWithChange()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
-            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateEnter);
-            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateLeaveChanged);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
+            Sut.SourceOnVisit(1, token, EStormVisitType.EnterUpdate);
+            Sut.SourceOnVisit(1, token, EStormVisitType.LeaveUpdateChanged);
             Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.VisitedWithChange));
         }
 
@@ -71,9 +71,9 @@ namespace StormDotNet.Tests
         public void GetStateOnLeaveUnchangedReturnsVisitedWithoutChange()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
-            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateEnter);
-            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateLeaveUnchanged);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
+            Sut.SourceOnVisit(1, token, EStormVisitType.EnterUpdate);
+            Sut.SourceOnVisit(1, token, EStormVisitType.LeaveUpdateUnchanged);
             Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.VisitedWithoutChange));
         }
 
@@ -89,32 +89,32 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterUpdate));
                         break;
                     case 1:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                     case 2:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LeaveLoopSearch));
                         break;
                     case 3:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateLeaveUnchanged));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LeaveUpdateUnchanged));
                         break;
                 }
 
                 visitCount++;
             };
 
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
             Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(2));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Sut.SourceOnVisit(0, token, EStormVisitType.LeaveLoopSearch);
             Assert.That(visitCount, Is.EqualTo(3));
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
+            Sut.SourceOnVisit(0, token, EStormVisitType.LeaveUpdateUnchanged);
             Assert.That(visitCount, Is.EqualTo(4));
         }
 
@@ -130,131 +130,41 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterUpdate));
                         break;
                     case 1:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                     case 2:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LeaveLoopSearch));
                         break;
                     case 3:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateLeaveUnchanged));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LeaveUpdateUnchanged));
                         break;
                 }
 
                 visitCount++;
             };
 
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
             Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(2));
-            Sut.SourceOnVisit(1, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(1, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(2));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Sut.SourceOnVisit(0, token, EStormVisitType.LeaveLoopSearch);
             Assert.That(visitCount, Is.EqualTo(2));
-            Sut.SourceOnVisit(1, token, EStormVisitType.LoopSearchLeave);
+            Sut.SourceOnVisit(1, token, EStormVisitType.LeaveLoopSearch);
             Assert.That(visitCount, Is.EqualTo(3));
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
+            Sut.SourceOnVisit(0, token, EStormVisitType.LeaveUpdateUnchanged);
             Assert.That(visitCount, Is.EqualTo(4));
         }
 
         [Test]
-        public void UpdateLeaveWithoutEnterThrow()
-        {
-            var token = Storm.TokenSource.CreateSource().Token;
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
-        }
-
-        [Test]
-        public void LoopSearchLeaveWithoutEnterThrow()
-        {
-            var token = Storm.TokenSource.CreateSource().Token;
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave));
-        }
-
-        [Test]
-        public void LoopSearchLeaveWithUnknownTokenThrow()
-        {
-            var token1 = Storm.TokenSource.CreateSource().Token;
-            var token2 = Storm.TokenSource.CreateSource().Token;
-
-            Sut.SourceOnVisit(0, token1, EStormVisitType.LoopSearchEnter);
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LoopSearchLeave));
-        }
-
-        [Test]
-        public void SourceUpdateLeaveChangedWithoutEnterThrow()
-        {
-            var token = Storm.TokenSource.CreateSource().Token;
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
-        }
-
-        [Test]
-        public void SourceUpdateLeaveUnchangedWithoutEnterThrow()
-        {
-            var token = Storm.TokenSource.CreateSource().Token;
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged));
-        }
-
-        [Test]
-        public void UpdateLeaveChangedCycle()
-        {
-            var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged);
-        }
-
-        [Test]
-        public void UpdateLeaveUnchangedCycle()
-        {
-            var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
-        }
-
-        [Test]
-        public void UpdateWithChange()
-        {
-            var updateCount = 0;
-            Sut.UpdateDelegate = () =>
-            {
-                updateCount++;
-                return true;
-            };
-
-            var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
-
-            Assert.That(updateCount, Is.Zero);
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged);
-            Assert.That(updateCount, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void UpdateWithoutChange()
-        {
-            var updateCount = 0;
-            Sut.UpdateDelegate = () =>
-            {
-                updateCount++;
-                return true;
-            };
-
-            var token = Storm.TokenSource.CreateSource().Token;
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
-
-            Assert.That(updateCount, Is.Zero);
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
-            Assert.That(updateCount, Is.Zero);
-        }
-
-        [Test]
-        public void SourceOnLoopSearchEnter()
+        public void SourceOnEnterLoopSearch()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -265,7 +175,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                 }
 
@@ -273,12 +183,12 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void SourceOnLoopSearchEnterWithKnownToken()
+        public void SourceOnEnterLoopSearchWithKnownToken()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -289,11 +199,11 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterUpdate));
                         break;
                     case 1:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                 }
 
@@ -301,14 +211,14 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
             Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(2));
         }
 
         [Test]
-        public void SourceOnLoopSearchEnterWithUnknownTokenThrow()
+        public void SourceOnEnterLoopSearchWithUnknownTokenThrow()
         {
             var token1 = Storm.TokenSource.CreateSource().Token;
             var token2 = Storm.TokenSource.CreateSource().Token;
@@ -320,7 +230,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token1));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterUpdate));
                         break;
                 }
 
@@ -328,14 +238,14 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token1, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token1, EStormVisitType.EnterUpdate);
             Assert.That(visitCount, Is.EqualTo(1));
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LoopSearchEnter));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.EnterLoopSearch));
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void SourceOnLoopSearchEnterTwiceWithDifferentSource()
+        public void SourceOnEnterLoopSearchTwiceWithDifferentSource()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -346,7 +256,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                 }
 
@@ -354,14 +264,14 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(1, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(1, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void SourceOnLoopSearchEnterTwiceWithSameSourceThrow()
+        public void SourceOnEnterLoopSearchTwiceWithSameSourceThrow()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -372,7 +282,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                 }
 
@@ -380,14 +290,14 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(1));
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch));
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void SourceOnLoopSearchLeaveThrow()
+        public void SourceOnLeaveLoopSearchThrow()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -395,12 +305,12 @@ namespace StormDotNet.Tests
             Sut.OnVisit += (visitToken, visitType) => { visitCount++; };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LeaveLoopSearch));
             Assert.That(visitCount, Is.EqualTo(0));
         }
 
         [Test]
-        public void SourceOnLoopSearchLeaveWithUnknownTokenThrow()
+        public void SourceOnLeaveLoopSearchWithUnknownTokenThrow()
         {
             var token1 = Storm.TokenSource.CreateSource().Token;
             var token2 = Storm.TokenSource.CreateSource().Token;
@@ -412,7 +322,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token1));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                 }
 
@@ -420,14 +330,14 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token1, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token1, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(1));
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LoopSearchLeave));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LeaveLoopSearch));
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void SourceOnLoopSearchLeaveWithoutEnterThrow()
+        public void SourceOnLeaveLoopSearchWithoutEnterThrow()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -438,7 +348,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterUpdate));
                         break;
                 }
 
@@ -446,14 +356,14 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
             Assert.That(visitCount, Is.EqualTo(1));
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LeaveLoopSearch));
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void SourceOnLoopSearchLeaveAfterEnter()
+        public void SourceOnLeaveLoopSearchAfterEnter()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -464,25 +374,74 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                     case 1:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LeaveLoopSearch));
                         break;
                 }
 
                 visitCount++;
             };
 
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(1));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Sut.SourceOnVisit(0, token, EStormVisitType.LeaveLoopSearch);
             Assert.That(visitCount, Is.EqualTo(2));
         }
 
         [Test]
-        public void SourceOnUpdateLeaveWithUnknownTokenThrow()
+        public void SourceOnLeaveUpdateChangedWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LeaveUpdateChanged));
+        }
+
+        [Test]
+        public void SourceOnLeaveUpdateUnchangedWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LeaveUpdateUnchanged));
+        }
+
+        [Test]
+        public void SourceOnLeaveUpdateChangedAfterEnter()
+        {
+            var updateCount = 0;
+            Sut.UpdateDelegate = () =>
+            {
+                updateCount++;
+                return true;
+            };
+
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
+
+            Assert.That(updateCount, Is.Zero);
+            Sut.SourceOnVisit(0, token, EStormVisitType.LeaveUpdateChanged);
+            Assert.That(updateCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void SourceOnLeaveUpdateUnchangedAfterEnter()
+        {
+            var updateCount = 0;
+            Sut.UpdateDelegate = () =>
+            {
+                updateCount++;
+                return true;
+            };
+
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterUpdate);
+            Assert.That(updateCount, Is.Zero);
+            Sut.SourceOnVisit(0, token, EStormVisitType.LeaveUpdateUnchanged);
+            Assert.That(updateCount, Is.Zero);
+        }
+
+        [Test]
+        public void SourceOnLeaveUpdateWithUnknownTokenThrow()
         {
             var token1 = Storm.TokenSource.CreateSource().Token;
             var token2 = Storm.TokenSource.CreateSource().Token;
@@ -494,7 +453,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token1));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterUpdate));
                         break;
                 }
 
@@ -502,14 +461,14 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token1, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(0, token1, EStormVisitType.EnterUpdate);
             Assert.That(visitCount, Is.EqualTo(1));
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.UpdateLeaveChanged));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LeaveUpdateChanged));
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void SourceOnUpdateLeaveWithoutEnterThrow()
+        public void SourceOnLeaveUpdateWithoutEnterThrow()
         {
             var token = Storm.TokenSource.CreateSource().Token;
 
@@ -520,7 +479,7 @@ namespace StormDotNet.Tests
                 {
                     case 0:
                         Assert.That(visitToken, Is.EqualTo(token));
-                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.EnterLoopSearch));
                         break;
                 }
 
@@ -528,9 +487,9 @@ namespace StormDotNet.Tests
             };
 
             Assert.That(visitCount, Is.EqualTo(0));
-            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Sut.SourceOnVisit(0, token, EStormVisitType.EnterLoopSearch);
             Assert.That(visitCount, Is.EqualTo(1));
-            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LeaveUpdateChanged));
             Assert.That(visitCount, Is.EqualTo(1));
         }
 
