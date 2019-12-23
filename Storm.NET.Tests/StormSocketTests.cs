@@ -180,6 +180,22 @@ namespace StormDotNet.Tests
             Assert.Throws<ArgumentNullException>(() => Sut.Connect(token, null));
         }
 
+        [Test]
+        public void ConnectToDisconnectedDoNotRaiseUpdateEvent()
+        {
+            Sut.OnVisit += (token, type) =>
+            {
+                switch (type)
+                {
+                    case EStormVisitType.EnterUpdate:
+                    case EStormVisitType.LeaveUpdateChanged:
+                    case EStormVisitType.LeaveUpdateUnchanged:
+                        throw new Exception();
+                }
+            };
+            Sut.Connect(Storm.Immutable.CreateError<object>(Error.Socket.Disconnected));
+        }
+
 
         [Test]
         public void ConnectDefaultTokenThrow()
