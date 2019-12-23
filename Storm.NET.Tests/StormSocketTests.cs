@@ -126,6 +126,20 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void BatchConnectAndModifyTargetWithDifferentTokenThrow()
+        {
+            var target = Storm.Input.Create<int>();
+            var socket = Storm.Socket.Create<int>();
+            var f = Storm.Func.Create(socket, v => v);
+
+            var tokenSource1 = Storm.TokenSource.CreateSource();
+            var tokenSource2 = Storm.TokenSource.CreateSource();
+            
+            target.SetError(tokenSource1.Token, Error.Socket.Disconnected);
+            Assert.Throws<InvalidOperationException>(() => socket.Connect(tokenSource2.Token, target));
+        }
+
+        [Test]
         public void ConnectToValueRaiseChanged()
         {
             var listener = new Mock<Action<StormToken, EStormVisitType>>(MockBehavior.Strict);
