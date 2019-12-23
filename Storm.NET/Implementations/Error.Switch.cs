@@ -17,10 +17,10 @@ namespace StormDotNet.Implementations
 {
     internal static partial class Error
     {
-        public static class Switch
+        internal static class Switch
         {
-            public static StormError Disconnected { get; } = new StormError("Disconnected switch.");
-            public static StormError Looped { get; } = new StormError("Looped switch.");
+            internal static StormError Disconnected { get; } = new StormError("Disconnected switch.");
+            internal static StormError Looped { get; } = new StormError("Looped switch.");
         }
     }
 }

@@ -17,9 +17,9 @@ namespace StormDotNet.Implementations
 {
     internal static partial class Error
     {
-        public static class Socket
+        internal static class Socket
         {
-            public static StormError Disconnected { get; } = new StormError("Disconnected socket.");
+            internal static StormError Disconnected { get; } = new StormError("Disconnected socket.");
         }
     }
 }

@@ -17,6 +17,6 @@ namespace StormDotNet.Implementations
 {
     internal static partial class Error
     {
-        public static StormError EmptyContent { get; } = Storm.Error.EmptyContent;
+        internal static StormError EmptyContent { get; } = Storm.Error.EmptyContent;
     }
 }

@@ -17,18 +17,21 @@ namespace StormDotNet.Implementations
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     internal static partial class Error
     {
-        public static class Func
+        internal static class Func
         {
-            public static StormError SourceError(IEnumerable<Exception> innerExceptions)
+            internal static StormError SourceError(IEnumerable<Exception> innerExceptions)
             {
+                Debug.Assert(innerExceptions != null, "innerExceptions != null");
                 return new StormError("StormFunc sources have errors.", new AggregateException(innerExceptions));
             }
 
-            public static StormError Evaluation(Exception innerException)
+            internal static StormError Evaluation(Exception innerException)
             {
+                Debug.Assert(innerException != null, "innerException != null");
                 return new StormError("StormFunc func evaluation failed.", innerException);
             }
         }
