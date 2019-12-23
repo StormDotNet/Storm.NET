@@ -104,6 +104,51 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void UpdateAndLoopSearchVisit()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+
+            var visitCount = 0;
+            Sut.OnVisit += (visitToken, visitType) =>
+            {
+                switch (visitCount)
+                {
+                    case 0:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateEnter));
+                        break;
+                    case 1:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        break;
+                    case 2:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
+                        break;
+                    case 3:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.UpdateLeaveUnchanged));
+                        break;
+                }
+
+                visitCount++;
+            };
+
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Assert.That(visitCount, Is.EqualTo(1));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(2));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(2));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Assert.That(visitCount, Is.EqualTo(2));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Assert.That(visitCount, Is.EqualTo(3));
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
+            Assert.That(visitCount, Is.EqualTo(4));
+        }
+
+        [Test]
         public void LoopSearchEnterWithUnknownTokenThrow()
         {
             var token1 = Storm.TokenSource.CreateSource().Token;
