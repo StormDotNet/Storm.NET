@@ -51,6 +51,38 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void Test3ElementsChainConnect1Then2WithListener()
+        {
+            var i = Storm.Input.WithCompare.Create<int>();
+            var s1 = Storm.Socket.Create<int>();
+            var s2 = Storm.Socket.Create<int>();
+            var f = Storm.Func.Create(s2, v => v);
+
+            s1.Connect(i);
+            s2.Connect(s1);
+
+            i.SetValue(0);
+            Assert.That(s2.GetValueOrThrow(), Is.EqualTo(0));
+            Assert.That(s2.Target, Is.EqualTo(i));
+        }
+
+        [Test]
+        public void Test3ElementsChainConnect2Then1WithListener()
+        {
+            var i = Storm.Input.WithCompare.Create<int>();
+            var s1 = Storm.Socket.Create<int>();
+            var s2 = Storm.Socket.Create<int>();
+            var f = Storm.Func.Create(s2, v => v);
+
+            s2.Connect(s1);
+            s1.Connect(i);
+
+            i.SetValue(0);
+            Assert.That(s2.GetValueOrThrow(), Is.EqualTo(0));
+            Assert.That(s2.Target, Is.EqualTo(i));
+        }
+
+        [Test]
         public void Test3ElementsInBatchChainConnect1Then2()
         {
             var i = Storm.Input.WithCompare.Create<int>();
@@ -86,6 +118,30 @@ namespace StormDotNet.Tests
 
             Assert.That(s2.GetValueOrThrow(), Is.EqualTo(0));
             Assert.That(s2.Target, Is.EqualTo(i));
+        }
+
+        [Test]
+        public void DifficultCase1()
+        {
+            var i0 = Storm.Input.WithCompare.Create<int>();
+            var i1 = Storm.Input.WithCompare.Create<int>();
+            var f1 = Storm.Func.Create(i1, v => v);
+            var f2 = Storm.Func.Create(i1, v => v);
+            var s1 = Storm.Switch.Create(i0, i => i % 2 == 0 ? f1 : f2);
+            var t1 = Storm.Socket.Create<int>();
+            var l1 = Storm.Func.Create(t1, v => v);
+
+            i0.SetValue(0);
+
+            using (var tokenSource = Storm.TokenSource.CreateSource())
+            {
+                var token = tokenSource.Token;
+                i1.SetValue(token, 42);
+                t1.Connect(token, s1);
+                i0.SetValue(token, 1);
+            }
+
+            Assert.That(l1.GetValueOrThrow(), Is.EqualTo(42));
         }
     }
 }

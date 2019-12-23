@@ -16,6 +16,7 @@
 namespace StormDotNet.Implementations
 {
     using System;
+    using System.Diagnostics;
 
     internal class StormSocket<T> : IStormSocket<T>
     {
@@ -63,8 +64,12 @@ namespace StormDotNet.Implementations
             if (IsDescendant(target))
                 throw new InvalidOperationException("This connection create a loop");
 
+            var onVisitCache = OnVisitCache;
             _target = target;
-            Connect(token);
+            OnVisitCache = null;
+
+            if (onVisitCache != null)
+                Connect(token, onVisitCache);
         }
 
         public TResult Match<TResult>(Func<T, TResult> onValue, Func<StormError, TResult> onError)
@@ -90,42 +95,37 @@ namespace StormDotNet.Implementations
 
         public override string ToString() => ToStringHelper.ToString(this);
 
-        private void Connect(StormToken token)
+        private void Connect(StormToken token, Action<StormToken, EStormVisitType> onVisitCache)
         {
             var target = GetDeepTarget();
             if (target == null)
             {
-                _target!.OnVisit += OnVisitCache;
-                OnVisitCache = null;
+                _target!.OnVisit += onVisitCache;
                 return;
             }
-
-            var onVisit = OnVisitCache;
-            if (onVisit == null)
-                return;
 
             var isEntered = target.TryGetEnteredToken(out var enteredToken);
             if (isEntered)
             {
                 if (!token.Equals(enteredToken))
                     throw new InvalidOperationException("Unknown token");
-                target.OnVisit += OnMiddleConnectionVisit;
+
+                var handler = new MiddleConnectionHandler(target, onVisitCache);
+                target.OnVisit += handler.OnVisit;
             }
             else
             {
                 if (target.TryGetError(out var error) && Equals(error, Error.Socket.Disconnected))
                 {
-                    target.OnVisit += OnVisitCache;
-                    OnVisitCache = null;
+                    target.OnVisit += onVisitCache;
                 }
                 else
                 {
-                    onVisit.Invoke(token, EStormVisitType.EnterUpdate);
+                    onVisitCache.Invoke(token, EStormVisitType.EnterUpdate);
                     token.Leave += () =>
                     {
-                        onVisit.Invoke(token, EStormVisitType.LeaveUpdateChanged);
-                        target.OnVisit += OnVisitCache;
-                        OnVisitCache = null;
+                        onVisitCache.Invoke(token, EStormVisitType.LeaveUpdateChanged);
+                        target.OnVisit += onVisitCache;
                     };
                 }
             }
@@ -172,32 +172,49 @@ namespace StormDotNet.Implementations
             return _target;
         }
 
-        private void OnMiddleConnectionVisit(StormToken token, EStormVisitType visitType)
+        private class MiddleConnectionHandler
         {
-            var onVisit = OnVisitCache;
-            var target = GetDeepTarget()!;
-            
-            switch (visitType)
-            {
-                case EStormVisitType.EnterUpdate:
-                    onVisit?.Invoke(token, EStormVisitType.EnterUpdate);
-                    break;
-                case EStormVisitType.LeaveUpdateChanged:
-                case EStormVisitType.LeaveUpdateUnchanged:
-                    var isDisconnected = target.TryGetError(out var error) && Equals(error, Error.Socket.Disconnected);
-                    onVisit?.Invoke( token, isDisconnected ? EStormVisitType.LeaveUpdateUnchanged : EStormVisitType.LeaveUpdateChanged);
+            private readonly IStorm<T> _target;
+            private readonly Action<StormToken, EStormVisitType> _onVisitCache;
 
-                    target.OnVisit += OnVisitCache;
-                    OnVisitCache = null;
-                    break;
-                case EStormVisitType.EnterLoopSearch:
-                    OnVisitCache?.Invoke(token, EStormVisitType.EnterLoopSearch);
-                    break;
-                case EStormVisitType.LeaveLoopSearch:
-                    OnVisitCache?.Invoke(token, EStormVisitType.LeaveLoopSearch);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(visitType), visitType, null);
+            public MiddleConnectionHandler(IStorm<T> target, Action<StormToken, EStormVisitType> onVisitCache)
+            {
+                _target = target;
+                _onVisitCache = onVisitCache;
+            }
+
+            public void OnVisit(StormToken token, EStormVisitType visitType)
+            {
+                void Leave(bool hasChanged)
+                {
+                    _onVisitCache.Invoke(
+                        token,
+                        hasChanged ? EStormVisitType.LeaveUpdateChanged : EStormVisitType.LeaveUpdateUnchanged);
+
+                    _target.OnVisit -= OnVisit;
+                    _target.OnVisit += _onVisitCache;
+                }
+
+                switch (visitType)
+                {
+                    case EStormVisitType.EnterUpdate:
+                        _onVisitCache.Invoke(token, EStormVisitType.EnterUpdate);
+                        break;
+                    case EStormVisitType.LeaveUpdateUnchanged:
+                        Leave(false);
+                        break;
+                    case EStormVisitType.LeaveUpdateChanged:
+                        var hasChanged = !_target.TryGetError(out var error) ||
+                                         !Equals(error, Error.Socket.Disconnected);
+                        Leave(hasChanged);
+                        break;
+                    case EStormVisitType.EnterLoopSearch:
+                        _onVisitCache.Invoke(token, EStormVisitType.EnterLoopSearch);
+                        break;
+                    case EStormVisitType.LeaveLoopSearch:
+                        _onVisitCache.Invoke(token, EStormVisitType.LeaveLoopSearch);
+                        break;
+                }
             }
         }
     }
