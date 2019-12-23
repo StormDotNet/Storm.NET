@@ -1,0 +1,108 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// Storm.NET - Simple Topologically Ordered Reactive Model
+// Copyright © 2019 Storm.NET. All rights reserved.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+<#
+    var ordinals = new[]
+    {
+        string.Empty,
+        "First", "Second", "Third", "Fourth",
+        "Fifth", "Sixth", "Seventh", "Eighth"
+    };
+
+    var cardinals = new[]
+    {
+        "Zero",
+        "One", "Two", "Three", "Four",
+        "Five", "Six", "Seven", "Eight"
+    };
+
+    var overloads =
+        from argCount in Enumerable.Range(1, 8)
+        from args in new[]
+        {
+            from argIndex in Enumerable.Range(0, argCount)
+            select new
+            {
+                Index = argIndex,
+                Name = ordinals[argIndex + 1],
+                name = ordinals[argIndex + 1].ToLower(),
+                Type = $"T{ordinals[argIndex + 1]}",
+            }
+        }
+        select new
+        {
+            argCount,
+            Arguments = args.ToList(),
+            Cardinal = cardinals[argCount],
+            TParams = string.Join(", ", from arg in args select arg.Type),
+            InputTParams = string.Join(", ", from arg in args select $"StormFuncInput<{arg.Type}>"),
+            CreateSignature = string.Join(", ", Enumerable.Repeat("object", argCount + 1)),
+            FuncSignature = string.Join(", ", Enumerable.Repeat("StormFuncInput<object>", argCount)) + ", IStorm<object>",
+            CreateParams1 = (Func<int, string>) (i => string.Join(", ", args.Select(a => a.name).Concat(new[] {"func"}).Select((v, j) => i == j ? "null" : v).ToList())),
+            CreateParams2 = (Func<int, string>) (i => string.Join(", ", args.Select(a => a.name).Concat(new[] {"func", "comparer"}).Select((v, j) => i == j ? "null" : v).ToList()))
+        };
+#>
+
+namespace StormDotNet.Tests
+{
+    using System;
+    using Moq;
+    using NUnit.Framework;
+    using StormDotNet.Factories.Switch;
+
+    [TestFixture]
+    public class StormSwitchFactoryFromStatesWithoutCompareTests
+    {
+        [SetUp]
+        public void SetUp()
+        {
+            Sut = new StormSwitchFactoryFromStatesWithoutCompare();
+        }
+
+        private StormSwitchFactoryFromStatesWithoutCompare Sut { get; set; }
+
+<#  foreach (var o in overloads) { #>
+        [Test]
+        public void CreateWith<#= o.argCount #>SourceReturns()
+        {
+<#  foreach (var a in o.Arguments) { #>
+            var <#= a.name #> = Mock.Of<IStorm<object>>();
+<#  } #>
+            var func = Mock.Of<Func<<#= o.FuncSignature #>>>();
+
+            Assert.That(Sut.Create<<#= o.CreateSignature #>>(<#= o.CreateParams1(-1) #>), Is.Not.Null);
+        }
+
+        [Test]
+        public void CreateWith<#= o.argCount #>SourceThrowOnNullArgument()
+        {
+<#  foreach (var a in o.Arguments) { #>
+            var <#= a.name #> = Mock.Of<IStorm<object>>();
+<#  } #>
+            var func = Mock.Of<Func<<#= o.FuncSignature #>>>();
+
+<#  for (var i = 0; i < o.argCount + 1; i++) { #>
+            Assert.Throws<ArgumentNullException>(() => Sut.Create<<#= o.CreateSignature #>>(<#= o.CreateParams1(i) #>));
+<#  } #>
+        }
+
+<#  } #>
+    }
+}

@@ -52,6 +52,26 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Update="StormSwitchFactoryFromStatesWithCompareTests.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromStatesWithCompareTests.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="StormSwitchFactoryFromStatesWithoutCompareTests.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromStatesWithoutCompareTests.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="StormSwitchFactoryFromValuesWithCompareTests.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromValuesWithCompareTests.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="StormSwitchFactoryFromValuesWithoutCompareTests.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StormSwitchFactoryFromValuesWithoutCompareTests.g.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -78,6 +98,26 @@
     <None Update="StormFuncFactoryFromValuesWithoutCompareTests.g.tt">
       <LastGenOutput>StormFuncFactoryFromValuesWithoutCompareTests.g.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="StormSwitchFactoryFromStatesWithCompareTests.g.tt">
+      <CustomToolNamespace></CustomToolNamespace>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormSwitchFactoryFromStatesWithCompareTests.g.cs</LastGenOutput>
+    </None>
+    <None Update="StormSwitchFactoryFromStatesWithoutCompareTests.g.tt">
+      <CustomToolNamespace></CustomToolNamespace>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormSwitchFactoryFromStatesWithoutCompareTests.g.cs</LastGenOutput>
+    </None>
+    <None Update="StormSwitchFactoryFromValuesWithCompareTests.g.tt">
+      <CustomToolNamespace></CustomToolNamespace>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormSwitchFactoryFromValuesWithCompareTests.g.cs</LastGenOutput>
+    </None>
+    <None Update="StormSwitchFactoryFromValuesWithoutCompareTests.g.tt">
+      <CustomToolNamespace></CustomToolNamespace>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StormSwitchFactoryFromValuesWithoutCompareTests.g.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
