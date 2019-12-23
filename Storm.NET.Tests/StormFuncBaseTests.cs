@@ -141,6 +141,28 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void LoopSearchEnterTwiceThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter));
+        }
+
+        [Test]
+        public void LoopSearchLeaveWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave));
+        }
+
+        [Test]
+        public void UpdateLeaveWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
+        }
+
+        [Test]
         public void LoopSearchEnterWithUnknownTokenFromUpdateThrow()
         {
             var token1 = Storm.TokenSource.CreateSource().Token;
