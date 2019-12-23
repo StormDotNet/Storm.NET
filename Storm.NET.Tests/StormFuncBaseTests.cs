@@ -149,12 +149,22 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void LoopSearchEnterWithUnknownTokenThrow()
+        public void LoopSearchEnterWithUnknownTokenFromUpdateThrow()
         {
             var token1 = Storm.TokenSource.CreateSource().Token;
             var token2 = Storm.TokenSource.CreateSource().Token;
 
             Sut.SourceOnVisit(0, token1, EStormVisitType.UpdateEnter);
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LoopSearchEnter));
+        }
+
+        [Test]
+        public void LoopSearchEnterWithUnknownTokenFromLoopSearchThrow()
+        {
+            var token1 = Storm.TokenSource.CreateSource().Token;
+            var token2 = Storm.TokenSource.CreateSource().Token;
+
+            Sut.SourceOnVisit(0, token1, EStormVisitType.LoopSearchEnter);
             Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LoopSearchEnter));
         }
 
@@ -180,6 +190,42 @@ namespace StormDotNet.Tests
         {
             var token = Storm.TokenSource.CreateSource().Token;
             Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged));
+        }
+
+        [Test]
+        public void UpdateWithChange()
+        {
+            var updateCount = 0;
+            Sut.UpdateDelegate = () =>
+            {
+                updateCount++;
+                return true;
+            };
+
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+
+            Assert.That(updateCount, Is.Zero);
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged);
+            Assert.That(updateCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void UpdateWithoutChange()
+        {
+            var updateCount = 0;
+            Sut.UpdateDelegate = () =>
+            {
+                updateCount++;
+                return true;
+            };
+
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+
+            Assert.That(updateCount, Is.Zero);
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged);
+            Assert.That(updateCount, Is.Zero);
         }
 
         private class TestableStormFuncBase : StormFuncBase<object>
