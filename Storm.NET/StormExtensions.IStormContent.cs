@@ -16,6 +16,7 @@
 namespace StormDotNet
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     public static partial class StormExtensions
     {
@@ -52,7 +53,7 @@ namespace StormDotNet
             content.Match(OnValue, OnError);
         }
 
-        public static bool TryGetError<T>(this IStormContent<T> content, out StormError? error)
+        public static bool TryGetError<T>(this IStormContent<T> content, [NotNullWhen(true)] out StormError? error)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
