@@ -60,10 +60,9 @@ namespace StormDotNet.Implementations
             return _sourceStates[index] switch
             {
                 EStormSourceState.Idle => EStormFuncInputState.NotVisited,
-                EStormSourceState.Enter => throw new InvalidOperationException("Token hasn't leave."),
                 EStormSourceState.LeaveChanged => EStormFuncInputState.VisitedWithChange,
                 EStormSourceState.LeaveUnchanged => EStormFuncInputState.VisitedWithoutChange,
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new InvalidOperationException("Token is still here."),
             };
         }
 

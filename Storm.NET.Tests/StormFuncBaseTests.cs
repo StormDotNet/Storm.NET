@@ -15,6 +15,7 @@
 
 namespace StormDotNet.Tests
 {
+    using System;
     using System.Collections.Generic;
     using Implementations;
     using NUnit.Framework;
@@ -25,12 +26,49 @@ namespace StormDotNet.Tests
         [SetUp]
         public void SetUp()
         {
-            Sut = new TestableStormFuncBase(1, null);
+            Sut = new TestableStormFuncBase(2, null);
         }
 
         private TestableStormFuncBase Sut { get; set; }
 
         protected override IStorm<object> SutStorm => Sut;
+
+        [Test]
+        public void GetStateOnNotVisitedReturnsNotVisited()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.NotVisited));
+        }
+
+        [Test]
+        public void GetStateOnEnteredThrows()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateEnter);
+            Assert.Throws<InvalidOperationException>(() => Sut.GetState(1));
+        }
+
+        [Test]
+        public void GetStateOnLeaveChangedReturnsVisitedWithChange()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateLeaveChanged);
+            Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.VisitedWithChange));
+        }
+
+        [Test]
+        public void GetStateOnLeaveUnchangedReturnsVisitedWithoutChange()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.SourceOnVisit(0, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateEnter);
+            Sut.SourceOnVisit(1, token, EStormVisitType.UpdateLeaveUnchanged);
+            Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.VisitedWithoutChange));
+        }
 
         private class TestableStormFuncBase : StormFuncBase<object>
         {
@@ -38,10 +76,13 @@ namespace StormDotNet.Tests
             {
             }
 
-            protected override bool Update()
-            {
-                return false;
-            }
+            protected override bool Update() => UpdateDelegate?.Invoke() ?? false;
+
+            public Func<bool> UpdateDelegate { get; set; }
+
+            public new EStormFuncInputState GetState(int index) => base.GetState(index);
+
+            public new void SourceOnVisit(int index, StormToken token, EStormVisitType visitType) => base.SourceOnVisit(index, token, visitType);
         }
     }
 }
