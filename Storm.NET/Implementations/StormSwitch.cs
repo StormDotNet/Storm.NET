@@ -48,9 +48,9 @@ namespace StormDotNet.Implementations
             return _target.Match(TrySetValue, TrySetError);
         }
 
-        protected override void SourceOnChanged(int index)
+        protected override void SourceOnLeaveUpdateChanged(int index)
         {
-            base.SourceOnChanged(index);
+            base.SourceOnLeaveUpdateChanged(index);
             if (index == 0)
             {
                 if (_target != null && _target.TryGetEnteredToken(out var token))

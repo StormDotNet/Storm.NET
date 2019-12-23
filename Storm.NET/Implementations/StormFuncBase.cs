@@ -71,7 +71,7 @@ namespace StormDotNet.Implementations
 
         protected abstract bool Update();
 
-        protected virtual void SourceOnChanged(int index)
+        protected virtual void SourceOnLeaveUpdateChanged(int index)
         {
         }
 
@@ -125,7 +125,7 @@ namespace StormDotNet.Implementations
             _sourceStates[index] = _sourceStates[index].LeaveUpdate(hasChanged);
 
             if (hasChanged)
-                SourceOnChanged(index);
+                SourceOnLeaveUpdateChanged(index);
 
             _enteredCount--;
             _hasChanged |= hasChanged;
