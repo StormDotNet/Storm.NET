@@ -70,6 +70,73 @@ namespace StormDotNet.Tests
             Assert.That(Sut.GetState(1), Is.EqualTo(EStormFuncInputState.VisitedWithoutChange));
         }
 
+        [Test]
+        public void LoopSearchVisit()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+
+            var visitCount = 0;
+            Sut.OnVisit += (visitToken, visitType) =>
+            {
+                switch (visitCount)
+                {
+                    case 0:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchEnter));
+                        break;
+                    case 1:
+                        Assert.That(visitToken, Is.EqualTo(token));
+                        Assert.That(visitType, Is.EqualTo(EStormVisitType.LoopSearchLeave));
+                        break;
+                }
+
+                visitCount++;
+            };
+
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(1));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchEnter);
+            Assert.That(visitCount, Is.EqualTo(1));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Assert.That(visitCount, Is.EqualTo(1));
+            Sut.SourceOnVisit(0, token, EStormVisitType.LoopSearchLeave);
+            Assert.That(visitCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void LoopSearchEnterWithUnknownTokenThrow()
+        {
+            var token1 = Storm.TokenSource.CreateSource().Token;
+            var token2 = Storm.TokenSource.CreateSource().Token;
+
+            Sut.SourceOnVisit(0, token1, EStormVisitType.UpdateEnter);
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LoopSearchEnter));
+        }
+
+        [Test]
+        public void LoopSearchLeaveWithUnknownTokenThrow()
+        {
+            var token1 = Storm.TokenSource.CreateSource().Token;
+            var token2 = Storm.TokenSource.CreateSource().Token;
+
+            Sut.SourceOnVisit(0, token1, EStormVisitType.LoopSearchEnter);
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token2, EStormVisitType.LoopSearchLeave));
+        }
+
+        [Test]
+        public void SourceUpdateLeaveChangedWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveChanged));
+        }
+
+        [Test]
+        public void SourceUpdateLeaveUnchangedWithoutEnterThrow()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Assert.Throws<InvalidOperationException>(() => Sut.SourceOnVisit(0, token, EStormVisitType.UpdateLeaveUnchanged));
+        }
+
         private class TestableStormFuncBase : StormFuncBase<object>
         {
             public TestableStormFuncBase(int length, IEqualityComparer<object> comparer) : base(length, comparer)
