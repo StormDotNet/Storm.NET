@@ -16,7 +16,6 @@
 namespace StormDotNet.Implementations
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
 
     internal class ImmutableValue<T> : IStorm<T>
     {
@@ -27,29 +26,16 @@ namespace StormDotNet.Implementations
             _value = value;
         }
 
-        public EStormContentType ContentType => EStormContentType.Value;
-
         public event Action<StormToken, EStormVisitType>? OnVisit
         {
             add { }
             remove { }
         }
 
-        public T GetValueOr(T fallBack) => _value;
-        public T GetValueOrThrow() => _value;
-        
-        public void Match(Action<StormError> onError, Action<T> onValue)
+        public TResult Match<TResult>(Func<T, TResult> onValue, Func<StormError, TResult> onError)
         {
-            if (onError == null) throw new ArgumentNullException(nameof(onError));
             if (onValue == null) throw new ArgumentNullException(nameof(onValue));
-
-            onValue(_value);
-        }
-
-        public TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue)
-        {
             if (onError == null) throw new ArgumentNullException(nameof(onError));
-            if (onValue == null) throw new ArgumentNullException(nameof(onValue));
 
             return onValue(_value);
         }
@@ -58,18 +44,6 @@ namespace StormDotNet.Implementations
         {
             token = default;
             return false;
-        }
-
-        public bool TryGetError([NotNullWhen(true)] out StormError? error)
-        {
-            error = null;
-            return false;
-        }
-
-        public bool TryGetValue(out T value)
-        {
-            value = _value;
-            return true;
         }
 
         public override string ToString() => ToStringHelper.ToString(this);

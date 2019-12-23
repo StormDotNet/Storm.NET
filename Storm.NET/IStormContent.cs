@@ -16,22 +16,9 @@
 namespace StormDotNet
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
 
-    public interface IStormContent<T>
+    public interface IStormContent<out T>
     {
-        EStormContentType ContentType { get; }
-
-        T GetValueOr(T fallBack);
-
-        T GetValueOrThrow();
-
-        void Match(Action<StormError> onError, Action<T> onValue);
-
-        TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue);
-
-        bool TryGetError([NotNullWhen(true)] out StormError? error);
-
-        bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)] out T value);
+        TResult Match<TResult>(Func<T, TResult> onValue, Func<StormError, TResult> onError);
     }
 }

@@ -33,12 +33,6 @@ namespace StormDotNet.Tests
         private object Value { get; set; }
 
         [Test]
-        public void ContentType()
-        {
-            Assert.That(Sut.ContentType, Is.EqualTo(EStormContentType.Value));
-        }
-
-        [Test]
         public void GetValueOr()
         {
             Assert.That(Sut.GetValueOr(new object()), Is.EqualTo(Value));
@@ -56,7 +50,7 @@ namespace StormDotNet.Tests
             static void OnError(StormError obj) => throw new Exception();
             void OnValue(object obj) => Assert.That(obj, Is.EqualTo(Value));
 
-            Sut.Match(OnError, OnValue);
+            Sut.Match(OnValue, OnError);
         }
 
         [Test]
@@ -65,7 +59,7 @@ namespace StormDotNet.Tests
             static object OnError(StormError obj) => obj;
             static object OnValue(object obj) => obj;
 
-            var actual = Sut.Match(OnError, OnValue);
+            var actual = Sut.Match(OnValue, OnError);
             Assert.That(actual, Is.EqualTo(Value));
         }
 

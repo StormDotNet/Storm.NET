@@ -16,7 +16,6 @@
 namespace StormDotNet.Implementations
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
 
     internal class ImmutableError<T> : IStorm<T>
     {
@@ -27,48 +26,23 @@ namespace StormDotNet.Implementations
             _error = error ?? throw new ArgumentNullException(nameof(error));
         }
 
-        public EStormContentType ContentType => EStormContentType.Error;
-
         public event Action<StormToken, EStormVisitType>? OnVisit
         {
             add { }
             remove { }
         }
 
-        public T GetValueOr(T fallBack) => fallBack;
-        public T GetValueOrThrow() => throw _error;
-
-        public void Match(Action<StormError> onError, Action<T> onValue)
+        public TResult Match<TResult>(Func<T, TResult> onValue, Func<StormError, TResult> onError)
         {
-            if (onError == null) throw new ArgumentNullException(nameof(onError));
             if (onValue == null) throw new ArgumentNullException(nameof(onValue));
+            if (onError == null) throw new ArgumentNullException(nameof(onError));
             
-            onError(_error);
-        }
-
-        public TResult Match<TResult>(Func<StormError, TResult> onError, Func<T, TResult> onValue)
-        {
-            if (onError == null) throw new ArgumentNullException(nameof(onError));
-            if (onValue == null) throw new ArgumentNullException(nameof(onValue));
-
             return onError(_error);
         }
 
         public bool TryGetEnteredToken(out StormToken token)
         {
             token = default;
-            return false;
-        }
-
-        public bool TryGetError([NotNullWhen(true)] out StormError? error)
-        {
-            error = _error;
-            return true;
-        }
-
-        public bool TryGetValue([AllowNull] [MaybeNull] [NotNullWhen(true)] out T value)
-        {
-            value = default!;
             return false;
         }
 

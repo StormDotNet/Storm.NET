@@ -29,16 +29,13 @@ namespace StormDotNet.Tests
             var f = Storm.Func.Create(s, i => i % 2 == 0 ? i : throw new Exception("odd value"));
 
             Assert.DoesNotThrow(() => s.SetEmpty());
-            Assert.DoesNotThrow(() => f.Match(error => { },
-                                              value => throw new Exception()));
+            Assert.DoesNotThrow(() => f.Match(value => throw new Exception(), error => { }));
 
             Assert.DoesNotThrow(() => s.SetValue(2));
-            Assert.DoesNotThrow(() => f.Match(error => throw new Exception(),
-                                              value => Assert.That(value, Is.EqualTo(2))));
+            Assert.DoesNotThrow(() => f.Match(value => Assert.That(value, Is.EqualTo(2)), error => throw new Exception()));
 
             Assert.DoesNotThrow(() => s.SetValue(3));
-            Assert.DoesNotThrow(() => f.Match(error => { },
-                                              value => throw new Exception()));
+            Assert.DoesNotThrow(() => f.Match(value => throw new Exception(), error => { }));
         }
 
         [Test]

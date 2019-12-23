@@ -195,12 +195,6 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void ContentType()
-        {
-            Assert.That(Sut.ContentType, Is.EqualTo(EStormContentType.Error));
-        }
-
-        [Test]
         public void GetValueOr()
         {
             var fallBack = new object();
@@ -219,7 +213,7 @@ namespace StormDotNet.Tests
             static void OnError(StormError obj) => Assert.That(obj, Is.InstanceOf<StormError>());
             static void OnValue(object obj) => throw new Exception();
 
-            Sut.Match(OnError, OnValue);
+            Sut.Match(OnValue, OnError);
         }
 
         [Test]
@@ -228,7 +222,7 @@ namespace StormDotNet.Tests
             static object OnError(StormError obj) => obj;
             static object OnValue(object obj) => obj;
 
-            var actual = Sut.Match(OnError, OnValue);
+            var actual = Sut.Match(OnValue, OnError);
             Assert.That(actual, Is.InstanceOf<StormError>());
         }
 

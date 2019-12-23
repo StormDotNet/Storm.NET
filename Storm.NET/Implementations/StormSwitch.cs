@@ -15,7 +15,6 @@
 
 namespace StormDotNet.Implementations
 {
-    using System;
     using System.Collections.Generic;
 
     internal class StormSwitch<TResult> : StormFuncBase<TResult>
@@ -46,7 +45,7 @@ namespace StormDotNet.Implementations
             if (_target == this)
                 return TrySetError(Error.Switch.Looped);
 
-            return _target.Match(TrySetError, TrySetValue);
+            return _target.Match(TrySetValue, TrySetError);
         }
 
         protected override void SourceOnChanged(int index)

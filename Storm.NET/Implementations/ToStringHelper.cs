@@ -22,7 +22,7 @@ namespace StormDotNet.Implementations
             static string Error(StormError error) => $"err: '{error.Message}'";
             static string Value(T value) => $"val: '{value}'";
 
-            return content.Match(Error, Value);
+            return content.Match(Value, Error);
         }
     }
 }

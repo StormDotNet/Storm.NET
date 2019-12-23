@@ -27,25 +27,25 @@ namespace StormDotNet.Tests
         [Test]
         public void VoidMatchThrownOnNullOnErrorParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(null, o => { }));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(o => { }, null));
         }
 
         [Test]
         public void VoidMatchThrownOnNullOnValueParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(e => { }, null));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(null, e => { }));
         }
 
         [Test]
         public void ValueMatchThrownOnNullOnErrorParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(null, o => o));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(o => o, null));
         }
 
         [Test]
         public void ValueMatchThrownOnNullOnValueParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(e => e, null));
+            Assert.Throws<ArgumentNullException>(() => SutStorm.Match(null, e => e));
         }
     }
 }

@@ -14,6 +14,7 @@
 // limitations under the License.
 
 // ReSharper disable InvokeAsExtensionMethod
+// ReSharper disable RedundantTypeArgumentsOfMethod
 namespace StormDotNet.Tests
 {
     using System;
