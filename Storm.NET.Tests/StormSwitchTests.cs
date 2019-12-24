@@ -16,6 +16,7 @@
 // ReSharper disable IdentifierTypo
 // ReSharper disable AccessToModifiedClosure
 // ReSharper disable PossibleNullReferenceException
+// ReSharper disable UnusedVariable
 namespace StormDotNet.Tests
 {
     using System;
@@ -404,6 +405,25 @@ namespace StormDotNet.Tests
             Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(42));
             select.SetValue(1);
             Assert.That(swicht.GetValueOrThrow(), Is.EqualTo(69));
+        }
+
+        [Test]
+        public void OldTargetAndNewTargetAreInUpdate()
+        {
+            var input = Storm.Input.Create<int>();
+            var select = Storm.Input.Create<int>();
+            var oldTarget = Storm.Func.Create(input, v => v);
+            var newTarget = Storm.Func.Create(input, v => v + 1);
+            var swicht = Storm.Switch.Create(select, i => i % 2 == 0 ? oldTarget : newTarget);
+            var listener = Storm.Func.Create(swicht, v => v);
+
+            input.SetValue(0);
+            select.SetValue(0);
+
+            using var tokenSource = Storm.TokenSource.CreateSource();
+            var token = tokenSource.Token;
+            select.SetValue(token, 1);
+            input.SetValue(token, 1);
         }
     }
 }
