@@ -68,8 +68,6 @@ namespace StormDotNet.Implementations
         private void SourceOnEnterLoopSearch(int index, StormToken token)
         {
             var state = GetVisitState(out var enteredToken);
-            if (_enteredLoopSearchCount == 0 && ! state.CanEnterLoopSearch())
-                throw new InvalidOperationException("Can't enter loop search now");
 
             if (state.HasToken() && !Equals(enteredToken, token))
                 throw new InvalidOperationException("Unknown token");
