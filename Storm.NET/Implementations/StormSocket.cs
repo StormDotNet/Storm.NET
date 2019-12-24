@@ -81,7 +81,7 @@ namespace StormDotNet.Implementations
             return target == null ? onError(Error.Socket.Disconnected) : target.Match(onValue, onError);
         }
 
-        public bool TryGetEnteredToken(out StormToken token)
+        public bool TryGetUpdateToken(out StormToken token)
         {
             var target = GetDeepTarget();
             if (target == null)
@@ -90,7 +90,7 @@ namespace StormDotNet.Implementations
                 return false;
             }
 
-            return target.TryGetEnteredToken(out token);
+            return target.TryGetUpdateToken(out token);
         }
 
         public override string ToString() => ToStringHelper.ToString(this);
@@ -104,7 +104,7 @@ namespace StormDotNet.Implementations
                 return;
             }
 
-            var isEntered = target.TryGetEnteredToken(out var enteredToken);
+            var isEntered = target.TryGetUpdateToken(out var enteredToken);
             if (isEntered)
             {
                 if (!token.Equals(enteredToken))

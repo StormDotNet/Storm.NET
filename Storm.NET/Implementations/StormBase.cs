@@ -43,10 +43,16 @@ namespace StormDotNet.Implementations
             remove => OnVisitEvent -= value;
         }
 
-        public bool TryGetEnteredToken(out StormToken token)
+        public bool TryGetUpdateToken(out StormToken token)
         {
-            token = _currentToken;
-            return !token.Equals(default);
+            if (_isInUpdate)
+            {
+                token = _currentToken;
+                return true;
+            }
+
+            token = default;
+            return false;
         }
 
         protected bool IsDescendant(IStormNode node)

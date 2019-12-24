@@ -40,7 +40,7 @@ namespace StormDotNet.Implementations
             return onError(_error);
         }
 
-        public bool TryGetEnteredToken(out StormToken token)
+        public bool TryGetUpdateToken(out StormToken token)
         {
             token = default;
             return false;

@@ -76,7 +76,7 @@ namespace StormDotNet.Implementations
 
         private void SourceOnEnterLoopSearch(int index, StormToken token)
         {
-            if (TryGetEnteredToken(out var enteredToken) && !Equals(enteredToken, token))
+            if (TryGetUpdateToken(out var enteredToken) && !Equals(enteredToken, token))
                 throw new InvalidOperationException("Unknown token");
 
             _sourceStates[index] = _sourceStates[index].EnterLoopSearch();
@@ -88,7 +88,7 @@ namespace StormDotNet.Implementations
 
         private void SourceOnLeaveLoopSearch(int index, StormToken token)
         {
-            if (!TryGetEnteredToken(out var enteredToken))
+            if (!TryGetUpdateToken(out var enteredToken))
                 throw new InvalidOperationException("Can't leave now");
 
             if (!Equals(enteredToken, token))
@@ -103,7 +103,7 @@ namespace StormDotNet.Implementations
 
         private void SourceOnEnterUpdate(int index, StormToken token)
         {
-            if (TryGetEnteredToken(out var enteredToken) && !Equals(enteredToken, token))
+            if (TryGetUpdateToken(out var enteredToken) && !Equals(enteredToken, token))
                 throw new InvalidOperationException("Unknown token");
 
             _sourceStates[index] = _sourceStates[index].EnterUpdate();
@@ -115,7 +115,7 @@ namespace StormDotNet.Implementations
 
         private void SourceOnLeaveUpdate(int index, StormToken token, bool hasChanged)
         {
-            if (!TryGetEnteredToken(out var enteredToken))
+            if (!TryGetUpdateToken(out var enteredToken))
                 throw new InvalidOperationException("Can't leave now");
 
             if (!Equals(enteredToken, token))

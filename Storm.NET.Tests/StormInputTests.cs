@@ -65,7 +65,7 @@ namespace StormDotNet.Tests
         [Test]
         public void TryGetEnteredTokenIdle()
         {
-            var result = Sut.TryGetEnteredToken(out var token);
+            var result = Sut.TryGetUpdateToken(out var token);
             Assert.That(result, Is.False);
             Assert.That(token, Is.EqualTo(new StormToken()));
         }
@@ -78,13 +78,13 @@ namespace StormDotNet.Tests
             {
                 if (type == EStormVisitType.EnterUpdate)
                 {
-                    var result = Sut.TryGetEnteredToken(out var enteredToken);
+                    var result = Sut.TryGetUpdateToken(out var enteredToken);
                     Assert.That(result, Is.True);
                     Assert.That(token, Is.EqualTo(enteredToken));
                 }
                 else if (type == EStormVisitType.LeaveUpdateUnchanged)
                 {
-                    var result = Sut.TryGetEnteredToken(out _);
+                    var result = Sut.TryGetUpdateToken(out _);
                     Assert.That(result, Is.False);
                 }
 

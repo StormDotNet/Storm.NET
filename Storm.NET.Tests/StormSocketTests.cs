@@ -242,7 +242,7 @@ namespace StormDotNet.Tests
         [Test]
         public void TryGetEnteredTokenWithNoTarget()
         {
-            Assert.That(SutNode.TryGetEnteredToken(out var token), Is.False);
+            Assert.That(SutNode.TryGetUpdateToken(out var token), Is.False);
             Assert.That(token, Is.EqualTo(default(StormToken)));
         }
 
@@ -250,7 +250,7 @@ namespace StormDotNet.Tests
         public void TryGetEnteredTokenWithNoDeepTarget()
         {
             Sut.Connect(Storm.Socket.Create<object>());
-            Assert.That(SutNode.TryGetEnteredToken(out var token), Is.False);
+            Assert.That(SutNode.TryGetUpdateToken(out var token), Is.False);
             Assert.That(token, Is.EqualTo(default(StormToken)));
         }
 
@@ -259,9 +259,9 @@ namespace StormDotNet.Tests
         {
             var token = Storm.TokenSource.CreateSource().Token;
             var mock = new Mock<IStorm<object>>(MockBehavior.Strict);
-            mock.Setup(m => m.TryGetEnteredToken(out token)).Returns(true);
+            mock.Setup(m => m.TryGetUpdateToken(out token)).Returns(true);
             Sut.Connect(mock.Object);
-            Assert.That(SutNode.TryGetEnteredToken(out var enteredToken), Is.True);
+            Assert.That(SutNode.TryGetUpdateToken(out var enteredToken), Is.True);
             Assert.That(enteredToken, Is.EqualTo(token));
         }
 
@@ -270,7 +270,7 @@ namespace StormDotNet.Tests
         {
             var token = Storm.TokenSource.CreateSource().Token;
             var mock = new Mock<IStorm<object>>(MockBehavior.Strict);
-            mock.Setup(m => m.TryGetEnteredToken(out token)).Returns(true);
+            mock.Setup(m => m.TryGetUpdateToken(out token)).Returns(true);
 
             var f = Storm.Func.Create(Sut, v => v);
             Sut.Connect(token, mock.Object);

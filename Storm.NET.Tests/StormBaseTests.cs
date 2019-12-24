@@ -180,6 +180,55 @@ namespace StormDotNet.Tests
             };
         }
 
+        [Test]
+        public void TryGetUpdateTokenWhenIdle()
+        {
+            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.False);
+            Assert.That(updateToken, Is.EqualTo(default(StormToken)));
+        }
+
+        [Test]
+        public void TryGetUpdateTokenAfterUpdateEnter()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.RaiseUpdateEnter(token);
+
+            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.True);
+            Assert.That(updateToken, Is.EqualTo(token));
+        }
+
+        [Test]
+        public void TryGetUpdateTokenAfterUpdateEnterAndLeave()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.RaiseUpdateEnter(token);
+            Sut.RaiseUpdateLeave(token, true);
+
+            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.False);
+            Assert.That(updateToken, Is.EqualTo(default(StormToken)));
+        }
+
+        [Test]
+        public void TryGetUpdateTokenAfterLoopSearchEnter()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.RaiseLoopSearchEnter(token);
+
+            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.False);
+            Assert.That(updateToken, Is.EqualTo(default(StormToken)));
+        }
+
+        [Test]
+        public void TryGetUpdateTokenAfterUpdateEnterAndLoopSearchEnter()
+        {
+            var token = Storm.TokenSource.CreateSource().Token;
+            Sut.RaiseUpdateEnter(token);
+            Sut.RaiseLoopSearchEnter(token);
+
+            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.True);
+            Assert.That(updateToken, Is.EqualTo(token));
+        }
+
         private class TestableStormBase : StormBase<int>
         {
             public TestableStormBase(IEqualityComparer<int> comparer) : base(comparer)
@@ -190,6 +239,7 @@ namespace StormDotNet.Tests
             public new void RaiseLoopSearchLeave(StormToken token) => base.RaiseLoopSearchLeave(token);
             public new void RaiseUpdateEnter(StormToken token) => base.RaiseUpdateEnter(token);
             public new void RaiseUpdateLeave(StormToken token, bool hasChanged) => base.RaiseUpdateLeave(token, hasChanged);
+            public new bool TryGetUpdateToken(out StormToken token) => base.TryGetUpdateToken(out token);
         }
     }
 }

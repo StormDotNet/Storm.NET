@@ -40,7 +40,7 @@ namespace StormDotNet.Tests
         [Test]
         public void TryGetEnteredToken()
         {
-            Assert.That(SutNode.TryGetEnteredToken(out var token), Is.False);
+            Assert.That(SutNode.TryGetUpdateToken(out var token), Is.False);
             Assert.That(token, Is.EqualTo(default(StormToken)));
         }
     }
