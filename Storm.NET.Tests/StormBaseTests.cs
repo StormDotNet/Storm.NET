@@ -35,34 +35,34 @@ namespace StormDotNet.Tests
         public void UpdateEnterLeave()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token);
-            Sut.RaiseUpdateLeave(token, true);
+            Sut.EnterUpdate(token);
+            Sut.LeaveUpdate(token, true);
         }
 
         [Test]
         public void UpdateEnterLeaveWithLoopSearch()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token);
-            Sut.RaiseLoopSearchEnter(token);
-            Sut.RaiseLoopSearchLeave(token);
-            Sut.RaiseUpdateLeave(token, true);
+            Sut.EnterUpdate(token);
+            Sut.EnterLoopSearch(token);
+            Sut.LeaveLoopSearch(token);
+            Sut.LeaveUpdate(token, true);
         }
 
         [Test]
         public void LoopSearchEnterLeave()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseLoopSearchEnter(token);
-            Sut.RaiseLoopSearchLeave(token);
+            Sut.EnterLoopSearch(token);
+            Sut.LeaveLoopSearch(token);
         }
 
         [Test]
         public void RaiseLoopSearchEnterTwiceThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseLoopSearchEnter(token);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseLoopSearchEnter(token));
+            Sut.EnterLoopSearch(token);
+            Assert.Throws<InvalidOperationException>(() => Sut.EnterLoopSearch(token));
         }
 
         [Test]
@@ -70,15 +70,15 @@ namespace StormDotNet.Tests
         {
             var token1 = Storm.TokenSource.CreateDisposedSource().Token;
             var token2 = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token1);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseLoopSearchEnter(token2));
+            Sut.EnterUpdate(token1);
+            Assert.Throws<InvalidOperationException>(() => Sut.EnterLoopSearch(token2));
         }
 
         [Test]
         public void RaiseLoopSearchLeaveWithoutEnterThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseLoopSearchLeave(token));
+            Assert.Throws<InvalidOperationException>(() => Sut.LeaveLoopSearch(token));
         }
 
         [Test]
@@ -86,32 +86,32 @@ namespace StormDotNet.Tests
         {
             var token1 = Storm.TokenSource.CreateDisposedSource().Token;
             var token2 = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token1);
-            Sut.RaiseLoopSearchEnter(token1);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseLoopSearchLeave(token2));
+            Sut.EnterUpdate(token1);
+            Sut.EnterLoopSearch(token1);
+            Assert.Throws<InvalidOperationException>(() => Sut.LeaveLoopSearch(token2));
         }
 
         [Test]
         public void RaiseUpdateEnterTwiceThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateEnter(token));
+            Sut.EnterUpdate(token);
+            Assert.Throws<InvalidOperationException>(() => Sut.EnterUpdate(token));
         }
 
         [Test]
         public void RaiseUpdateEnterAfterEnterLoopSearchThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseLoopSearchEnter(token);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateEnter(token));
+            Sut.EnterLoopSearch(token);
+            Assert.Throws<InvalidOperationException>(() => Sut.EnterUpdate(token));
         }
 
         [Test]
         public void RaiseUpdateLeaveWithoutEnterThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token, true));
+            Assert.Throws<InvalidOperationException>(() => Sut.LeaveUpdate(token, true));
         }
 
         [Test]
@@ -119,17 +119,17 @@ namespace StormDotNet.Tests
         {
             var token1 = Storm.TokenSource.CreateDisposedSource().Token;
             var token2 = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token1);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token2, true));
+            Sut.EnterUpdate(token1);
+            Assert.Throws<InvalidOperationException>(() => Sut.LeaveUpdate(token2, true));
         }
 
         [Test]
         public void RaiseUpdateLeaveWhileInLoopSearchThrow()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token);
-            Sut.RaiseLoopSearchEnter(token);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token, true));
+            Sut.EnterUpdate(token);
+            Sut.EnterLoopSearch(token);
+            Assert.Throws<InvalidOperationException>(() => Sut.LeaveUpdate(token, true));
         }
 
         [Test]
@@ -137,9 +137,9 @@ namespace StormDotNet.Tests
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
 
-            Sut.OnVisit += (visitToken, visitType) => Sut.RaiseUpdateEnter(token);
+            Sut.OnVisit += (visitToken, visitType) => Sut.EnterUpdate(token);
 
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateEnter(token));
+            Assert.Throws<InvalidOperationException>(() => Sut.EnterUpdate(token));
         }
 
         [Test]
@@ -147,9 +147,9 @@ namespace StormDotNet.Tests
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
 
-            Sut.OnVisit += (visitToken, visitType) => Sut.RaiseUpdateLeave(token, true);
+            Sut.OnVisit += (visitToken, visitType) => Sut.LeaveUpdate(token, true);
 
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateEnter(token));
+            Assert.Throws<InvalidOperationException>(() => Sut.EnterUpdate(token));
         }
 
         [Test]
@@ -159,18 +159,18 @@ namespace StormDotNet.Tests
             Sut.OnVisit += (visitToken, visitType) =>
             {
                 if (visitType != EStormVisitType.EnterUpdate)
-                    Sut.RaiseUpdateLeave(token, true);
+                    Sut.LeaveUpdate(token, true);
             };
             
-            Sut.RaiseUpdateEnter(token);
-            Assert.Throws<InvalidOperationException>(() => Sut.RaiseUpdateLeave(token, true));
+            Sut.EnterUpdate(token);
+            Assert.Throws<InvalidOperationException>(() => Sut.LeaveUpdate(token, true));
         }
 
         [Test]
         public void RegisterWhileEnteredRaise()
         {
             var token = Storm.TokenSource.CreateDisposedSource().Token;
-            Sut.RaiseUpdateEnter(token);
+            Sut.EnterUpdate(token);
 
             Sut.OnVisit += null;
             Sut.OnVisit += (enteredToken, visitType) =>
@@ -183,50 +183,60 @@ namespace StormDotNet.Tests
         [Test]
         public void TryGetUpdateTokenWhenIdle()
         {
-            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.False);
-            Assert.That(updateToken, Is.EqualTo(default(StormToken)));
+            var state = Sut.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.False);
+            Assert.That(state.IsInLoopSearch, Is.False);
+            Assert.That(enteredToken, Is.EqualTo(default(StormToken)));
         }
 
         [Test]
         public void TryGetUpdateTokenAfterUpdateEnter()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.RaiseUpdateEnter(token);
+            Sut.EnterUpdate(token);
 
-            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.True);
-            Assert.That(updateToken, Is.EqualTo(token));
+            var state = Sut.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.True);
+            Assert.That(state.IsInLoopSearch, Is.False);
+            Assert.That(enteredToken, Is.EqualTo(token));
         }
 
         [Test]
         public void TryGetUpdateTokenAfterUpdateEnterAndLeave()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.RaiseUpdateEnter(token);
-            Sut.RaiseUpdateLeave(token, true);
+            Sut.EnterUpdate(token);
+            Sut.LeaveUpdate(token, true);
 
-            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.False);
-            Assert.That(updateToken, Is.EqualTo(default(StormToken)));
+            var state = Sut.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.False);
+            Assert.That(state.IsInLoopSearch, Is.False);
+            Assert.That(enteredToken, Is.EqualTo(default(StormToken)));
         }
 
         [Test]
         public void TryGetUpdateTokenAfterLoopSearchEnter()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.RaiseLoopSearchEnter(token);
+            Sut.EnterLoopSearch(token);
 
-            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.False);
-            Assert.That(updateToken, Is.EqualTo(default(StormToken)));
+            var state = Sut.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.False);
+            Assert.That(state.IsInLoopSearch, Is.True);
+            Assert.That(enteredToken, Is.EqualTo(token));
         }
 
         [Test]
         public void TryGetUpdateTokenAfterUpdateEnterAndLoopSearchEnter()
         {
             var token = Storm.TokenSource.CreateSource().Token;
-            Sut.RaiseUpdateEnter(token);
-            Sut.RaiseLoopSearchEnter(token);
+            Sut.EnterUpdate(token);
+            Sut.EnterLoopSearch(token);
 
-            Assert.That(Sut.TryGetUpdateToken(out var updateToken), Is.True);
-            Assert.That(updateToken, Is.EqualTo(token));
+            var state = Sut.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.True);
+            Assert.That(state.IsInLoopSearch, Is.True);
+            Assert.That(enteredToken, Is.EqualTo(token));
         }
 
         private class TestableStormBase : StormBase<int>
@@ -235,11 +245,11 @@ namespace StormDotNet.Tests
             {
             }
 
-            public new void RaiseLoopSearchEnter(StormToken token) => base.RaiseLoopSearchEnter(token);
-            public new void RaiseLoopSearchLeave(StormToken token) => base.RaiseLoopSearchLeave(token);
-            public new void RaiseUpdateEnter(StormToken token) => base.RaiseUpdateEnter(token);
-            public new void RaiseUpdateLeave(StormToken token, bool hasChanged) => base.RaiseUpdateLeave(token, hasChanged);
-            public new bool TryGetUpdateToken(out StormToken token) => base.TryGetUpdateToken(out token);
+            public new void EnterLoopSearch(StormToken token) => base.EnterLoopSearch(token);
+            public new void LeaveLoopSearch(StormToken token) => base.LeaveLoopSearch(token);
+            public new void EnterUpdate(StormToken token) => base.EnterUpdate(token);
+            public new void LeaveUpdate(StormToken token, bool hasChanged) => base.LeaveUpdate(token, hasChanged);
+            public new StormVisitState GetVisitState(out StormToken token) => base.GetVisitState(out token);
         }
     }
 }

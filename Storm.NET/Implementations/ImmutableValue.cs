@@ -40,10 +40,10 @@ namespace StormDotNet.Implementations
             return onValue(_value);
         }
 
-        public bool TryGetUpdateToken(out StormToken token)
+        public StormVisitState GetVisitState(out StormToken token)
         {
             token = default;
-            return false;
+            return StormVisitState.Idle;
         }
 
         public override string ToString() => ToStringHelper.ToString(this);

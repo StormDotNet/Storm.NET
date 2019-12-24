@@ -15,7 +15,7 @@
 
 namespace StormDotNet
 {
-    public interface IStorm<T> : IStormContent<T>, IStormNode
+    public interface IStorm<out T> : IStormContent<T>, IStormNode
     {
     }
 }

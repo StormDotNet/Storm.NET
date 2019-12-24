@@ -242,16 +242,21 @@ namespace StormDotNet.Tests
         [Test]
         public void TryGetEnteredTokenWithNoTarget()
         {
-            Assert.That(SutNode.TryGetUpdateToken(out var token), Is.False);
-            Assert.That(token, Is.EqualTo(default(StormToken)));
+            var state = SutNode.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.False);
+            Assert.That(state.IsInLoopSearch, Is.False);
+            Assert.That(enteredToken, Is.EqualTo(default(StormToken)));
         }
 
         [Test]
         public void TryGetEnteredTokenWithNoDeepTarget()
         {
             Sut.Connect(Storm.Socket.Create<object>());
-            Assert.That(SutNode.TryGetUpdateToken(out var token), Is.False);
-            Assert.That(token, Is.EqualTo(default(StormToken)));
+
+            var state = Sut.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.False);
+            Assert.That(state.IsInLoopSearch, Is.False);
+            Assert.That(enteredToken, Is.EqualTo(default(StormToken)));
         }
 
         [Test]
@@ -259,9 +264,12 @@ namespace StormDotNet.Tests
         {
             var token = Storm.TokenSource.CreateSource().Token;
             var mock = new Mock<IStorm<object>>(MockBehavior.Strict);
-            mock.Setup(m => m.TryGetUpdateToken(out token)).Returns(true);
+            mock.Setup(m => m.GetVisitState(out token)).Returns(StormVisitState.Update);
             Sut.Connect(mock.Object);
-            Assert.That(SutNode.TryGetUpdateToken(out var enteredToken), Is.True);
+
+            var state = Sut.GetVisitState(out var enteredToken);
+            Assert.That(state.IsInUpdate, Is.True);
+            Assert.That(state.IsInLoopSearch, Is.False);
             Assert.That(enteredToken, Is.EqualTo(token));
         }
 
@@ -270,7 +278,7 @@ namespace StormDotNet.Tests
         {
             var token = Storm.TokenSource.CreateSource().Token;
             var mock = new Mock<IStorm<object>>(MockBehavior.Strict);
-            mock.Setup(m => m.TryGetUpdateToken(out token)).Returns(true);
+            mock.Setup(m => m.GetVisitState(out token)).Returns(StormVisitState.Update);
 
             var f = Storm.Func.Create(Sut, v => v);
             Sut.Connect(token, mock.Object);

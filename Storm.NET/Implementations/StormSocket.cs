@@ -16,7 +16,6 @@
 namespace StormDotNet.Implementations
 {
     using System;
-    using System.Diagnostics;
 
     internal class StormSocket<T> : IStormSocket<T>
     {
@@ -81,16 +80,16 @@ namespace StormDotNet.Implementations
             return target == null ? onError(Error.Socket.Disconnected) : target.Match(onValue, onError);
         }
 
-        public bool TryGetUpdateToken(out StormToken token)
+        public StormVisitState GetVisitState(out StormToken token)
         {
             var target = GetDeepTarget();
             if (target == null)
             {
                 token = default;
-                return false;
+                return StormVisitState.Idle;
             }
 
-            return target.TryGetUpdateToken(out token);
+            return target.GetVisitState(out token);
         }
 
         public override string ToString() => ToStringHelper.ToString(this);
@@ -104,8 +103,8 @@ namespace StormDotNet.Implementations
                 return;
             }
 
-            var isEntered = target.TryGetUpdateToken(out var enteredToken);
-            if (isEntered)
+            var visitState = target.GetVisitState(out var enteredToken);
+            if (visitState.IsInUpdate())
             {
                 if (!token.Equals(enteredToken))
                     throw new InvalidOperationException("Unknown token");

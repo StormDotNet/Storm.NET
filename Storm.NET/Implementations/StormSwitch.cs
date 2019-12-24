@@ -53,7 +53,7 @@ namespace StormDotNet.Implementations
             base.SourceOnLeaveUpdateChanged(index);
             if (index == 0)
             {
-                if (_target != null && _target.TryGetUpdateToken(out var token))
+                if (_target != null && _target.GetVisitState(out var token).IsInUpdate())
                     SourceOnVisit(1, token, EStormVisitType.LeaveUpdateChanged);
 
                 UpdateTarget();

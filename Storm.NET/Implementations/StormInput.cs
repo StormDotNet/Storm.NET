@@ -36,10 +36,10 @@ namespace StormDotNet.Implementations
             token.Leave += () =>
             {
                 SetError(error);
-                RaiseUpdateLeave(token, true);
+                LeaveUpdate(token, true);
             };
 
-            RaiseUpdateEnter(token);
+            EnterUpdate(token);
         }
 
         public void SetValue(StormToken token, [AllowNull] [MaybeNull] T value)
@@ -51,10 +51,10 @@ namespace StormDotNet.Implementations
             token.Leave += () =>
             {
                 SetValue(value);
-                RaiseUpdateLeave(token, true);
+                LeaveUpdate(token, true);
             };
 
-            RaiseUpdateEnter(token);
+            EnterUpdate(token);
         }
     }
 }
