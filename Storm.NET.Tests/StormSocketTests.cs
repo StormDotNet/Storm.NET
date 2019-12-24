@@ -287,24 +287,6 @@ namespace StormDotNet.Tests
         }
 
         [Test]
-        public void UpdateTargetOnLoopSearchThrow()
-        {
-            var target = Storm.Input.Create<int>();
-            var socket = Storm.Socket.Create<int>();
-            var f = Storm.Func.Create(socket, v => v);
-
-            f.OnVisit += (token, type) =>
-            {
-                if (type == EStormVisitType.EnterLoopSearch)
-                {
-                    target.SetValue(0);
-                }
-            };
-
-            Assert.Throws<InvalidOperationException>(() => socket.Connect(target));
-        }
-
-        [Test]
         public new void ToString()
         {
             Assert.That(Sut.ToString(), Is.EqualTo("err: 'Disconnected socket.'"));

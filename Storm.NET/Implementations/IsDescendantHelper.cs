@@ -37,10 +37,7 @@ namespace StormDotNet.Implementations
 
             void TargetOnVisit(StormToken enteredToken, EStormVisitType visitType)
             {
-                if (!Equals(enteredToken, token))
-                    throw new InvalidOperationException("Unknown token");
-
-                hasEntered |= visitType == EStormVisitType.EnterLoopSearch;
+                hasEntered |= Equals(enteredToken, token) && visitType == EStormVisitType.EnterLoopSearch;
             }
 
             otherNode.OnVisit += TargetOnVisit;
