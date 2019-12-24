@@ -48,31 +48,7 @@ namespace StormDotNet.Implementations
             return _visitState;
         }
 
-        protected bool IsDescendant(IStormNode node)
-        {
-            if (node == this)
-                return true;
-
-            if (node is IStormSocket<T> socket && socket.Target == this)
-                return true;
-
-            if (OnVisitEvent == null)
-                return false;
-
-            var hasEntered = false;
-
-            void TargetOnVisit(StormToken enteredToken, EStormVisitType visitType)
-            {
-                hasEntered |= visitType == EStormVisitType.EnterLoopSearch;
-            }
-
-            node.OnVisit += TargetOnVisit;
-            OnVisitEvent.Invoke(_currentToken, EStormVisitType.EnterLoopSearch);
-            OnVisitEvent.Invoke(_currentToken, EStormVisitType.LeaveLoopSearch);
-            node.OnVisit -= TargetOnVisit;
-
-            return hasEntered;
-        }
+        protected bool IsDescendant(IStormNode otherNode) => IsDescendantHelper.IsDescendant(_currentToken, this, OnVisitEvent, otherNode);
 
         protected void EnterLoopSearch(StormToken token)
         {

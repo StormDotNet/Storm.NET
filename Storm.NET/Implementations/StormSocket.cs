@@ -60,7 +60,7 @@ namespace StormDotNet.Implementations
             if (_target != null)
                 throw new InvalidOperationException("Already connected");
 
-            if (IsDescendant(target))
+            if (IsDescendantHelper.IsDescendant(token, this, OnVisitCache, target))
                 throw new InvalidOperationException("This connection create a loop");
 
             var onVisitCache = OnVisitCache;
@@ -128,34 +128,6 @@ namespace StormDotNet.Implementations
                     };
                 }
             }
-        }
-
-        private bool IsDescendant(IStormNode node)
-        {
-            if (node == this)
-                return true;
-
-            if (node is IStormSocket<T> socket && socket.Target == this)
-                return true;
-
-            if (OnVisitCache == null)
-                return false;
-
-            var tokenSource = Storm.TokenSource.CreateDisposedSource();
-            var token = tokenSource.Token;
-            var hasEntered = false;
-
-            void TargetOnVisit(StormToken enteredToken, EStormVisitType visitType)
-            {
-                hasEntered |= token.Equals(enteredToken) && visitType == EStormVisitType.EnterLoopSearch;
-            }
-
-            node.OnVisit += TargetOnVisit;
-            OnVisitCache.Invoke(token, EStormVisitType.EnterLoopSearch);
-            OnVisitCache.Invoke(token, EStormVisitType.LeaveLoopSearch);
-            node.OnVisit -= TargetOnVisit;
-
-            return hasEntered;
         }
 
         private IStorm<T>? GetDeepTarget()
