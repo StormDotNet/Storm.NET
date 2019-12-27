@@ -210,10 +210,10 @@ The dependency graph show how `FooSubModel` and `BarSubModel` are interdependent
 
 ### Switch
 
-> Q: I don't know how, I end up with a `IStorm<IStorm<T>>`.
-> A: Can't you use a `Func`, put all known `IStorm<T>` possible values as input and made a switch on it?
-> Q: Erh.. Nope.
-> A: In this case, just made a `Switch` on it.
+> - Q: I don't know how, I end up with a `IStorm<IStorm<T>>`.
+> - A: Can't you use a `Func`, put all known `IStorm<T>` possible values as input and made a switch on it?
+> - Q: Erh.. Nope.
+> - A: In this case, just made a `Switch` on it.
 
 `Switch` transform an `IStorm<IStorm<T>>` into a `IStorm<T>`.
 
