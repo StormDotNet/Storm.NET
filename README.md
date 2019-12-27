@@ -83,9 +83,9 @@ var f = Storm.Func.FromStates.Create(a, b, (aState, bState) => ...); // the eval
 
 **`WithCompare`/`WithoutCompare`**
 
-When a *node* is created using the `WithCompare` flavour: on update, it's new value is compared to the old value using the provided `IEqualityComparer` (or the `DefaultEqualityComparer`) to define the state `Changed`/`Unchanged`.
+When a *node* is created using the `WithCompare` flavour: on evaluation, it's new value is compared to the old value using the provided `IEqualityComparer` (or the `DefaultEqualityComparer`) to define the state `Changed`/`Unchanged`.
 
-When a *node* is created using the `WithoutCompare` flavour: on update, the state is always `Changed`. That's can be usefull to create repeatable actions.
+When a *node* is created using the `WithoutCompare` flavour: on evaluation, the state is always `Changed`. That's can be usefull to create repeatable actions.
 
 The default flavour is `WithCompare`.
 
@@ -112,7 +112,9 @@ The default content is `Storm.Error.EmptyContent`.
 
 `Storm.Func` factory came with four flavours mixed from `WithCompare`/`WithoutCompare` and `FromValues`/`FromStates`.
 
-When a `StormFunc` node evaluation fail (throw an exception), it's content is a `Storm.Error`. The inner exception contain the original exception.
+When a `StormFunc` node is updated, at least one of it dependency should have the `Changed` state to trigger the evaluation. That's it, if the dependencies are either not updated or updated without changes, the `Func` is not evaluated and the `StormFunc` is defined as `Unchanged`. Even if it was created with the `WithoutCompare` flavor !
+
+When a `StormFunc` node evaluation fails (throw an exception), it's content is a `Storm.Error`. The inner exception contain the original exception.
 
 When a `StormFunc` node is created using the `FromValues` flavour, it's value is evaluated from the values of the dependencies. If one or more dependencies are in an `Error` state, the *Storm function* content is a `Storm.Error` with an inner `AggregateException` contening dependencies errors.
 
