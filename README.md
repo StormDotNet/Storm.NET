@@ -74,7 +74,7 @@ That is called a topological sort of the graph.
 
 ### Fluent Factories
 
-*Storm.NET* model nodes are created via the `Storm` factory. This allow fluent parameterization of the created objects:
+*Storm.NET* nodes are created via the `Storm` factory. This allow fluent parameterization of the created objects:
 
 ```C#
 var a = Storm.Input.WithoutCompare.Create<int>(); // 'a' will not compare old and new values. It raise 'changed' at each update.
@@ -83,17 +83,24 @@ var f = Storm.Func.FromStates.Create(a, b, (aState, bState) => ...); // the eval
 
 **`WithCompare`/`WithoutCompare`**
 
-Those flavours are available for each *Storm nodes*.
+When a *node* is created using the `WithCompare` flavour: on update, it's new value is compared to the old value using the provided `IEqualityComparer` (or the `DefaultEqualityComparer`) to define the state `Changed`/`Unchanged`.
 
-When a *Storm node* is created using the `WithCompare` flavour: on update, it's new value is compared to the old value using the provided `IEqualityComparer` (or the `DefaultEqualityComparer`) to define the state `Changed`/`Unchanged`.
+When a *node* is created using the `WithoutCompare` flavour: on update, the state is always `Changed`. That's can be usefull to create repeatable actions.
 
-When a *Storm node* is created using the `WithoutCompare` flavour: on update, the state is always `Changed`. That's can be usefull to create repeatable actions.
+The default flavour is `WithCompare`.
 
-The default flavour is `WithCompare(DefaultEqualityComparer)`.
+### Immutable
+
+`Immutable` nodes are roots of the dependency graph. That's it, they don't have dependencies. They don't trigger any graph update since their content is immutable.
+
+`Storm.Immutable` factory provide three methods:
+ - `CreateError<T>(StormError error)` create an immutable node that contains the given error.
+ - `CreateError<T>(string message)` create an immutable node that contains an error with the given message.
+ - `CreateValue<T>(T value)` create an immutable node that contains the given value.
 
 ### Input
 
-`StormInput` nodes are roots of the dependency graph. That's it, they don't have dependencies. They are the entry point of a graph update via the `SetValue` and `SetError` method.
+`Input` nodes are roots of the dependency graph. That's it, they don't have dependencies. They are the entry point of a graph update via the `SetValue` and `SetError` method.
 
 `Storm.Input` factory came with two flavours `WithCompare`/`WithoutCompare`.
 
@@ -101,13 +108,13 @@ The default content is `Storm.Error.EmptyContent`.
 
 ### Function
 
-`StormFunc` nodes are readonly, their values depends only on their dependencies. They are the core of the graph.
+`Func` nodes are readonly, their values depends only on their dependencies. They are the core of the graph.
 
 `Storm.Func` factory came with four flavours mixed from `WithCompare`/`WithoutCompare` and `FromValues`/`FromStates`.
 
-When a *Storm function* evaluation fail (throw an exception), it's content is a `Storm.Error`. The inner exception contain the original exception.
+When a `StormFunc` node evaluation fail (throw an exception), it's content is a `Storm.Error`. The inner exception contain the original exception.
 
-When a *Storm function* is created using the `FromValues` flavour, it's value is evaluated from the values of the dependencies. If one or more dependencies are in an `Error` state, the *Storm function* content is a `Storm.Error` with an inner `AggregateException` contening dependencies errors.
+When a `StormFunc` node is created using the `FromValues` flavour, it's value is evaluated from the values of the dependencies. If one or more dependencies are in an `Error` state, the *Storm function* content is a `Storm.Error` with an inner `AggregateException` contening dependencies errors.
 
 Example:
 ```C#
@@ -118,7 +125,7 @@ var b = Storm.Input.Create<int>();
 var c = Storm.Func.Create(a, b, (aValue, bValue) => aValue + bValue);
 ```
 
-When a *Storm function* is created using the `FromStates` flavour, it's value is evaluated from the states informations of the dependencies.
+When a `StormFunc` node is created using the `FromStates` flavour, it's value is evaluated from the states informations of the dependencies.
 For each dependency, the state information contains:
  - `VisitState` either:
    - `NotVisited`: The dependency was not impacted by the current update.
@@ -143,4 +150,62 @@ var c = Storm.Func.FromStates.Create(a, b, (aState, bState) =>
 ```
 
 ### Socket
+
+Creating a complex model with hundreds of inter-dependent `Input` and `Func` nodes force the developer to declare the nodes in a topological order. That it, you can't create a `Func` before its dependency. This is a tough work, and it's hard to maintain.
+
+`Socket` nodes can be created before their dependencies.
+
+This allow the user to create the nodes, then to interconnect them with the `Connect` method:
+
+```C#
+public class GlobalModel
+{
+    public GlobalModel()
+    {
+        // instantiate nodes.
+        FooSubModel = new FooSubModel();
+        BarSubModel = new BarSubModel();
+
+        // create dependency
+        FooSubModel.Configure(this);
+        BarSubModel.Configure(this);
+    }
+
+    public FooSubModel FooSubModel { get; }
+    public BarSubModel BarSubModel { get; }
+}
+
+public class FooSubModel
+{
+    private readonly IStormSocket<string> _fooString = Storm.Socket.Create<string>();
+
+    public void Configure(GlobalModel globalModel)
+    {
+        _fooString.Connect(Storm.Func.Create(globalModel.BarSubModel.BarInt, barInt => $"{barInt:00}"));
+    }
+
+    public IStormInput<int> FooInt { get; } = Storm.Input.Create(0);
+
+    public IStorm<string> FooString => _fooString;
+}
+
+public class BarSubModel
+{
+    private readonly IStormSocket<string> _barString = Storm.Socket.Create<string>();
+
+    public void Configure(GlobalModel globalModel)
+    {
+        _barString.Connect(Storm.Func.Create(globalModel.FooSubModel.FooInt, fooInt => $"{fooInt:00}"));
+    }
+
+    public IStormInput<int> BarInt { get; } = Storm.Input.Create(0);
+
+    public IStorm<string> BarString => _barString;
+}
+```
+
+The dependency graph show how `FooSubModel` and `BarSubModel` are interdependent. They could not have been created without the use of sockets:
+
+![FooInt<-BarString, BarInt<-FooString](https://user-images.githubusercontent.com/9695349/71519701-efc54d80-28b8-11ea-9e58-e3dc0a368a18.png)
+
 ### Switch
