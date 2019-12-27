@@ -25,6 +25,10 @@ namespace StormDotNet.Implementations
         {
         }
 
+        public StormInput(T initialValue, IEqualityComparer<T>? comparer) : base(initialValue, comparer)
+        {
+        }
+
         public void SetError(StormToken token, StormError error)
         {
             if (token.Equals(default)) throw new ArgumentException("Default token not allowed", nameof(token));

@@ -27,6 +27,10 @@ namespace StormDotNet.Implementations
         {
         }
 
+        protected StormBase(T initialValue, IEqualityComparer<T>? comparer) : base(initialValue, comparer)
+        {
+        }
+
         private event Action<StormToken, EStormVisitType>? OnVisitEvent;
 
         public event Action<StormToken, EStormVisitType>? OnVisit

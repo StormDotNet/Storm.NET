@@ -31,5 +31,10 @@ namespace StormDotNet.Factories.Input
         {
             return new StormInput<T>(null);
         }
+
+        public IStormInput<T> Create<T>(T initialValue)
+        {
+            return new StormInput<T>(initialValue, null);
+        }
     }
 }

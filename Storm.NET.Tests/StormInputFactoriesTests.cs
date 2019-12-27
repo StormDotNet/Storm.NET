@@ -17,6 +17,7 @@ namespace StormDotNet.Tests
 {
     using System;
     using System.Collections.Generic;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -50,6 +51,55 @@ namespace StormDotNet.Tests
         public void CreateStormInputWithCompareWithNullComparerThrow()
         {
             Assert.Throws<ArgumentNullException>(() => Storm.Input.WithCompare.Create((IEqualityComparer<int>) null));
+        }
+
+        [Test]
+        public void CreateStormInputWithCompareWithInitialValue()
+        {
+            var mock = new Mock<IEqualityComparer<int>>();
+            mock.Setup(m => m.Equals(It.IsAny<int>(), It.IsAny<int>())).Returns(false);
+            
+            var sut = Storm.Input.WithCompare.Create(42, mock.Object);
+
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+
+            var count = 0;
+            sut.OnVisit += (token, type) => count++;
+
+            sut.SetValue(42);
+
+            Assert.That(count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void CreateStormInputWithDefaultCompareWithInitialValue()
+        {
+            var sut = Storm.Input.WithCompare.Create(42);
+
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+
+            var count = 0;
+            sut.OnVisit += (token, type) => count++;
+
+            sut.SetValue(41);
+
+            Assert.That(count, Is.EqualTo(2));
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(41));
+        }
+
+        [Test]
+        public void CreateStormInputWithoutCompareWithInitialValue()
+        {
+            var sut = Storm.Input.WithoutCompare.Create(42);
+
+            Assert.That(sut.GetValueOrThrow(), Is.EqualTo(42));
+
+            var count = 0;
+            sut.OnVisit += (token, type) => count++;
+
+            sut.SetValue(42);
+
+            Assert.That(count, Is.EqualTo(2));
         }
     }
 }

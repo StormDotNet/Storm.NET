@@ -35,6 +35,13 @@ namespace StormDotNet.Implementations
             _hasValue = false;
         }
 
+        protected StormContentBase(T initialValue, IEqualityComparer<T>? comparer)
+        {
+            _comparer = comparer;
+            _error = null;
+            _value = initialValue;
+            _hasValue = true;
+        }
 
         public TResult Match<TResult>(Func<T, TResult> onValue, Func<StormError, TResult> onError)
         {

@@ -34,11 +34,23 @@ namespace StormDotNet.Factories.Input
             return new StormInput<T>(EqualityComparer<T>.Default);
         }
 
+        public IStormInput<T> Create<T>(T initialValue)
+        {
+            return new StormInput<T>(initialValue, EqualityComparer<T>.Default);
+        }
+
         public IStormInput<T> Create<T>(IEqualityComparer<T> comparer)
         {
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
             return new StormInput<T>(comparer);
+        }
+
+        public IStormInput<T> Create<T>(T initialValue, IEqualityComparer<T> comparer)
+        {
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+
+            return new StormInput<T>(initialValue, comparer);
         }
     }
 }
