@@ -54,6 +54,12 @@ namespace StormDotNet.Tests
         }
 
         [Test]
+        public void CreateStormInputWithInitialValueWithCompareWithNullComparerThrow()
+        {
+            Assert.Throws<ArgumentNullException>(() => Storm.Input.WithCompare.Create(42, null));
+        }
+
+        [Test]
         public void CreateStormInputWithCompareWithInitialValue()
         {
             var mock = new Mock<IEqualityComparer<int>>();
