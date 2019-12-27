@@ -209,3 +209,39 @@ The dependency graph show how `FooSubModel` and `BarSubModel` are interdependent
 ![FooInt<-BarString, BarInt<-FooString](https://user-images.githubusercontent.com/9695349/71519701-efc54d80-28b8-11ea-9e58-e3dc0a368a18.png)
 
 ### Switch
+
+> Q: I don't know how, I end up with a `IStorm<IStorm<T>>`.
+> A: Can't you use a `Func`, put all known `IStorm<T>` possible values as input and made a switch on it?
+> Q: Erh.. Nope.
+> A: In this case, just made a `Switch` on it.
+
+`Switch` transform an `IStorm<IStorm<T>>` into a `IStorm<T>`.
+
+**Remark**
+
+If you know all possible target, a `Func` may be preferable:
+
+Example:
+```C#
+var selector = Storm.Input.Create(0);
+var evenTarget = Storm.Input.Create("even");
+var oddTarget = Storm.Input.Create("odd");
+
+var output = Storm.Switch.Create(selector, i => i % 2 == 0 ? evenTarget : oddTarget);
+```
+
+Can be transformed to:
+```C#
+var selector = Storm.Input.Create(0);
+var evenTarget = Storm.Input.Create("even");
+var oddTarget = Storm.Input.Create("odd");
+
+var output = Storm.Func.Create(selector, evenTarget, oddTarget, (i, evenValue, oddValue) => i % 2 == 0 ? evenValue : oddValue);
+```
+
+But in some cases you can't:
+```C#
+var selectedIndex = Storm.Input.Create(0);
+var models = new List<FooSubModel>();
+var selectedFooString = Storm.Switch.Create(selectedIndex, i => models[i].FooString);
+```
