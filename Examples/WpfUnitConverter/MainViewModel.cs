@@ -42,7 +42,7 @@ namespace WpfUnitConverter
 
         private static decimal GetModelValue(StormFuncInput<decimal> meterValue, StormFuncInput<decimal> inchValue)
         {
-            return (meterValue.State, inchValue.State) switch
+            return (meterValue.VisitState, inchValue.VisitState) switch
             {
                 (_, EStormFuncInputState.NotVisited) => meterValue.Content.GetValueOrThrow(),
                 (EStormFuncInputState.NotVisited, _) => inchValue.Content.GetValueOrThrow(),

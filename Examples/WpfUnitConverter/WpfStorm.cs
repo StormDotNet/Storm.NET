@@ -84,7 +84,7 @@ namespace WpfUnitConverter
 
         private static T Resolve(StormFuncInput<T> input, StormFuncInput<T> update)
         {
-            return (input.State, update.State) switch
+            return (input.VisitState, update.VisitState) switch
             {
                 (EStormFuncInputState.NotVisited, _) => update.Content.GetValueOr(default),
                 _ => input.Content.GetValueOr(default)

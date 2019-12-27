@@ -19,18 +19,18 @@ namespace StormDotNet
 
     public readonly struct StormFuncInput<T>
     {
-        public StormFuncInput(IStormContent<T> content, EStormFuncInputState state)
+        public StormFuncInput(IStormContent<T> content, EStormFuncInputState visitState)
         {
-            if (!Enum.IsDefined(typeof(EStormFuncInputState), state))
-                throw new ArgumentOutOfRangeException(nameof(state));
+            if (!Enum.IsDefined(typeof(EStormFuncInputState), visitState))
+                throw new ArgumentOutOfRangeException(nameof(visitState));
             
             Content = content ?? throw new ArgumentNullException(nameof(content));
-            State = state;
+            VisitState = visitState;
         }
 
         public IStormContent<T> Content { get; }
-        public EStormFuncInputState State { get; }
+        public EStormFuncInputState VisitState { get; }
 
-        public override string ToString() => $"{State.GetDescription()}, {Content}";
+        public override string ToString() => $"{VisitState.GetDescription()}, {Content}";
     }
 }

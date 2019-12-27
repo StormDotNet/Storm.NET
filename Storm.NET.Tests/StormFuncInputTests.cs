@@ -58,7 +58,7 @@ namespace StormDotNet.Tests
             var content = Mock.Of<IStormContent<object>>();
             var sut = new StormFuncInput<object>(content, state);
 
-            Assert.That(sut.State, Is.EqualTo(state));
+            Assert.That(sut.VisitState, Is.EqualTo(state));
         }
 
         [Test]
